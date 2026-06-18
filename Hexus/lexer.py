@@ -33,5 +33,6 @@ def tokenizer(text, definition):
 
     return tokens
 
-tekst = 'Nothing c:'
-print(tokenizer(tekst, token_pattern))
+def ftokenizer(text):
+    tokens = tokenizer(text, token_pattern)
+    return tokens

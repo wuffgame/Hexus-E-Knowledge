@@ -1,7 +1,18 @@
 import sys
+from lexer import ftokenizer
 
-filename = sys.argv[1]
+def main():
+    file_name = "test.he"
+    try:
+        with open(file_name, "r", encoding="utf-8") as file:
+            source_code = file.read()
 
-with open(filename, "r", encoding="utf-8") as f:
-    code = f.read()
-print(code)
+    except FileNotFoundError:
+        print(f"File {file_name} not found!!!")
+        return
+    token_list = ftokenizer(source_code)
+    for token in token_list:
+        print(token)
+
+if __name__ == "__main__":
+    main()
