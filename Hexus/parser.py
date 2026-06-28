@@ -24,12 +24,13 @@ class ReadCommandNode:
     def __repr__(self):
         return f"ReadCommandNode(text={self.text_value}, var={self.var_name})"
 
-class AddNode:
-    def __init__(self, left, right):
+class BinaryOpNode:
+    def __init__(self, left, op, right):
         self.left = left
+        self.op = op
         self.right = right
     def __repr__(self):
-        return f"AddNode({self.left} + {self.right})"
+        return f"BinaryOpNode({self.left} {self.op} {self.right})"
 
 class HexusParser:
     def __init__(self, tokens):
@@ -84,6 +85,25 @@ class HexusParser:
         else:
             raise SyntaxError(f"SyntaxError: Expect number or variable, but found '{token_type}' ('{value}')")
 
+    def parse_expression(self):
+        left = self.parse_value()
+
+        token_type, value = self.peek()
+
+        if token_type == "PLUS":
+            self.consume("PLUS")
+            op = "+"
+        elif token_type == "MINUS":
+            self.consume("MINUS")
+            op = "-"
+        else:
+            raise SyntaxError(f"Expected a mathematical operator, but found {token_type}")
+
+        right = self.parse_value()
+        self.consume_end_of_statement()
+        return BinaryOpNode(left, op, right)
+
+
     def parse_send(self):
         self.consume("KEYWORD")
         text = self.consume("STRING")
@@ -102,14 +122,6 @@ class HexusParser:
         self.consume_end_of_statement()
         return ReadCommandNode(text, var)
 
-    def parse_add(self):
-        left = self.parse_value()
-        self.consume("PLUS")
-        right = self.parse_value()
-        self.consume_end_of_statement()
-        return AddNode(left, right)
-
-
     def parse(self):
         program_nodes = []
 
@@ -126,7 +138,9 @@ class HexusParser:
             elif token_type == "KEYWORD" and value == "read":
                 node = self.parse_read()
                 program_nodes.append(node)
-            elif token_type == ""
+            elif token_type == "INT" or token_type == "VAR":
+                node = self.parse_expression()
+                program_nodes.append(node)
             else:
                 raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
         return program_nodes
