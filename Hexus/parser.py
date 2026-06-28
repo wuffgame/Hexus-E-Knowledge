@@ -4,6 +4,13 @@ class SendCommandNode:
 
     def __repr__(self):
         return f"SendCommandNode(text={self.text_value})"
+class ReadCommandNode:
+    def __init__(self, text_value, var_name):
+        self.text_value = text_value
+        self.var_name = var_name
+
+    def __repr__(self):
+        return f"ReadCommandNode(text={self.text_value}, var={self.var_name})"
 
 class HexusParser:
     def __init__(self, tokens):
@@ -54,6 +61,16 @@ class HexusParser:
         self.consume_end_of_statement()
         return SendCommandNode(text)
 
+    def parse_read(self):
+        self.consume("KEYWORD")
+        text = self.consume("STRING")
+        self.consume_value("KEYWORD", "to")
+        var = self.consume("VAR")
+        self.consume_value("KEYWORD", "from")
+        self.consume_value("KEYWORD", "console")
+        self.consume_end_of_statement()
+        return ReadCommandNode(text, var)
+
 
     def parse(self):
         program_nodes = []
@@ -67,6 +84,9 @@ class HexusParser:
 
             if token_type == "KEYWORD" and value == "send":
                 node = self.parse_send()
+                program_nodes.append(node)
+            elif token_type == "KEYWORD" and value == "read":
+                node = self.parse_read()
                 program_nodes.append(node)
             else:
                 raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
