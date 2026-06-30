@@ -28,6 +28,12 @@ class StopNode:
     def __repr__(self):
         return f"StopNode()"
 
+class ComNode:
+    def __init__(self, text_value):
+        self.text_value = text_value
+    def __repr__(self):
+        return f"ComNode(text={self.text_value})"
+
 class SetVar:
     def __init__(self, var_name, value):
         self.var_name = var_name
@@ -65,6 +71,11 @@ class HexusParser:
                 f"Expected token of type '{expected_type}', "
                 f"but found '{token_type}' with value '{value}' at position {self.pos}."
             )
+
+    def advance(self):
+        token_type, value = self.peek()
+        self.pos += 1
+        return str(value)
 
     def consume_value(self, expected_type, expected_value):
         token_type, value = self.peek()
@@ -174,6 +185,14 @@ class HexusParser:
         self.consume_end_of_statement()
         return StopNode()
 
+    def parse_com(self):
+        text = []
+        self.consume("HASH")
+        while self.peek()[0] != "NEWLINE" and self.peek()[0] != "EOF":
+            text.append(self.advance())
+        self.consume_end_of_statement()
+        return ComNode(" ".join(text))
+
     def parse(self):
         program_nodes = []
 
@@ -199,6 +218,9 @@ class HexusParser:
                     node = self.parse_var()
                 else:
                     node = self.parse_expression()
+                program_nodes.append(node)
+            elif token_type == "HASH" and value == "#":
+                node = self.parse_com()
                 program_nodes.append(node)
             else:
                 raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
