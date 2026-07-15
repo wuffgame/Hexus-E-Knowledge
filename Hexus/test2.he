@@ -1,3 +1,4 @@
+# Next goal
 read "Wpisz pierwszą liczbę" to a
 read "Wpisz znak:" to op
 read "Wpisz drugą liczbę" to b
