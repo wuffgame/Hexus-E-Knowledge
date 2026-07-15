@@ -50,6 +50,12 @@ class BinaryOpNode:
     def __repr__(self):
         return f"BinaryOpNode({self.left} {self.op} {self.right})"
 
+class StringNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"StringNode({self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -109,28 +115,27 @@ class HexusParser:
             raise SyntaxError(f"SyntaxError: Expect number or variable, but found '{token_type}' ('{value}')")
 
     def parse_expression(self):
-        left = self.parse_value()
 
         token_type, value = self.peek()
+        if token_type == "STRING":
+            val = self.consume("STRING")
+            return StringNode(val)
+        left = self.parse_value()
 
-        if token_type == "PLUS":
-            self.consume("PLUS")
-            op = "+"
-        elif token_type == "MINUS":
-            self.consume("MINUS")
-            op = "-"
-        elif token_type == "MUL":
-            self.consume("MUL")
-            op = "*"
-        elif token_type == "DIV":
-            self.consume("DIV")
-            op = "/"
-        else:
-            raise SyntaxError(f"Expected a mathematical operator, but found {token_type}")
+        next_type, _ = self.peek()
 
-        right = self.parse_value()
-        self.consume_end_of_statement()
-        return BinaryOpNode(left, op, right)
+        if next_type in ["PLUS", "MINUS", "MUL", "DIV"]:
+            self.consume(next_type)
+            op = {
+                "PLUS": "+",
+                "MINUS": "-",
+                "MUL": "*",
+                "DIV": "/"
+            }[next_type]
+
+            right = self.parse_value()
+            return BinaryOpNode(left, op, right)
+        return left
 
     def parse_var(self):
         var = self.consume("VAR")
@@ -164,19 +169,23 @@ class HexusParser:
 
     def parse_send(self):
         self.consume("KEYWORD")
-        text = self.consume("STRING")
-        self.consume_value("KEYWORD", "to")
-        self.consume_value("KEYWORD", "console")
+        text = self.parse_expression()
+        token_type, value = self.peek()
+        if token_type == "KEYWORD" and value == "to":
+            self.consume_value("KEYWORD", "to")
+            self.consume_value("KEYWORD", "console")
         self.consume_end_of_statement()
         return SendCommandNode(text)
 
     def parse_read(self):
         self.consume("KEYWORD")
-        text = self.consume("STRING")
+        text = self.parse_expression()
         self.consume_value("KEYWORD", "to")
         var = self.consume("VAR")
-        self.consume_value("KEYWORD", "from")
-        self.consume_value("KEYWORD", "console")
+        token_type, value = self.peek()
+        if token_type == "KEYWORD" and value == "from":
+            self.consume_value("KEYWORD", "from")
+            self.consume_value("KEYWORD", "console")
         self.consume_end_of_statement()
         return ReadCommandNode(text, var)
 
