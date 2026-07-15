@@ -1,2 +1,18 @@
-read "Write any symbol: " to var from console
-send "{var}" to console
+read "Wpisz pierwszą liczbę" to a
+read "Wpisz znak:" to op
+read "Wpisz drugą liczbę" to b
+if op == "+" {
+a + b
+}
+elif op == "-" {
+send a - b
+}
+elif op == "*" {
+send a * b
+}
+elif op == "/" {
+send a / b
+}
+else {
+send "Zły operator"
+}

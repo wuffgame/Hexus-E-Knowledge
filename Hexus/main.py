@@ -1,5 +1,6 @@
 import sys
 
+from Hexus.interpreter import HexusInterpreter
 from Hexus.parser import HexusParser
 from lexer import tokenizer_tokens
 
@@ -22,7 +23,11 @@ def main():
 
         program_tree = parser.parse()
 
-        print(program_tree)
+        #print(program_tree)
+
+        interpreter = HexusInterpreter()
+
+        result = interpreter.interpret(program_tree)
 
     except SyntaxError as e:
         print(e)

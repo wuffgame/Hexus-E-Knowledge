@@ -138,32 +138,23 @@ class HexusParser:
         return left
 
     def parse_var(self):
-        var = self.consume("VAR")
+        var_name = self.consume("VAR")
+
         token_type, value = self.peek()
+
+        expr_value = None
         if token_type == "EQUAL":
             self.consume("EQUAL")
-            token_type, value = self.peek()
-            if token_type == "INT":
-                value = self.consume("INT")
-            elif token_type == "STRING":
-                value = self.consume("STRING")
-            else:
-                raise SyntaxError(f"SyntaxError: Expected string or number, but found {token_type}")
+            expr_value = self.parse_expression()
 
         elif token_type == "KEYWORD" and value == "is":
-            self.consume("KEYWORD")
-            token_type, value = self.peek()
-            if token_type == "INT":
-                value = self.consume("INT")
-            elif token_type == "STRING":
-                value = self.consume("STRING")
-            else:
-                raise SyntaxError(f"SyntaxError: Expected string or number, but found {token_type}")
+            self.consume_value("KEYWORD", "is")
+            expr_value = self.parse_expression()
         else:
             raise SyntaxError(f"SyntaxError: Expected '=' or 'is', but found {token_type} ('{value}')")
 
         self.consume_end_of_statement()
-        return SetVar(var, value)
+        return SetVar(var_name, expr_value)
 
 
 

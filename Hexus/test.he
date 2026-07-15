@@ -1,1 +1,2 @@
-send x + 2 to console
+read "Wpisz coś: " to x from console
+send x
