@@ -1,2 +1,1 @@
-read "Wpisz coś: " to x from console
-send x
+send 5 is 3

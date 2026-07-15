@@ -122,7 +122,7 @@ class HexusParser:
             return StringNode(val)
         left = self.parse_value()
 
-        next_type, _ = self.peek()
+        next_type, value = self.peek()
 
         if next_type in ["PLUS", "MINUS", "MUL", "DIV"]:
             self.consume(next_type)
@@ -133,6 +133,11 @@ class HexusParser:
                 "DIV": "/"
             }[next_type]
 
+            right = self.parse_value()
+            return BinaryOpNode(left, op, right)
+        elif next_type == "EQUALS" or (next_type == "KEYWORD" and value == "is"):
+            self.consume(next_type)
+            op = "=="
             right = self.parse_value()
             return BinaryOpNode(left, op, right)
         return left

@@ -31,6 +31,7 @@ class HexusInterpreter:
         if node.op == "-": return left_val - right_val
         if node.op == "*": return left_val * right_val
         if node.op == "/": return left_val / right_val
+        if node.op == "==": return left_val == right_val
 
     def visit_SendCommandNode(self, node):
         result = self.visit(node.text_value)
