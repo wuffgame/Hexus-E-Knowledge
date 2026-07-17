@@ -1,6 +1,6 @@
-read "Wpisz pierwszą liczbę: " to a
-read "Wpisz znak: " to op
-read "Wpisz drugą liczbę: " to b
+read "Enter the first number: " to a
+read "Enter a character: " to op
+read "Enter the second number: " to b
 if op == "+" {
 send a + b
 }
@@ -14,5 +14,5 @@ elif op == "/" {
 send a / b
 }
 else {
-send "Zły operator"
+send "Bad operator"
 }

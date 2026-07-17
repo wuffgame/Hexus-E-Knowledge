@@ -49,6 +49,11 @@ class HexusInterpreter:
 
         if v.isdigit():
             v = int(v)
+        else:
+            try:
+                v = float(v)
+            except ValueError:
+                pass
 
         self.env[var] = v
 
