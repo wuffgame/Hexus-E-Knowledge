@@ -23,7 +23,7 @@ def main():
 
         program_tree = parser.parse()
 
-        #print(program_tree)
+        print(program_tree)
 
         interpreter = HexusInterpreter()
 

@@ -56,6 +56,15 @@ class StringNode:
     def __repr__(self):
         return f"StringNode({self.value})"
 
+class IfNode:
+    def __init__(self, exp, value, value2=None, elifv=None):
+        self.value = value
+        self.exp = exp
+        self.value2 = value2
+        self.elifv = elifv
+    def __repr__(self):
+        return f"IfNode(exp={self.exp} value={self.value} value2={self.value2} elifv={self.elifv})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -107,10 +116,14 @@ class HexusParser:
 
         if token_type == "INT":
             self.consume("INT")
+            value = int(value)
             return NumberNode(value)
         elif token_type == "VAR":
             self.consume("VAR")
             return VariableNode(value)
+        elif token_type == "STRING":
+            self.consume("STRING")
+            return StringNode(value)
         else:
             raise SyntaxError(f"SyntaxError: Expect number or variable, but found '{token_type}' ('{value}')")
 
@@ -122,24 +135,27 @@ class HexusParser:
             return StringNode(val)
         left = self.parse_value()
 
-        next_type, value = self.peek()
+        while True:
+            next_type, value = self.peek()
 
-        if next_type in ["PLUS", "MINUS", "MUL", "DIV"]:
-            self.consume(next_type)
-            op = {
-                "PLUS": "+",
-                "MINUS": "-",
-                "MUL": "*",
-                "DIV": "/"
-            }[next_type]
+            if next_type in ["PLUS", "MINUS", "MUL", "DIV"]:
+                self.consume(next_type)
+                op = {
+                    "PLUS": "+",
+                    "MINUS": "-",
+                    "MUL": "*",
+                    "DIV": "/"
+                }[next_type]
 
-            right = self.parse_value()
-            return BinaryOpNode(left, op, right)
-        elif next_type == "EQUALS" or (next_type == "KEYWORD" and value == "is"):
-            self.consume(next_type)
-            op = "=="
-            right = self.parse_value()
-            return BinaryOpNode(left, op, right)
+                right = self.parse_value()
+                left = BinaryOpNode(left, op, right)
+            elif next_type == "EQUALS" or (next_type == "KEYWORD" and value == "is"):
+                self.consume(next_type)
+                op = "=="
+                right = self.parse_value()
+                left = BinaryOpNode(left, op, right)
+            else:
+                break
         return left
 
     def parse_var(self):
@@ -198,35 +214,77 @@ class HexusParser:
         self.consume_end_of_statement()
         return ComNode(" ".join(text))
 
+    def parse_if(self):
+        self.consume_value("KEYWORD", "if")
+        exp = self.parse_expression()
+        value = self.parse_block()
+        self.consume_end_of_statement()
+        elifv = {}
+        while self.peek()[0] == "KEYWORD" and self.peek()[1] == "elif":
+            self.consume_value("KEYWORD", "elif")
+            elexp = self.parse_expression()
+            elvalue = self.parse_block()
+            elifv[elexp] = elvalue
+            self.consume_end_of_statement()
+        value2 = None
+        if self.peek()[0] == "KEYWORD" and self.peek()[1] == "else":
+            self.consume_value("KEYWORD", "else")
+            value2 = self.parse_block()
+        self.consume_end_of_statement()
+        return IfNode(exp, value, value2, elifv)
+
+    def parse_block(self):
+        self.consume("LBRACE")
+
+        while self.peek()[0] == "NEWLINE":
+            self.consume("NEWLINE")
+
+        statements = []
+
+        while self.peek()[0] != "RBRACE":
+            node = self.parse_statement()
+            statements.append(node)
+
+            while self.peek()[0] == "NEWLINE":
+                self.consume("NEWLINE")
+
+        self.consume("RBRACE")
+        return statements
+
+    def parse_statement(self):
+        while self.peek()[0] == "NEWLINE":
+            self.consume("NEWLINE")
+
+        token_type, value = self.peek()
+
+        if token_type == "KEYWORD" and value == "send":
+            return self.parse_send()
+        elif token_type == "KEYWORD" and value == "read":
+            return self.parse_read()
+        elif token_type == "KEYWORD" and value == "stop":
+            return self.parse_stop()
+        elif token_type == "INT" or token_type == "VAR":
+            next_type, next_value = self.peek(1)
+            if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "KEYWORD" and next_value == "is")):
+                return self.parse_var()
+            else:
+                return self.parse_expression()
+        elif token_type == "HASH" and value == "#":
+            return self.parse_com()
+        elif token_type == "KEYWORD" and value == "if":
+            return self.parse_if()
+        else:
+            raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
+
     def parse(self):
         program_nodes = []
-
         while self.peek()[0] != "EOF":
             if self.peek()[0] == "NEWLINE":
                 self.consume("NEWLINE")
                 continue
 
-            token_type, value = self.peek()
+            node = self.parse_statement()
+            program_nodes.append(node)
 
-            if token_type == "KEYWORD" and value == "send":
-                node = self.parse_send()
-                program_nodes.append(node)
-            elif token_type == "KEYWORD" and value == "read":
-                node = self.parse_read()
-                program_nodes.append(node)
-            elif token_type == "KEYWORD" and value == "stop":
-                node = self.parse_stop()
-                program_nodes.append(node)
-            elif token_type == "INT" or token_type == "VAR":
-                next_type, next_value = self.peek(1)
-                if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "KEYWORD" and next_value == "is")):
-                    node = self.parse_var()
-                else:
-                    node = self.parse_expression()
-                program_nodes.append(node)
-            elif token_type == "HASH" and value == "#":
-                node = self.parse_com()
-                program_nodes.append(node)
-            else:
-                raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
+
         return program_nodes

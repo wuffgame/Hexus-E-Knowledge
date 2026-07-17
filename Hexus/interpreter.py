@@ -46,7 +46,39 @@ class HexusInterpreter:
         value = self.visit(node.text_value)
         var = node.var_name.strip()
         v = input(value)
+
+        if v.isdigit():
+            v = int(v)
+
         self.env[var] = v
+
+    def visit_ComNode(self, node):
+        pass
+
+    def visit_IfNode(self, node):
+        exp = self.visit(node.exp)
+        if exp == True:
+            value = node.value
+            while value:
+                val = value.pop(0)
+                self.visit(val)
+            return
+        elifv = node.elifv
+        if elifv:
+            for exp, value in elifv.items():
+                exp = self.visit(exp)
+                if exp == True:
+                    while value:
+                        val = value.pop(0)
+                        self.visit(val)
+                    return
+
+        if node.value2:
+            value2 = node.value2
+            while value2:
+                val = value2.pop(0)
+                self.visit(val)
+
 
 
 
