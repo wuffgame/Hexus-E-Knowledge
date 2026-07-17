@@ -1,18 +1,4 @@
-read "Enter the first number: " to a
-read "Enter a character: " to op
-read "Enter the second number: " to b
-if op == "+" {
-send a + b
-}
-elif op == "-" {
-send a - b
-}
-elif op == "*" {
-send a * b
-}
-elif op == "/" {
-send a / b
-}
-else {
-send "Bad operator"
+name = 5
+if name == 5 {
+send "True"
 }

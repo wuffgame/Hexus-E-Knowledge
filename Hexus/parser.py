@@ -132,6 +132,7 @@ class HexusParser:
         token_type, value = self.peek()
         if token_type == "STRING":
             val = self.consume("STRING")
+            val = val.split()
             return StringNode(val)
         left = self.parse_value()
 

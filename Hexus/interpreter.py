@@ -15,7 +15,32 @@ class HexusInterpreter:
         return int(node.value)
 
     def visit_StringNode(self, node):
-        return node.value[1:-1]
+        if isinstance(node.value, str):
+            words_list = node.value.split()
+        else:
+            words_list = node.value
+
+
+        if len(words_list) == 1:
+            text = words_list[0][1:-1]
+            if text.startswith("{") and text.endswith("}"):
+                var_name = text[1:-1]
+                if var_name in self.env:
+                    return str(self.env.get(var_name))
+            return text
+        first = words_list[0][1:]
+        middle = words_list[1:-1]
+        last = words_list[-1][:-1]
+        newtxt = [first] + middle + [last]
+        for i, t in enumerate(newtxt):
+            if t.startswith("{") and t.endswith("}"):
+                t = t[1:-1]
+                if t in self.env:
+                    txt = self.env.get(t)
+                    newtxt[i] = str(txt)
+
+        full_txt = " ".join(newtxt)
+        return full_txt
 
     def visit_VariableNode(self, node):
         if node.name in self.env:
