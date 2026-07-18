@@ -14,6 +14,7 @@ class HexusInterpreter:
     def visit_NumberNode(self, node):
         return int(node.value)
 
+
     def visit_StringNode(self, node):
         if isinstance(node.value, str):
             words_list = node.value.split()
