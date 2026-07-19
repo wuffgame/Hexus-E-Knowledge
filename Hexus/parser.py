@@ -11,18 +11,20 @@ class VariableNode:
         return f"VariableNode({self.name})"
 
 class SendCommandNode:
-    def __init__(self, text_value):
+    def __init__(self, text_value, target):
         self.text_value = text_value
+        self.target = target
 
     def __repr__(self):
-        return f"SendCommandNode(text={self.text_value})"
+        return f"SendCommandNode(text={self.text_value}, target={self.target})"
 class ReadCommandNode:
-    def __init__(self, text_value, var_name):
+    def __init__(self, text_value, var_name, target):
         self.text_value = text_value
         self.var_name = var_name
+        self.target = target
 
     def __repr__(self):
-        return f"ReadCommandNode(text={self.text_value}, var={self.var_name})"
+        return f"ReadCommandNode(text={self.text_value}, var={self.var_name}, target={self.target})"
 
 class StopNode:
     def __repr__(self):
@@ -181,16 +183,18 @@ class HexusParser:
 
 
     def parse_send(self):
+        target = "console"
         self.consume("KEYWORD")
         text = self.parse_expression()
         token_type, value = self.peek()
         if token_type == "KEYWORD" and value == "to":
             self.consume_value("KEYWORD", "to")
-            self.consume_value("KEYWORD", "console")
+            target = self.consume("VAR")
         self.consume_end_of_statement()
-        return SendCommandNode(text)
+        return SendCommandNode(text, target)
 
     def parse_read(self):
+        target = "console"
         self.consume("KEYWORD")
         text = self.parse_expression()
         self.consume_value("KEYWORD", "to")
@@ -198,9 +202,9 @@ class HexusParser:
         token_type, value = self.peek()
         if token_type == "KEYWORD" and value == "from":
             self.consume_value("KEYWORD", "from")
-            self.consume_value("KEYWORD", "console")
+            target = self.consume("VAR")
         self.consume_end_of_statement()
-        return ReadCommandNode(text, var)
+        return ReadCommandNode(text, var, target)
 
     def parse_stop(self):
         self.consume("KEYWORD")

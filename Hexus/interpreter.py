@@ -61,7 +61,8 @@ class HexusInterpreter:
 
     def visit_SendCommandNode(self, node):
         result = self.visit(node.text_value)
-        print(result)
+        if node.target == "console":
+            print(result)
 
     def visit_SetVar(self, node):
         value = self.visit(node.value)
@@ -71,15 +72,16 @@ class HexusInterpreter:
     def visit_ReadCommandNode(self, node):
         value = self.visit(node.text_value)
         var = node.var_name.strip()
-        v = input(value)
+        if node.target == "console":
+            v = input(value)
 
-        if v.isdigit():
-            v = int(v)
-        else:
-            try:
-                v = float(v)
-            except ValueError:
-                pass
+            if v.isdigit():
+                v = int(v)
+            else:
+                try:
+                    v = float(v)
+                except ValueError:
+                    pass
 
         self.env[var] = v
 

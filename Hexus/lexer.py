@@ -10,7 +10,7 @@ token_pattern = [
         ("MUL", r"\*"),
         ("DIV", r"/"),
         ("STRING", r'"[^"\\]*(?:\\.[^"\\]*)*"'),
-        ("KEYWORD", r'\b(send|to|console|read|from|if|is|or|else|stop|elif)\b'),
+        ("KEYWORD", r'\b(send|to|read|from|if|is|or|else|stop|elif)\b'),
         ("VAR", r'[a-zA-Z_][a-zA-Z0-9_]*'),
         ("LBRACE", r'\{'),
         ("RBRACE", r'\}'),
