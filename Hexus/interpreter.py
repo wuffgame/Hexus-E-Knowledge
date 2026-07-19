@@ -67,9 +67,18 @@ class HexusInterpreter:
     def visit_SetVar(self, node):
         var = node.var_name.strip()
         if node.list == True:
-            self.env[var] = []
-            print(self.env)
-            return
+            if node.value == None:
+                self.env[var] = []
+                print(self.env)
+                return
+            elif node.value:
+                list = []
+                for v in node.value:
+                    result = self.visit(v)
+                    list.append(result)
+                self.env[var] = list
+                print(self.env)
+                return
         value = self.visit(node.value)
         self.env[var] = value
 

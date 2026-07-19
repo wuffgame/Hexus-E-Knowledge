@@ -43,7 +43,7 @@ class SetVar:
         self.list = list
 
     def __repr__(self):
-        return f"SetVarNode(var= {self.var_name}, value={self.value}, list={self.list})"
+        return f"SetVarNode(var={self.var_name}, value={self.value}, list={self.list})"
 
 class BinaryOpNode:
     def __init__(self, left, op, right):
@@ -182,6 +182,15 @@ class HexusParser:
         if self.peek()[0] == "COMMA":
             list = True
             self.consume("COMMA")
+        elif self.peek(1)[0] == "COMMA":
+            list = True
+            expr_value = []
+            expr_value.append(self.parse_expression())
+            while self.peek()[0] != "NEWLINE" and self.peek()[0] != "EOF":
+                self.consume("COMMA")
+                if self.peek()[0] == "STRING" or self.peek()[0] ==  "INT" or self.peek()[0] ==  "VAR":
+                    expr_value.append(self.parse_expression())
+
         else:
             expr_value = self.parse_expression()
 
