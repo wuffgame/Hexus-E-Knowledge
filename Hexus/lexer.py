@@ -14,6 +14,8 @@ token_pattern = [
         ("VAR", r'[a-zA-Z_][a-zA-Z0-9_]*'),
         ("LBRACE", r'\{'),
         ("RBRACE", r'\}'),
+        ("LSBRACE", r"\["),
+        ("RSBRACE", r"\]"),
         ("SKIP", r'[ \t]+'),
         ("NEWLINE", r'\n'),
         ("COMMA", r"\,")

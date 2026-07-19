@@ -179,9 +179,11 @@ class HexusParser:
         else:
             raise SyntaxError(f"SyntaxError: Expected '=' or 'is', but found {token_type} ('{value}')")
 
-        if self.peek()[0] == "COMMA":
-            list = True
-            self.consume("COMMA")
+        if self.peek()[0] == "LSBRACE":
+            self.consume("LSBRACE")
+            if self.peek()[0] == "RSBRACE":
+                self.consume("RSBRACE")
+                list = True
         elif self.peek(1)[0] == "COMMA":
             list = True
             expr_value = []

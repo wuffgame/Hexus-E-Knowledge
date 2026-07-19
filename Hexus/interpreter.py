@@ -69,7 +69,6 @@ class HexusInterpreter:
         if node.list == True:
             if node.value == None:
                 self.env[var] = []
-                print(self.env)
                 return
             elif node.value:
                 list = []
@@ -77,7 +76,6 @@ class HexusInterpreter:
                     result = self.visit(v)
                     list.append(result)
                 self.env[var] = list
-                print(self.env)
                 return
         value = self.visit(node.value)
         self.env[var] = value

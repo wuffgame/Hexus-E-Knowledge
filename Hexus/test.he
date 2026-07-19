@@ -1,1 +1,2 @@
-list = "apple", "banana"
+list = []
+send "{list}"
