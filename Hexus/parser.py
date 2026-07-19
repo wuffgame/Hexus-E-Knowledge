@@ -179,19 +179,26 @@ class HexusParser:
         else:
             raise SyntaxError(f"SyntaxError: Expected '=' or 'is', but found {token_type} ('{value}')")
 
-        if self.peek()[0] == "LSBRACE":
-            self.consume("LSBRACE")
-            if self.peek()[0] == "RSBRACE":
-                self.consume("RSBRACE")
-                list = True
-        elif self.peek(1)[0] == "COMMA":
+
+        if self.peek(1)[0] == "COMMA" or self.peek()[0] == "LSBRACE":
             list = True
             expr_value = []
-            expr_value.append(self.parse_expression())
+            if self.peek(1)[0] == "COMMA":
+                expr_value.append(self.parse_expression())
             while self.peek()[0] != "NEWLINE" and self.peek()[0] != "EOF":
-                self.consume("COMMA")
+                if self.peek()[0] == "LSBRACE":
+                    self.consume("LSBRACE")
+                    if self.peek()[0] == "RSBRACE":
+                        self.consume("RSBRACE")
+                        list = True
+                    else:
+                        list = True
+                        expr_value.append(self.parse_expression())
+                        self.consume("RSBRACE")
+                        self.consume("COMMA")
                 if self.peek()[0] == "STRING" or self.peek()[0] ==  "INT" or self.peek()[0] ==  "VAR":
                     expr_value.append(self.parse_expression())
+                    self.consume("COMMA")
 
         else:
             expr_value = self.parse_expression()
