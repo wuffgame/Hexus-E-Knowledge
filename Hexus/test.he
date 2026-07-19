@@ -1,8 +1,1 @@
-read "Write your name: " to name
-send "Hello {name}"
-if name == "Kacper" {
-send "Welcome admin!!!"
-}
-else {
-send "You are not admin :c"
-}
+list = ,

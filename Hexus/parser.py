@@ -37,12 +37,13 @@ class ComNode:
         return f"ComNode(text={self.text_value})"
 
 class SetVar:
-    def __init__(self, var_name, value):
+    def __init__(self, var_name, value, list):
         self.var_name = var_name
         self.value = value
+        self.list = list
 
     def __repr__(self):
-        return f"SetVarNode(var= {self.var_name}, value={self.value})"
+        return f"SetVarNode(var= {self.var_name}, value={self.value}, list={self.list})"
 
 class BinaryOpNode:
     def __init__(self, left, op, right):
@@ -162,6 +163,7 @@ class HexusParser:
         return left
 
     def parse_var(self):
+        list = False
         var_name = self.consume("VAR")
 
         token_type, value = self.peek()
@@ -169,16 +171,22 @@ class HexusParser:
         expr_value = None
         if token_type == "EQUAL":
             self.consume("EQUAL")
-            expr_value = self.parse_expression()
+
 
         elif token_type == "KEYWORD" and value == "is":
             self.consume_value("KEYWORD", "is")
-            expr_value = self.parse_expression()
+
         else:
             raise SyntaxError(f"SyntaxError: Expected '=' or 'is', but found {token_type} ('{value}')")
 
+        if self.peek()[0] == "COMMA":
+            list = True
+            self.consume("COMMA")
+        else:
+            expr_value = self.parse_expression()
+
         self.consume_end_of_statement()
-        return SetVar(var_name, expr_value)
+        return SetVar(var_name, expr_value, list)
 
 
 

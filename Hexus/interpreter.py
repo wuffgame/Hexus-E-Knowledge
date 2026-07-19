@@ -65,8 +65,12 @@ class HexusInterpreter:
             print(result)
 
     def visit_SetVar(self, node):
-        value = self.visit(node.value)
         var = node.var_name.strip()
+        if node.list == True:
+            self.env[var] = []
+            print(self.env)
+            return
+        value = self.visit(node.value)
         self.env[var] = value
 
     def visit_ReadCommandNode(self, node):

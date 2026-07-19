@@ -15,7 +15,8 @@ token_pattern = [
         ("LBRACE", r'\{'),
         ("RBRACE", r'\}'),
         ("SKIP", r'[ \t]+'),
-        ("NEWLINE", r'\n')
+        ("NEWLINE", r'\n'),
+        ("COMMA", r"\,")
     ]
 
 def tokenizer(text, definition):
