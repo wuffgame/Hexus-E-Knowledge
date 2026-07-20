@@ -136,6 +136,24 @@ class HexusInterpreter:
         else:
             raise NameError(f"Interpreter Error: Variable '{var_name}' (value: {current_value}) is not a list")
 
+    def visit_ListRemoveNode(self, node):
+        value = None
+        var_name = node.var.name
+        current_value = self.env.get(var_name)
+        if node.value:
+            value = self.visit(node.value)
+        if isinstance(current_value, list):
+            if node.pos:
+                pos = self.visit(node.pos)
+                pos -= 1
+                current_value.pop(pos)
+                self.env[var_name] = current_value
+            elif value:
+                current_value.remove(value)
+                self.env[var_name] = current_value
+        else:
+            raise NameError(f"Interpreter Error: Variable '{var_name}' (value: {current_value}) is not a list")
+
 
 
 

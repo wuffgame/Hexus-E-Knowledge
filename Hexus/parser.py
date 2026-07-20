@@ -76,6 +76,14 @@ class ListAddNode:
     def __repr__(self):
         return f"ListAddNode(var={self.var} value={self.value} pos={self.pos})"
 
+class ListRemoveNode:
+    def __init__(self, var, pos, value):
+        self.var = var
+        self.value = value
+        self.pos = pos
+    def __repr__(self):
+        return f"ListRemoveNode(var={self.var} value={self.value} pos={self.pos}"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -329,8 +337,21 @@ class HexusParser:
         return ListAddNode(list, value, pos)
 
 
-    def parse_remove(self):
-        pass
+    def parse_listremove(self):
+        pos = None
+        value = None
+        self.consume_value("KEYWORD", "remove")
+        token_type, valuee = self.peek(0)
+        if token_type == "KEYWORD" and valuee == "pos":
+            self.consume_value("KEYWORD", "pos")
+            if self.peek()[0] == "INT":
+                pos = self.parse_value()
+        elif token_type == "INT" or token_type == "VAR" or token_type == "STRING":
+            value = self.parse_value()
+        self.consume_value("KEYWORD", "from")
+        list = self.parse_vara()
+        return ListRemoveNode(list, pos, value)
+
 
     def parse_statement(self):
         while self.peek()[0] == "NEWLINE":
@@ -357,7 +378,7 @@ class HexusParser:
         elif token_type == "KEYWORD" and value == "add":
             return self.parse_listadd()
         elif token_type == "KEYWORD" and value == "remove":
-            return self.parse_remove()
+            return self.parse_listremove()
         else:
             raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
 
