@@ -321,7 +321,7 @@ class HexusParser:
         return statements
 
     def parse_listadd(self):
-        pos = 0
+        pos = None
         self.consume_value("KEYWORD", "add")
         token_type, value = self.peek(0)
         if token_type == "INT" or token_type == "VAR" or token_type == "STRING":

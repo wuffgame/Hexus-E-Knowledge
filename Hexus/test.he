@@ -1,4 +1,6 @@
-list = "1. Pies", "2. Kot", "3. Zwierzak", "4. Damianek", 5, [2+4],
+list = "1. Dog", "2. Kot", "3. Animal", "4. Name", 5, [2+4],
 remove pos 1 from list
-remove "3. Zwierzak" from list
+remove "3. Animal" from list
+add "Test" to list
+add "Test2" to list at pos 4
 send "{list}"

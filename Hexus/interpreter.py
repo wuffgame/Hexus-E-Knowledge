@@ -129,7 +129,10 @@ class HexusInterpreter:
         current_value = self.env.get(var_name)
         value = self.visit(node.value)
         if isinstance(current_value, list):
-            pos = self.visit(node.pos)
+            if not node.pos:
+                pos = 1
+            else:
+                pos = self.visit(node.pos)
             pos -= 1
             current_value.insert(pos, value)
             self.env[var_name] = current_value
