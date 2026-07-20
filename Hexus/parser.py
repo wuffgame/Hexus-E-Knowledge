@@ -69,11 +69,12 @@ class IfNode:
         return f"IfNode(exp={self.exp} value={self.value} value2={self.value2} elifv={self.elifv})"
 
 class ListAddNode:
-    def __init__(self, var, value):
+    def __init__(self, var, value, pos):
         self.var = var
-        self.value= value
+        self.value = value
+        self.pos = pos
     def __repr__(self):
-        return f"ListAddNode(var={self.var} value={self.value})"
+        return f"ListAddNode(var={self.var} value={self.value} pos={self.pos})"
 
 class HexusParser:
     def __init__(self, tokens):
@@ -312,13 +313,20 @@ class HexusParser:
         return statements
 
     def parse_listadd(self):
+        pos = 0
         self.consume_value("KEYWORD", "add")
         token_type, value = self.peek(0)
         if token_type == "INT" or token_type == "VAR" or token_type == "STRING":
             value = self.parse_value()
         self.consume_value("KEYWORD", "to")
         list = self.parse_vara()
-        return ListAddNode(list, value)
+        if self.peek()[0] == "KEYWORD" and self.peek()[1] == "at":
+            self.consume_value("KEYWORD", "at")
+            if self.peek()[0] == "KEYWORD" and self.peek()[1] == "pos":
+                self.consume_value("KEYWORD", "pos")
+                if self.peek()[0] == "INT":
+                    pos = self.parse_value()
+        return ListAddNode(list, value, pos)
 
 
     def parse_remove(self):

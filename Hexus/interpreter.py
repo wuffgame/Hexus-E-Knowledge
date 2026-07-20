@@ -129,7 +129,9 @@ class HexusInterpreter:
         current_value = self.env.get(var_name)
         value = self.visit(node.value)
         if isinstance(current_value, list):
-            current_value.append(value)
+            pos = self.visit(node.pos)
+            pos -= 1
+            current_value.insert(pos, value)
             self.env[var_name] = current_value
         else:
             raise NameError(f"Interpreter Error: Variable '{var_name}' (value: {current_value}) is not a list")
