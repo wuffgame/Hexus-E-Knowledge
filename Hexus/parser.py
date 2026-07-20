@@ -68,6 +68,13 @@ class IfNode:
     def __repr__(self):
         return f"IfNode(exp={self.exp} value={self.value} value2={self.value2} elifv={self.elifv})"
 
+class ListAddNode:
+    def __init__(self, var, value):
+        self.var = var
+        self.value= value
+    def __repr__(self):
+        return f"ListAddNode(var={self.var} value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -125,10 +132,17 @@ class HexusParser:
             self.consume("VAR")
             return VariableNode(value)
         elif token_type == "STRING":
-            self.consume("STRING")
-            return StringNode(value)
+            val = self.consume("STRING")
+            val = val.split()
+            return StringNode(val)
         else:
             raise SyntaxError(f"SyntaxError: Expect number or variable, but found '{token_type}' ('{value}')")
+
+    def parse_vara(self):
+        token_type, value = self.peek()
+        if token_type == "VAR":
+            self.consume("VAR")
+            return VariableNode(value)
 
     def parse_expression(self):
 
@@ -162,6 +176,15 @@ class HexusParser:
                 break
         return left
 
+    def peek_is_list_expression(self):
+        if self.peek()[0] == "LSBRACE":
+            return True
+
+        if self.peek()[0] in ["STRING", "INT", "VAR"] and self.peek(1)[0] == "COMMA":
+            return True
+
+        return False
+
     def parse_var(self):
         list = False
         var_name = self.consume("VAR")
@@ -179,26 +202,32 @@ class HexusParser:
         else:
             raise SyntaxError(f"SyntaxError: Expected '=' or 'is', but found {token_type} ('{value}')")
 
+        is_empty_list = (self.peek()[0] == "LSBRACE" and self.peek(1)[0] == "RSBRACE")
 
-        if self.peek(1)[0] == "COMMA" or self.peek()[0] == "LSBRACE":
+        if is_empty_list or self.peek_is_list_expression():
             list = True
-            expr_value = []
-            if self.peek(1)[0] == "COMMA":
-                expr_value.append(self.parse_expression())
-            while self.peek()[0] != "NEWLINE" and self.peek()[0] != "EOF":
-                if self.peek()[0] == "LSBRACE":
-                    self.consume("LSBRACE")
-                    if self.peek()[0] == "RSBRACE":
-                        self.consume("RSBRACE")
-                        list = True
-                    else:
-                        list = True
+
+            if is_empty_list:
+                self.consume("LSBRACE")
+                self.consume("RSBRACE")
+                expr_value = None
+            else:
+                expr_value = []
+
+                while self.peek()[0] not in ["NEWLINE", "EOF"]:
+
+                    if self.peek()[0] == "LSBRACE":
+                        self.consume("LSBRACE")
                         expr_value.append(self.parse_expression())
                         self.consume("RSBRACE")
+
+                    else:
+                        expr_value.append(self.parse_expression())
+
+                    if self.peek()[0] == "COMMA":
                         self.consume("COMMA")
-                if self.peek()[0] == "STRING" or self.peek()[0] ==  "INT" or self.peek()[0] ==  "VAR":
-                    expr_value.append(self.parse_expression())
-                    self.consume("COMMA")
+                    else:
+                        raise SyntaxError(f"SyntaxError: Expected ',' after list element, but found {self.peek()[0]}")
 
         else:
             expr_value = self.parse_expression()
@@ -282,6 +311,19 @@ class HexusParser:
         self.consume("RBRACE")
         return statements
 
+    def parse_listadd(self):
+        self.consume_value("KEYWORD", "add")
+        token_type, value = self.peek(0)
+        if token_type == "INT" or token_type == "VAR" or token_type == "STRING":
+            value = self.parse_value()
+        self.consume_value("KEYWORD", "to")
+        list = self.parse_vara()
+        return ListAddNode(list, value)
+
+
+    def parse_remove(self):
+        pass
+
     def parse_statement(self):
         while self.peek()[0] == "NEWLINE":
             self.consume("NEWLINE")
@@ -304,6 +346,10 @@ class HexusParser:
             return self.parse_com()
         elif token_type == "KEYWORD" and value == "if":
             return self.parse_if()
+        elif token_type == "KEYWORD" and value == "add":
+            return self.parse_listadd()
+        elif token_type == "KEYWORD" and value == "remove":
+            return self.parse_remove()
         else:
             raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
 
