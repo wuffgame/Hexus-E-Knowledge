@@ -1,1 +1,5 @@
 # Next goal
+add "Test" to list
+remove "Test" from list
+add "Test" to list on pos 1
+remove pos 1 from list
