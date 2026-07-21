@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="index.html" class="logo">
+            <span class="name">HEXUS</span>
+        </a>
+        <nav>
+            <a href="index.html">Start</a>
+            <a href="Docs.html">Documentation</a>
+            <a href="Playground.html" class="active">Playground</a>
+        </nav>
+    </header>
+
+    <main class="wide">
+        <p class="eyebrow">Playground</p>
+        <h1>Try Hexus</h1>
+        <p class="lede">Write code in left window and run it!!!</p>
+        <div class="pg-toolbar">
+            <button class="btn" id="run-btn">▶ RUN</button>
+            <button class="btn ghost" id="clear-btn">Clear</button>
+            <span style="margin-left: auto; font-family: var(--mono); font-size: 0.8rem; color: var(--text-muted);">
+                <span class="status-dot" id="status-dot"></span><span id="status-text">ready</span>
+            </span>
+        </div>
+
+        <div class="playground">
+            <div class="pg-panel">
+                <div class="pg-panel-header">
+                    <span>editor.he</span>
+                </div>
+                <textarea class="pg-editor" id="editor" spellcheck="false">send "Hello World!!!"</textarea>
+            </div>
+            <div class="pg-panel">
+                <div class="pg-panel-header">
+                    <span>Result</span>
+                </div>
+                <div class="pg-output" id="output"># here result</div>
+            </div>
+        </div>
+
+        <hr class="rule">
+
+        <h2>Commands</h2>
+    </main>
+
+    <footer>Hexus-lang - Made by wuff</footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
