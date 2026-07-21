@@ -297,6 +297,73 @@ table.ref-table code {
     color: var(--accent);
 }
 
+.playground {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.pg-panel {
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 520px;
+}
+
+.pg-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.1rem;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.pg-editor {
+    flex: 1;
+    background-color: transparent;
+    color: var(--text);
+    border: none;
+    resize: none;
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    padding: 1.25rem;
+    outline: none;
+}
+
+.pg-output {
+    flex: 1;
+    padding: 1.25rem;
+    font-family: var(--mono);
+    font-size: 1.02rem;
+    color: var(--text-muted);
+    white-space: pre-wrap;
+}
+
+.pg-toolbar {
+    display: flex;
+    gap: 0.75rem;
+    margin: 1rem 0 1.5rem;
+    align-items: center;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--accent-dim);
+    display: inline-block;
+    margin-right: 0.4rem;
+}
+
 footer {
     border-top: 1px solid var(--border);
     padding: 1.25rem 1.75rem;
