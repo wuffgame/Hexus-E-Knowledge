@@ -137,7 +137,7 @@ p {
     max-width: 60ch;
 }
 
-hc.rule {
+hr.rule {
     height: 2px;
     border: none;
     background: linear-gradient(90deg, var(--accent), transparent);
