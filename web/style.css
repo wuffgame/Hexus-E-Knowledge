@@ -196,6 +196,107 @@ hc.rule {
     border-color: var(--text-muted);
 }
 
+pre, code {
+    font-family: var(--mono);
+}
+
+pre.code-block {
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    color: #e6e6e6;
+    line-height: 1.6;
+}
+
+code.inline {
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: var(--accent);
+}
+
+.docs-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+.docs-toc {
+    position: sticky;
+    top: 5.5rem;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+}
+
+.docs-toc .toc-label {
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    margin-bottom: 0.75rem;
+}
+
+.docs-toc a {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.35rem 0;
+    border-left: 2px solid var(--border);
+    padding-left: 0.75rem;
+    margin-left: -1px;
+}
+
+.docs-toc a:hover,
+.docs-toc a:focus-visible {
+    color: var(--text);
+    border-left-color: var(--accent);
+}
+
+.docs-section {
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.docs-section:first-child {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+table.ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 1rem 0;
+}
+
+table.ref-table th, table.ref-table td {
+    text-align: left;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid var(--border);
+}
+
+table.ref-table th {
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+table.ref-table code {
+    color: var(--accent);
+}
+
 footer {
     border-top: 1px solid var(--border);
     padding: 1.25rem 1.75rem;
@@ -204,4 +305,35 @@ footer {
     font-family: var(--mono);
     font-size: 0.78rem;
     letter-spacing: 0.04em;
+}
+
+@media (max-width: 720px) {
+    .docs-layout {
+        grid-template-columns: 1fr;
+    }
+    .docs-toc {
+        position: static;
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    .docs-toc a {
+        border-left: none;
+        border-bottom: 2px solid var(--border);
+        padding-left: 0;
+        white-space: nowrap;
+    }
+    .playground {
+        grid-template-columns: 1fr;
+    }
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+    }
 }
