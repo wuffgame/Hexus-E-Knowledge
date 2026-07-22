@@ -176,7 +176,7 @@ class HexusParser:
 
                 right = self.parse_value()
                 left = BinaryOpNode(left, op, right)
-            elif next_type == "EQUALS" or (next_type == "KEYWORD" and value == "is"):
+            elif next_type == "EQUALS" or (next_type == "VAR" and value == "is"):
                 self.consume(next_type)
                 op = "=="
                 right = self.parse_value()
@@ -205,8 +205,8 @@ class HexusParser:
             self.consume("EQUAL")
 
 
-        elif token_type == "KEYWORD" and value == "is":
-            self.consume_value("KEYWORD", "is")
+        elif token_type == "VAR" and value == "is":
+            self.consume_value("VAR", "is")
 
         else:
             raise SyntaxError(f"SyntaxError: Expected '=' or 'is', but found {token_type} ('{value}')")
@@ -248,30 +248,30 @@ class HexusParser:
 
     def parse_send(self):
         target = "console"
-        self.consume("KEYWORD")
+        self.consume("VAR")
         text = self.parse_expression()
         token_type, value = self.peek()
-        if token_type == "KEYWORD" and value == "to":
-            self.consume_value("KEYWORD", "to")
+        if token_type == "VAR" and value == "to":
+            self.consume_value("VAR", "to")
             target = self.consume("VAR")
         self.consume_end_of_statement()
         return SendCommandNode(text, target)
 
     def parse_read(self):
         target = "console"
-        self.consume("KEYWORD")
+        self.consume("VAR")
         text = self.parse_expression()
-        self.consume_value("KEYWORD", "to")
+        self.consume_value("VAR", "to")
         var = self.consume("VAR")
         token_type, value = self.peek()
-        if token_type == "KEYWORD" and value == "from":
-            self.consume_value("KEYWORD", "from")
+        if token_type == "VAR" and value == "from":
+            self.consume_value("VAR", "from")
             target = self.consume("VAR")
         self.consume_end_of_statement()
         return ReadCommandNode(text, var, target)
 
     def parse_stop(self):
-        self.consume("KEYWORD")
+        self.consume("VAR")
         self.consume_end_of_statement()
         return StopNode()
 
@@ -284,20 +284,20 @@ class HexusParser:
         return ComNode(" ".join(text))
 
     def parse_if(self):
-        self.consume_value("KEYWORD", "if")
+        self.consume_value("VAR", "if")
         exp = self.parse_expression()
         value = self.parse_block()
         self.consume_end_of_statement()
         elifv = {}
-        while self.peek()[0] == "KEYWORD" and self.peek()[1] == "elif":
-            self.consume_value("KEYWORD", "elif")
+        while self.peek()[0] == "VAR" and self.peek()[1] == "elif":
+            self.consume_value("VAR", "elif")
             elexp = self.parse_expression()
             elvalue = self.parse_block()
             elifv[elexp] = elvalue
             self.consume_end_of_statement()
         value2 = None
-        if self.peek()[0] == "KEYWORD" and self.peek()[1] == "else":
-            self.consume_value("KEYWORD", "else")
+        if self.peek()[0] == "VAR" and self.peek()[1] == "else":
+            self.consume_value("VAR", "else")
             value2 = self.parse_block()
         self.consume_end_of_statement()
         return IfNode(exp, value, value2, elifv)
@@ -322,16 +322,16 @@ class HexusParser:
 
     def parse_listadd(self):
         pos = None
-        self.consume_value("KEYWORD", "add")
+        self.consume_value("VAR", "add")
         token_type, value = self.peek(0)
         if token_type == "INT" or token_type == "VAR" or token_type == "STRING":
             value = self.parse_value()
-        self.consume_value("KEYWORD", "to")
+        self.consume_value("VAR", "to")
         list = self.parse_vara()
-        if self.peek()[0] == "KEYWORD" and self.peek()[1] == "at":
-            self.consume_value("KEYWORD", "at")
-            if self.peek()[0] == "KEYWORD" and self.peek()[1] == "pos":
-                self.consume_value("KEYWORD", "pos")
+        if self.peek()[0] == "VAR" and self.peek()[1] == "at":
+            self.consume_value("VAR", "at")
+            if self.peek()[0] == "VAR" and self.peek()[1] == "pos":
+                self.consume_value("VAR", "pos")
                 if self.peek()[0] == "INT":
                     pos = self.parse_value()
         return ListAddNode(list, value, pos)
@@ -340,17 +340,20 @@ class HexusParser:
     def parse_listremove(self):
         pos = None
         value = None
-        self.consume_value("KEYWORD", "remove")
+        self.consume_value("VAR", "remove")
         token_type, valuee = self.peek(0)
-        if token_type == "KEYWORD" and valuee == "pos":
-            self.consume_value("KEYWORD", "pos")
+        if token_type == "VAR" and valuee == "pos":
+            self.consume_value("VAR", "pos")
             if self.peek()[0] == "INT":
                 pos = self.parse_value()
         elif token_type == "INT" or token_type == "VAR" or token_type == "STRING":
             value = self.parse_value()
-        self.consume_value("KEYWORD", "from")
+        self.consume_value("VAR", "from")
         list = self.parse_vara()
         return ListRemoveNode(list, pos, value)
+
+    def parse_wait(self):
+        pass
 
 
     def parse_statement(self):
@@ -359,26 +362,28 @@ class HexusParser:
 
         token_type, value = self.peek()
 
-        if token_type == "KEYWORD" and value == "send":
+        if token_type == "VAR" and value == "send":
             return self.parse_send()
-        elif token_type == "KEYWORD" and value == "read":
+        elif token_type == "VAR" and value == "read":
             return self.parse_read()
-        elif token_type == "KEYWORD" and value == "stop":
+        elif token_type == "VAR" and value == "stop":
             return self.parse_stop()
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
-            if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "KEYWORD" and next_value == "is")):
+            if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):
                 return self.parse_var()
             else:
                 return self.parse_expression()
         elif token_type == "HASH" and value == "#":
             return self.parse_com()
-        elif token_type == "KEYWORD" and value == "if":
+        elif token_type == "VAR" and value == "if":
             return self.parse_if()
-        elif token_type == "KEYWORD" and value == "add":
+        elif token_type == "VAR" and value == "add":
             return self.parse_listadd()
-        elif token_type == "KEYWORD" and value == "remove":
+        elif token_type == "VAR" and value == "remove":
             return self.parse_listremove()
+        elif token_type == "VAR" and value == "wait":
+            return self.parse_wait()
         else:
             raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
 
