@@ -48,6 +48,11 @@ class HexusInterpreter:
             return self.env[node.name]
         raise NameError(f"Variable '{node.name}' is not defined!!!")
 
+    def visit_NowNode(self, node):
+        import time
+        now = time.strftime("%Y-%m-%d %H:%M:%S")
+        return now
+
 
     def visit_BinaryOpNode(self, node):
         left_val = self.visit(node.left)

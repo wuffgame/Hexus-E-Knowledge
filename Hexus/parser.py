@@ -91,6 +91,10 @@ class WaitNode:
     def __repr__(self):
         return f"WaitNode(value={self.value} vale2={self.value2}"
 
+class NowNode:
+    def __repr__(self):
+        return f"NowNode()"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -144,6 +148,9 @@ class HexusParser:
             self.consume("INT")
             value = int(value)
             return NumberNode(value)
+        elif token_type == "VAR" and value == "now":
+            self.consume("VAR")
+            return NowNode()
         elif token_type == "VAR":
             self.consume("VAR")
             return VariableNode(value)
