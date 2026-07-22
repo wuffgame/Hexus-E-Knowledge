@@ -6,6 +6,7 @@ token_pattern = [
         ("PLUS", r"\+"),
         ("MINUS", r"-"),
         ("EQUALS", r'=='),
+        ("NOTEQUALS", r'!='),
         ("EQUAL", r"="),
         ("MUL", r"\*"),
         ("DIV", r"/"),

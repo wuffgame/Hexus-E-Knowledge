@@ -1,5 +1,5 @@
 var = 1
-while 3 == var {
+while 3 is not var {
 var = var + 1
 wait 1s
 send var

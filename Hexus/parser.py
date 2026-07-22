@@ -197,6 +197,13 @@ class HexusParser:
 
                 right = self.parse_value()
                 left = BinaryOpNode(left, op, right)
+            elif next_type == "NOTEQUALS" or (next_type == "VAR" and value == "is" and self.peek(1)[1] == "not"):
+                self.consume(next_type)
+                if self.peek()[1] == "not":
+                    self.consume("VAR")
+                op = "!="
+                right = self.parse_value()
+                left = BinaryOpNode(left, op, right)
             elif next_type == "EQUALS" or (next_type == "VAR" and value == "is"):
                 self.consume(next_type)
                 op = "=="

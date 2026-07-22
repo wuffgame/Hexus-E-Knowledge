@@ -190,9 +190,9 @@ class HexusInterpreter:
         exp = self.visit(node.exp)
         value = node.value
         while exp == True:
-            exp = self.visit(node.exp)
             for val in node.value:
                 self.visit(val)
+            exp = self.visit(node.exp)
 
 
 
