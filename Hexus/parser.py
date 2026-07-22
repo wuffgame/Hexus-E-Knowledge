@@ -95,6 +95,13 @@ class NowNode:
     def __repr__(self):
         return f"NowNode()"
 
+class WhileNode:
+    def __init__(self, exp, value):
+        self.exp = exp
+        self.value = value
+    def __repr__(self):
+        return f"WhileNode(exp={self.exp} value={self.value}"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -376,6 +383,16 @@ class HexusParser:
                 self.consume_end_of_statement()
                 return WaitNode(value, value2)
 
+    def parse_while(self):
+        self.consume_value("VAR", "while")
+        if self.peek()[0] == "INT" or self.peek()[0] == "VAR":
+            exp = self.parse_expression()
+            value = self.parse_block()
+            self.consume_end_of_statement()
+            return WhileNode(exp, value)
+
+
+
 
     def parse_statement(self):
         while self.peek()[0] == "NEWLINE":
@@ -399,6 +416,8 @@ class HexusParser:
             return self.parse_listremove()
         elif token_type == "VAR" and value == "wait":
             return self.parse_wait()
+        elif token_type == "VAR" and value == "while":
+            return self.parse_while()
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
             if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):

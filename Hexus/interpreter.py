@@ -63,6 +63,7 @@ class HexusInterpreter:
         if node.op == "*": return left_val * right_val
         if node.op == "/": return left_val / right_val
         if node.op == "==": return left_val == right_val
+        if node.op == "!=": return left_val != right_val
 
     def visit_SendCommandNode(self, node):
         result = self.visit(node.text_value)
@@ -183,6 +184,15 @@ class HexusInterpreter:
             time.sleep(value * 60 * 60 * 24)
         else:
             raise ValueError(f"Unknown wait unit: {value2}")
+
+
+    def visit_WhileNode(self, node):
+        exp = self.visit(node.exp)
+        value = node.value
+        while exp == True:
+            exp = self.visit(node.exp)
+            for val in node.value:
+                self.visit(val)
 
 
 
