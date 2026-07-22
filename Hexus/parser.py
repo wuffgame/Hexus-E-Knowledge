@@ -404,6 +404,13 @@ class HexusParser:
             return WhileNode(exp, value)
 
 
+    def parse_repeat(self):
+        self.consume_value("VAR", "repeat")
+        if self.peek()[0] == "INT":
+            value = self.parse_value()
+            pass
+
+
 
 
     def parse_statement(self):
@@ -430,6 +437,8 @@ class HexusParser:
             return self.parse_wait()
         elif token_type == "VAR" and value == "while":
             return self.parse_while()
+        elif token_type == "VAR" and value == "repeat":
+            return self.parse_repeat
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
             if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):
