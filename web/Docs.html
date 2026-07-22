@@ -21,32 +21,83 @@
         </nav>
     </header>
 
-    <main>
-        <p class="eyebrow">Documentation</p>
-        <h1>Hexus Documentation</h1>
-        <p class="lede">Official documentation of Hexus syntax</p>
+    <div class="docs-shell">
+        <aside class="docs-sidebar">
+            <div class="docs-sidebar-group">
+            <p class="group-label">Basics</p>
+            <a href="#start" class="active">First steps</a>
+            <a href="#send">Send Command</a>
+            <a href="#read">Read Command</a>
+            </div>
+        </aside>
+        <div class="docs-content">
+            <div class="docs-content-inner">
+                <p class="eyebrow">Documentation</p>
+                <h1>Hexus documentation</h1>
+                <p class="lede">Full documentation of Hexus-lang (E-Knowledge).</p>
 
-        <div class="docs-layout">
-            <aside class="docs-toc">
-                <p class="toc-label">Table of contents</p>
-                <a href="#start">First steps</a>
-                <a href="#send">Send Command</a>
-                <a href="#read">Read Command</a>
-            </aside>
+                <section class="docs-section" id="start">
+                    <h2>First steps</h2>
+                    <p>Krótki przykład pokazujący, jak wygląda podstawowy program w Hexusie.</p>
+                    <pre class="code-block"><code># Code</code></pre>
+                </section>
+
+                <section class="docs-section" id="send">
+                    <h2>Send command</h2>
+                    <p></p>
+                    <pre class="code-block"><code>send "Hello World!!!"</code></pre>
+                    <p>Use <code class="inline">send</code> to send something to console</p>
+                </section>
+
+                <section class="docs-section" id="read">
+                    <h2>Read command</h2>
+                    <p>Using this command you can save something that you write to variable</p>
+                    <pre class="code-block"><code>Read "Write something: " to var</code></pre>
+                </section>
+
+                <section class="docs-section" id="1">
+                    <h2>Something</h2>
+                    <pre class="code-block"><code></code></pre>
+                </section>
+
+                <!-- Sample of table
+                <section class="docs-section" id="2">
+                    <h2>Type</h2>
+                    <table class="ref-table">
+                        <thead>
+                        <tr><th>Typ</th><th>Przykład</th><th>Opis</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr><td><code>liczba</code></td><td><code>10</code>, <code>3.14</code></td><td>Wartości liczbowe całkowite i zmiennoprzecinkowe</td></tr>
+                        <tr><td><code>tekst</code></td><td><code>"Hexus"</code></td><td>Łańcuch znaków</td></tr>
+                        <tr><td><code>logiczny</code></td><td><code>prawda</code>, <code>falsz</code></td><td>Wartość logiczna</td></tr>
+                        <tr><td><code>lista</code></td><td><code>[1, 2, 3]</code></td><td>Uporządkowany zbiór wartości</td></tr>
+                        </tbody>
+                    </table>
+                </section>-->
+            </div>
         </div>
-        <section class="docs-section" id="start">
-            <h2>First steps</h2>
-            <p>Test</p>
-            <pre class="code-block"><code>Test</code></pre>
-        </section>
-        <section class="docs-section" id="send">
-            <h2>Send Command</h2>
-        </section>
-        <section class="docs-section" id="read">
-            <h2>Read Command</h2>
-        </section>
 
-    </main>
+    </div>
+
+
+    <script>
+        const sekcje = document.querySelectorAll('.docs-section');
+        const linki = document.querySelectorAll('.docs-sidebar-group a');
+
+        const obserwator = new IntersectionObserver((wpisy) => {
+            wpisy.forEach((wpis) => {
+                if (wpis.isIntersecting) {
+                    linki.forEach((a) => a.classList.remove('active'));
+                    const aktywny = document.querySelector(`.docs-sidebar-group a[href="#${wpis.target.id}"]`);
+                    if (aktywny) aktywny.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-20% 0px -70% 0px' });
+
+        sekcje.forEach((s) => obserwator.observe(s));
+    </script>
+
 
     <footer>Hexus-lang - Made by wuff</footer>
 
