@@ -209,6 +209,11 @@ class HexusParser:
                 op = "=="
                 right = self.parse_value()
                 left = BinaryOpNode(left, op, right)
+            elif next_type == "VAR" and value in ["and", "or"]:
+                self.consume("VAR")
+                op = value
+                right = self.parse_expression()
+                left = BinaryOpNode(left, op, right)
             else:
                 break
         return left
