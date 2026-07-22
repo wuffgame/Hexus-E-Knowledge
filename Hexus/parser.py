@@ -84,6 +84,13 @@ class ListRemoveNode:
     def __repr__(self):
         return f"ListRemoveNode(var={self.var} value={self.value} pos={self.pos}"
 
+class WaitNode:
+    def __init__(self, value, value2):
+        self.value = value
+        self.value2 = value2
+    def __repr__(self):
+        return f"WaitNode(value={self.value} vale2={self.value2}"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -334,6 +341,7 @@ class HexusParser:
                 self.consume_value("VAR", "pos")
                 if self.peek()[0] == "INT":
                     pos = self.parse_value()
+        self.consume_end_of_statement()
         return ListAddNode(list, value, pos)
 
 
@@ -353,7 +361,13 @@ class HexusParser:
         return ListRemoveNode(list, pos, value)
 
     def parse_wait(self):
-        pass
+        self.consume_value("VAR", "wait")
+        if self.peek()[0] == "INT":
+            value = self.parse_value()
+            if self.peek()[0] == "VAR" and (self.peek()[1] == "s" or self.peek()[1] == "m" or self.peek()[1] == "h" or self.peek()[1] == "d"):
+                value2 = self.parse_value()
+                self.consume_end_of_statement()
+                return WaitNode(value, value2)
 
 
     def parse_statement(self):
@@ -368,12 +382,6 @@ class HexusParser:
             return self.parse_read()
         elif token_type == "VAR" and value == "stop":
             return self.parse_stop()
-        elif token_type == "INT" or token_type == "VAR":
-            next_type, next_value = self.peek(1)
-            if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):
-                return self.parse_var()
-            else:
-                return self.parse_expression()
         elif token_type == "HASH" and value == "#":
             return self.parse_com()
         elif token_type == "VAR" and value == "if":
@@ -384,6 +392,12 @@ class HexusParser:
             return self.parse_listremove()
         elif token_type == "VAR" and value == "wait":
             return self.parse_wait()
+        elif token_type == "INT" or token_type == "VAR":
+            next_type, next_value = self.peek(1)
+            if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):
+                return self.parse_var()
+            else:
+                return self.parse_expression()
         else:
             raise SyntaxError(f"Unknown start instruction: {token_type} ('{value}')")
 

@@ -158,6 +158,28 @@ class HexusInterpreter:
             raise NameError(f"Interpreter Error: Variable '{var_name}' (value: {current_value}) is not a list")
 
 
+    def visit_WaitNode(self, node):
+        import time
+
+        value = self.visit(node.value)
+
+        if hasattr(node.value2, "name"):
+            value2 = node.value2.name
+        else:
+            value2 = self.visit(node.value2)
+
+        if value2 == "s":
+            time.sleep(value)
+        elif value2 == "m":
+            time.sleep(value * 60)
+        elif value2 == "h":
+            time.sleep(value * 60 * 60)
+        elif value2 == "d":
+            time.sleep(value * 60 * 60 * 24)
+        else:
+            raise ValueError(f"Unknown wait unit: {value2}")
+
+
 
 
 

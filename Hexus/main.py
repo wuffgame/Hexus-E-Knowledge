@@ -14,20 +14,20 @@ def main():
         print(f"File {file_name} not found!!!")
         return
     token_list = tokenizer_tokens(source_code)
-    for token in token_list:
-        print(token)
 
     clear_tokens = [t for t in token_list if t[0] != "SKIP"]
     try:
+        for token in clear_tokens:
+            print(token)
         parser = HexusParser(clear_tokens)
 
         program_tree = parser.parse()
 
         print(program_tree)
 
-        #interpreter = HexusInterpreter()
+        interpreter = HexusInterpreter()
 
-        #result = interpreter.interpret(program_tree)
+        result = interpreter.interpret(program_tree)
 
     except SyntaxError as e:
         print(e)

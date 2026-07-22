@@ -1,1 +1,3 @@
-send "Test" to console
+send "Test"
+wait 5s
+send "True"
