@@ -224,6 +224,15 @@ class HexusInterpreter:
             sys.exit(value)
 
 
+    def visit_MakeNode(self, node):
+        var = node.var.strip()
+        value = node.value
+        if value == "lower":
+            self.env[var] = self.env[var].lower()
+        elif value == "upper":
+            self.env[var] = self.env[var].upper()
+
+
 
 
 

@@ -1,7 +1,3 @@
-# Next goal
-var2 = 10
-var = 1
-while 5 + var == var2: {
-send "{var}"
-add 1 to var
-}
+# Next Goal
+make var uppercase
+make var lowercase

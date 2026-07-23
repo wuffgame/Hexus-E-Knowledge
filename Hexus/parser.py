@@ -115,6 +115,13 @@ class ClearNode:
     def __repr__(self):
         return f"ClearNode()"
 
+class MakeNode:
+    def __init__(self, var, value):
+        self.var = var
+        self.value = value
+    def __repr__(self):
+        return f"MakeNode(var={self.var} value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -443,6 +450,20 @@ class HexusParser:
         return ClearNode()
 
 
+    def parse_make(self):
+        self.consume_value("VAR", "make")
+        if self.peek()[0] == "VAR":
+            var = self.consume("VAR")
+            if self.peek()[0] == "VAR" and self.peek()[1] == "lower":
+                value = "lower"
+                self.consume("VAR")
+            if self.peek()[0] == "VAR" and self.peek()[1] == "upper":
+                value = "upper"
+                self.consume("VAR")
+            self.consume_end_of_statement()
+            return MakeNode(var, value)
+
+
 
 
     def parse_statement(self):
@@ -473,6 +494,8 @@ class HexusParser:
             return self.parse_repeat()
         elif token_type == "VAR" and value == "clear":
             return self.parse_clear()
+        elif token_type == "VAR" and value == "make":
+            return self.parse_make()
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
             if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):
