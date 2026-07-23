@@ -212,6 +212,18 @@ class HexusInterpreter:
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
+    def visit_StopNode(self, node):
+        if node.value == None:
+            value = None
+        else:
+            value = self.visit(node.value)
+        import sys
+        if value == None:
+            sys.exit("Program stop")
+        else:
+            sys.exit(value)
+
+
 
 
 

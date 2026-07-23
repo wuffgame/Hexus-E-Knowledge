@@ -27,6 +27,8 @@ class ReadCommandNode:
         return f"ReadCommandNode(text={self.text_value}, var={self.var_name}, target={self.target})"
 
 class StopNode:
+    def __init__(self, value):
+        self.value = value
     def __repr__(self):
         return f"StopNode()"
 
@@ -315,9 +317,12 @@ class HexusParser:
         return ReadCommandNode(text, var, target)
 
     def parse_stop(self):
+        value = None
         self.consume("VAR")
+        if self.peek()[0] == "STRING":
+            value = self.parse_value()
         self.consume_end_of_statement()
-        return StopNode()
+        return StopNode(value)
 
     def parse_com(self):
         text = []
@@ -434,6 +439,7 @@ class HexusParser:
         self.consume_value("VAR", "clear")
         if self.peek()[0] == "VAR" and self.peek()[1] == "screen":
             self.consume_value("VAR", "screen")
+        self.consume_end_of_statement()
         return ClearNode()
 
 
