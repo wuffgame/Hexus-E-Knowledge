@@ -413,7 +413,7 @@ class HexusParser:
 
     def parse_repeat(self):
         self.consume_value("VAR", "repeat")
-        if self.peek()[0] == "INT":
+        if self.peek()[0] == "INT" or self.peek()[0] == "VAR":
             value = self.parse_value()
             if self.peek()[0] == "VAR" and self.peek()[1] == "times":
                 self.consume_value("VAR", "times")
