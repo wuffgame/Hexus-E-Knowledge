@@ -102,6 +102,13 @@ class WhileNode:
     def __repr__(self):
         return f"WhileNode(exp={self.exp} value={self.value}"
 
+class RepeatNode:
+    def __init__(self, value, value2):
+        self.value = value
+        self.value2 = value2
+    def __repr__(self):
+        return f"RepeatNode(number={self.value} value={self.value2}"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -408,7 +415,15 @@ class HexusParser:
         self.consume_value("VAR", "repeat")
         if self.peek()[0] == "INT":
             value = self.parse_value()
-            pass
+            if self.peek()[0] == "VAR" and self.peek()[1] == "times":
+                self.consume_value("VAR", "times")
+                value2 = self.parse_block()
+                self.consume_end_of_statement()
+                return RepeatNode(value, value2)
+            else:
+                raise SyntaxError("ERROR")
+        else:
+            raise SyntaxError("ERROR")
 
 
 
@@ -438,7 +453,7 @@ class HexusParser:
         elif token_type == "VAR" and value == "while":
             return self.parse_while()
         elif token_type == "VAR" and value == "repeat":
-            return self.parse_repeat
+            return self.parse_repeat()
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
             if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):

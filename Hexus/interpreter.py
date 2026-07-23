@@ -197,6 +197,16 @@ class HexusInterpreter:
             exp = self.visit(node.exp)
 
 
+    def visit_RepeatNode(self, node):
+        value = self.visit(node.value)
+        value2 = node.value2
+        time = 1
+        while time <= value:
+            for val in value2:
+                self.visit(val)
+            time += 1
+
+
 
 
 

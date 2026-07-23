@@ -1,1 +1,5 @@
 var = 1
+repeat 4 times {
+var = var + 1
+send var
+}
