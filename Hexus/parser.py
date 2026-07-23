@@ -109,6 +109,10 @@ class RepeatNode:
     def __repr__(self):
         return f"RepeatNode(number={self.value} value={self.value2}"
 
+class ClearNode:
+    def __repr__(self):
+        return f"ClearNode()"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -426,6 +430,13 @@ class HexusParser:
             raise SyntaxError("ERROR")
 
 
+    def parse_clear(self):
+        self.consume_value("VAR", "clear")
+        if self.peek()[0] == "VAR" and self.peek()[1] == "screen":
+            self.consume_value("VAR", "screen")
+        return ClearNode()
+
+
 
 
     def parse_statement(self):
@@ -454,6 +465,8 @@ class HexusParser:
             return self.parse_while()
         elif token_type == "VAR" and value == "repeat":
             return self.parse_repeat()
+        elif token_type == "VAR" and value == "clear":
+            return self.parse_clear()
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
             if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):

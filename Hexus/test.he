@@ -3,3 +3,4 @@ repeat 4 times {
 var = var + 1
 send var
 }
+clear screen

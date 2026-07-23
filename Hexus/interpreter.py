@@ -207,6 +207,11 @@ class HexusInterpreter:
             time += 1
 
 
+    def visit_ClearNode(self, node):
+        import os
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+
 
 
 
