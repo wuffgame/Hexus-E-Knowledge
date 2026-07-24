@@ -479,8 +479,12 @@ class HexusParser:
             if self.peek()[0] == "VAR" and self.peek()[1] == "upper":
                 value = "upper"
                 self.consume("VAR")
+            else:
+                raise SyntaxError(f"Expected lower or upper but found {self.peek()[0]}")
             self.consume_end_of_statement()
             return MakeNode(var, value)
+        else:
+            raise SyntaxError(f"Expected VAR but found {self.peek()[0]}")
 
 
 
