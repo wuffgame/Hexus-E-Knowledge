@@ -13,7 +13,8 @@ token_pattern = [
         ("RSBRACE", r"\]"),
         ("SKIP", r'[ \t]+'),
         ("NEWLINE", r'\n'),
-        ("COMMA", r"\,")
+        ("COMMA", r"\,"),
+        ("DOT", r"\.")
     ]
 
 def tokenizer(text, definition):
