@@ -122,6 +122,12 @@ class MakeNode:
     def __repr__(self):
         return f"MakeNode(var={self.var} value={self.value})"
 
+class BoolNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"BoolNode(value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -185,6 +191,9 @@ class HexusParser:
             val = self.consume("STRING")
             val = val.split()
             return StringNode(val)
+        elif token_type == "BOOL":
+            self.consume("BOOL")
+            return BoolNode(value)
         else:
             raise SyntaxError(f"SyntaxError: Expect number or variable, but found '{token_type}' ('{value}')")
 

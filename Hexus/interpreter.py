@@ -53,6 +53,9 @@ class HexusInterpreter:
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         return now
 
+    def visit_BoolNode(self, node):
+        return bool(node.value)
+
 
     def visit_BinaryOpNode(self, node):
         left_val = self.visit(node.left)

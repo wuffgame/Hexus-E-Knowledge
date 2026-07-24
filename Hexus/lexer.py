@@ -3,6 +3,7 @@ import re
 token_pattern = [
         ("HASH", r"#"),
         ("INT", r"\d+"),
+        ("BOOL", r"\b(True|False)\b"),
         ("PLUS", r"\+"),
         ("MINUS", r"-"),
         ("EQUALS", r'=='),

@@ -1,3 +1,2 @@
-var = "TEXT"
-make var lower
+var = True
 send var
