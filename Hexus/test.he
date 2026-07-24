@@ -1,2 +1,2 @@
-var = 20
-send not var
+var = "test", "test2", "test3",
+send length of var

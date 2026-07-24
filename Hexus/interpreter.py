@@ -257,6 +257,11 @@ class HexusInterpreter:
         return not value
 
 
+    def visit_LengthNode(self, node):
+        var = self.visit(node.var)
+        return len(var)
+
+
 
 
 

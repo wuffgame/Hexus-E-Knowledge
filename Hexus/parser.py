@@ -149,6 +149,12 @@ class NotNode:
     def __repr__(self):
         return f"NotNode(value={self.value})"
 
+class LengthNode:
+    def __init__(self, var):
+        self.var = var
+    def __repr__(self):
+        return f"LengthNode(var={self.var})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -334,7 +340,10 @@ class HexusParser:
     def parse_send(self):
         target = "console"
         self.consume("VAR")
-        text = self.parse_expression()
+        if self.peek()[0] == "VAR" and self.peek()[1] == "length":
+            text = self.parse_length()
+        else:
+            text = self.parse_expression()
         token_type, value = self.peek()
         if token_type == "VAR" and value == "to":
             self.consume_value("VAR", "to")
@@ -513,6 +522,13 @@ class HexusParser:
             return PlusNode(value)
 
 
+    def parse_length(self):
+        self.consume("VAR")
+        if self.peek()[0] == "VAR" and self.peek()[1] == "of":
+            self.consume_value("VAR", "of")
+            var = self.parse_value()
+            return LengthNode(var)
+
 
 
     def parse_statement(self):
@@ -545,6 +561,8 @@ class HexusParser:
             return self.parse_clear()
         elif token_type == "VAR" and value == "make":
             return self.parse_make()
+        elif token_type == "VAR" and value == "length":
+            return self.parse_length()
         elif token_type == "OP" and value == "-":
             return self.parse_minus()
         elif token_type == "OP" and value == "+":
