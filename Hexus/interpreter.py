@@ -69,6 +69,10 @@ class HexusInterpreter:
         if node.op == "!=": return left_val != right_val
         if node.op == "and": return bool(left_val) and bool(right_val)
         if node.op == "or": return bool(left_val) or bool(right_val)
+        if node.op == ">": return left_val > right_val
+        if node.op == "<": return left_val < right_val
+        if node.op == "<=": return left_val <= right_val
+        if node.op == ">=": return left_val >= right_val
 
     def visit_SendCommandNode(self, node):
         result = self.visit(node.text_value)

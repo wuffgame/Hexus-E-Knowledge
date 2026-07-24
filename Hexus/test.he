@@ -1,4 +1,4 @@
-var = True
-if var == True {
+var = 11
+if var >= 11 {
 send "HELLO"
 }

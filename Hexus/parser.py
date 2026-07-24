@@ -216,8 +216,7 @@ class HexusParser:
             next_type, value = self.peek()
 
             if next_type == "OP":
-                self.consume("OP")
-                op = value
+                op = self.consume("OP")
 
                 right = self.parse_value()
                 left = BinaryOpNode(left, op, right)
