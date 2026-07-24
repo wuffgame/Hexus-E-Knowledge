@@ -194,6 +194,12 @@ class HexusParser:
         elif token_type == "BOOL":
             self.consume("BOOL")
             return BoolNode(value)
+        elif token_type == "OP" and value == "-":
+            self.consume("OP")
+            value = self.consume("INT")
+            value = int(value)
+            value = int(-value)
+            return NumberNode(value)
         else:
             raise SyntaxError(f"SyntaxError: Expect number or variable, but found '{token_type}' ('{value}')")
 
