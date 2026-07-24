@@ -1,4 +1,2 @@
-var = -11
-send var
-var = +11
-send var
+var = 20
+send not var

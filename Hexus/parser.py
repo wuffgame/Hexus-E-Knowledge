@@ -1,3 +1,6 @@
+from ast import parse
+
+
 class NumberNode:
     def __init__(self, value):
         self.value = value
@@ -140,6 +143,12 @@ class PlusNode:
     def __repr__(self):
         return f"PlusNode(value={self.value})"
 
+class NotNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"NotNode(value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -222,6 +231,10 @@ class HexusParser:
     def parse_expression(self):
 
         token_type, value = self.peek()
+        if token_type == "VAR" and value == "not":
+            self.consume("VAR")
+            value = self.parse_value()
+            return NotNode(value)
         if token_type == "STRING":
             val = self.consume("STRING")
             val = val.split()
@@ -362,7 +375,6 @@ class HexusParser:
         self.consume_value("VAR", "if")
         exp = self.parse_expression()
         value = self.parse_block()
-        self.consume_end_of_statement()
         elifv = {}
         while self.peek()[0] == "VAR" and self.peek()[1] == "elif":
             self.consume_value("VAR", "elif")

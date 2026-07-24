@@ -252,6 +252,11 @@ class HexusInterpreter:
         return value
 
 
+    def visit_NotNode(self, node):
+        value = self.visit(node.value)
+        return not value
+
+
 
 
 
