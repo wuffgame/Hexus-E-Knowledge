@@ -215,25 +215,20 @@ class HexusParser:
         while True:
             next_type, value = self.peek()
 
-            if next_type in ["PLUS", "MINUS", "MUL", "DIV"]:
-                self.consume(next_type)
-                op = {
-                    "PLUS": "+",
-                    "MINUS": "-",
-                    "MUL": "*",
-                    "DIV": "/"
-                }[next_type]
+            if next_type == "OP":
+                self.consume("OP")
+                op = value
 
                 right = self.parse_value()
                 left = BinaryOpNode(left, op, right)
-            elif next_type == "NOTEQUALS" or (next_type == "VAR" and value == "is" and self.peek(1)[1] == "not"):
+            elif (next_type == "OP" and value == "!=") or (next_type == "VAR" and value == "is" and self.peek(1)[1] == "not"):
                 self.consume(next_type)
                 if self.peek()[1] == "not":
                     self.consume("VAR")
                 op = "!="
                 right = self.parse_value()
                 left = BinaryOpNode(left, op, right)
-            elif next_type == "EQUALS" or (next_type == "VAR" and value == "is"):
+            elif (next_type == "OP" and value == "==") or (next_type == "VAR" and value == "is"):
                 self.consume(next_type)
                 op = "=="
                 right = self.parse_value()
@@ -263,8 +258,8 @@ class HexusParser:
         token_type, value = self.peek()
 
         expr_value = None
-        if token_type == "EQUAL":
-            self.consume("EQUAL")
+        if token_type == "OP" and value == "=":
+            self.consume("OP")
 
 
         elif token_type == "VAR" and value == "is":
@@ -507,7 +502,7 @@ class HexusParser:
             return self.parse_make()
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
-            if token_type == "VAR" and (next_type == "EQUAL" or (next_type == "VAR" and next_value == "is")):
+            if token_type == "VAR" and ((next_type == "OP" and next_value == "=") or (next_type == "VAR" and next_value == "is")):
                 return self.parse_var()
             else:
                 return self.parse_expression()

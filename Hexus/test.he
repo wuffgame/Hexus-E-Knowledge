@@ -1,2 +1,4 @@
 var = True
-send var
+if var == True {
+send "HELLO"
+}
