@@ -1,4 +1,4 @@
 var = -11
-if var == -11 {
-send "Hello"
-}
+send var
+var = +11
+send var

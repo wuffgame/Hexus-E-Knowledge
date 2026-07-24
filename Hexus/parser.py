@@ -128,6 +128,18 @@ class BoolNode:
     def __repr__(self):
         return f"BoolNode(value={self.value})"
 
+class MinusNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"MinusNode(value={self.value})"
+
+class PlusNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"PlusNode(value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -195,11 +207,9 @@ class HexusParser:
             self.consume("BOOL")
             return BoolNode(value)
         elif token_type == "OP" and value == "-":
-            self.consume("OP")
-            value = self.consume("INT")
-            value = int(value)
-            value = int(-value)
-            return NumberNode(value)
+            return self.parse_minus()
+        elif token_type == "OP" and value == "+":
+            return self.parse_plus()
         else:
             raise SyntaxError(f"SyntaxError: Expect number or variable, but found '{token_type}' ('{value}')")
 
@@ -474,6 +484,20 @@ class HexusParser:
 
 
 
+    def parse_minus(self):
+        self.consume("OP")
+        if self.peek()[0] == "INT":
+            value = self.parse_value()
+            return MinusNode(value)
+
+    def parse_plus(self):
+        self.consume("OP")
+        if self.peek()[0] == "INT":
+            value = self.parse_value()
+            return PlusNode(value)
+
+
+
 
     def parse_statement(self):
         while self.peek()[0] == "NEWLINE":
@@ -505,6 +529,10 @@ class HexusParser:
             return self.parse_clear()
         elif token_type == "VAR" and value == "make":
             return self.parse_make()
+        elif token_type == "OP" and value == "-":
+            return self.parse_minus()
+        elif token_type == "OP" and value == "+":
+            return self.parse_plus()
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
             if token_type == "VAR" and ((next_type == "OP" and next_value == "=") or (next_type == "VAR" and next_value == "is")):

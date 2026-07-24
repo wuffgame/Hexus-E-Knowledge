@@ -240,6 +240,18 @@ class HexusInterpreter:
             self.env[var] = self.env[var].upper()
 
 
+    def visit_MinusNode(self, node):
+        value = int(self.visit(node.value))
+        value = -value
+        return value
+
+
+    def visit_PlusNode(self, node):
+        value = int(self.visit(node.value))
+        value = +value
+        return value
+
+
 
 
 
