@@ -165,6 +165,10 @@ class BreakNode:
     def __repr__(self):
         return "BreakNode()"
 
+class ContinueNode:
+    def __repr__(self):
+        return "ContinueNode()"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -575,6 +579,11 @@ class HexusParser:
         return BreakNode()
 
 
+    def parse_continue(self):
+        self.consume_value("VAR", "continue")
+        return ContinueNode()
+
+
 
 
     def parse_statement(self):
@@ -617,7 +626,12 @@ class HexusParser:
             if self.loop_depth > 0:
                 return self.parse_break()
             else:
-                raise SyntaxError("You can't use break outside of loop")
+                raise SyntaxError(f"[LINE: {self.current_line}] You can't use break outside of loop")
+        elif token_type == "VAR" and value == "continue":
+            if self.loop_depth > 0:
+                return self.parse_continue()
+            else:
+                raise SyntaxError(f"[LINE: {self.current_line}] You can't use continue outside of loop")
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
             if token_type == "VAR" and ((next_type == "OP" and next_value == "=") or (next_type == "VAR" and next_value == "is")):

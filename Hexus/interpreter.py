@@ -1,6 +1,9 @@
 class BreakException(Exception):
     pass
 
+class ContinueException(Exception):
+    pass
+
 class HexusInterpreter:
     def __init__(self):
         self.env = {}
@@ -196,7 +199,10 @@ class HexusInterpreter:
         while bool(self.visit(node.exp)):
             try:
                 for val in node.value:
-                    self.visit(val)
+                    try:
+                        self.visit(val)
+                    except ContinueException:
+                        break
             except BreakException:
                 break
 
@@ -208,7 +214,10 @@ class HexusInterpreter:
         while time <= value:
             try:
                 for val in value2:
-                    self.visit(val)
+                    try:
+                        self.visit(val)
+                    except ContinueException:
+                        break
                 time += 1
             except BreakException:
                 break
@@ -274,6 +283,10 @@ class HexusInterpreter:
 
     def visit_BreakNode(self, node):
         raise BreakException
+
+
+    def visit_ContinueNode(self, node):
+        raise ContinueException
 
 
 

@@ -1,8 +1,8 @@
 var = 1
-while var {
+repeat 6 times {
 if var == 3 {
-send "KONIEC"
-break
+var = var + 1
+continue
 }
 send var
 var = var + 1
