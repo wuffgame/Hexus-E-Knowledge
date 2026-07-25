@@ -170,6 +170,7 @@ class HexusParser:
         self.tokens = tokens
         self.pos = 0
         self.loop_depth = 0
+        self.current_line = 1
 
     def peek(self, offset=0):
         if self.pos + offset <len(self.tokens):
@@ -180,11 +181,13 @@ class HexusParser:
         token_type, value = self.peek()
 
         if token_type == expected_type:
+            if token_type == "NEWLINE":
+                self.current_line += 1
             self.pos += 1
             return value
         else:
             raise SyntaxError(
-                f"Expected token of type '{expected_type}', "
+                f"[Line {self.current_line}] expected token of type '{expected_type}', "
                 f"but found '{token_type}' with value '{value}' at position {self.pos}."
             )
 
@@ -210,7 +213,7 @@ class HexusParser:
         elif token_type == "EOF":
             pass
         else:
-            raise SyntaxError(f"SynaxError: Expected end of line, but found token of type '{token_type}'")
+            raise SyntaxError(f"SynaxError: [Line: {self.current_line}] Expected end of line, but found token of type '{token_type}'")
 
     def parse_value(self):
         token_type, value = self.peek()

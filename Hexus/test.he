@@ -1,1 +1,2 @@
-send time.hour
+send "TEST"
+send f"ttes"
