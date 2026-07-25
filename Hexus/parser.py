@@ -161,10 +161,15 @@ class TimeNode:
     def __repr__(self):
         return f"TimeNode(value={self.value})"
 
+class BreakNode:
+    def __repr__(self):
+        return "BreakNode()"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
+        self.loop_depth = 0
 
     def peek(self, offset=0):
         if self.pos + offset <len(self.tokens):
@@ -351,6 +356,8 @@ class HexusParser:
         elif self.peek()[0] == "VAR" and self.peek(1)[1] == ".":
             if self.peek()[1] == "time":
                 text = self.parse_time()
+            else:
+                raise SyntaxError("???")
         else:
             text = self.parse_expression()
         token_type, value = self.peek()
@@ -471,7 +478,9 @@ class HexusParser:
         self.consume_value("VAR", "while")
         if self.peek()[0] == "INT" or self.peek()[0] == "VAR":
             exp = self.parse_expression()
+            self.loop_depth += 1
             value = self.parse_block()
+            self.loop_depth -= 1
             self.consume_end_of_statement()
             return WhileNode(exp, value)
 
@@ -482,7 +491,9 @@ class HexusParser:
             value = self.parse_value()
             if self.peek()[0] == "VAR" and self.peek()[1] == "times":
                 self.consume_value("VAR", "times")
+                self.loop_depth += 1
                 value2 = self.parse_block()
+                self.loop_depth -= 1
                 self.consume_end_of_statement()
                 return RepeatNode(value, value2)
             else:
@@ -556,6 +567,11 @@ class HexusParser:
         return TimeNode(value)
 
 
+    def parse_break(self):
+        self.consume_value("VAR", "break")
+        return BreakNode()
+
+
 
 
     def parse_statement(self):
@@ -568,8 +584,6 @@ class HexusParser:
             return self.parse_send()
         elif token_type == "VAR" and value == "read":
             return self.parse_read()
-        elif token_type == "VAR" and value == "stop":
-            return self.parse_stop()
         elif token_type == "HASH" and value == "#":
             return self.parse_com()
         elif token_type == "VAR" and value == "if":
@@ -594,6 +608,13 @@ class HexusParser:
             return self.parse_minus()
         elif token_type == "OP" and value == "+":
             return self.parse_plus()
+        elif token_type == "VAR" and value == "stop":
+            return self.parse_stop()
+        elif token_type == "VAR" and value == "break":
+            if self.loop_depth > 0:
+                return self.parse_break()
+            else:
+                raise SyntaxError("You can't use break outside of loop")
         elif token_type == "INT" or token_type == "VAR":
             next_type, next_value = self.peek(1)
             if token_type == "VAR" and ((next_type == "OP" and next_value == "=") or (next_type == "VAR" and next_value == "is")):
