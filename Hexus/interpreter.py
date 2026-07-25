@@ -1,3 +1,6 @@
+class BreakException(Exception):
+    pass
+
 class HexusInterpreter:
     def __init__(self):
         self.env = {}
@@ -116,26 +119,20 @@ class HexusInterpreter:
 
     def visit_IfNode(self, node):
         exp = self.visit(node.exp)
-        if exp == True:
-            value = node.value
-            while value:
-                val = value.pop(0)
+        if bool(exp) == True:
+            for val in node.value:
                 self.visit(val)
             return
         elifv = node.elifv
         if elifv:
-            for exp, value in elifv.items():
-                exp = self.visit(exp)
-                if exp == True:
-                    while value:
-                        val = value.pop(0)
+            for e_exp, e_value in elifv.items():
+                if bool(self.visit(e_exp)):
+                    for val in e_value:
                         self.visit(val)
                     return
 
         if node.value2:
-            value2 = node.value2
-            while value2:
-                val = value2.pop(0)
+            for val in node.value2:
                 self.visit(val)
 
 
@@ -196,12 +193,12 @@ class HexusInterpreter:
 
 
     def visit_WhileNode(self, node):
-        exp = self.visit(node.exp)
-        value = node.value
-        while exp == True:
-            for val in node.value:
-                self.visit(val)
-            exp = self.visit(node.exp)
+        while bool(self.visit(node.exp)):
+            try:
+                for val in node.value:
+                    self.visit(val)
+            except BreakException:
+                break
 
 
     def visit_RepeatNode(self, node):
@@ -209,9 +206,12 @@ class HexusInterpreter:
         value2 = node.value2
         time = 1
         while time <= value:
-            for val in value2:
-                self.visit(val)
-            time += 1
+            try:
+                for val in value2:
+                    self.visit(val)
+                time += 1
+            except BreakException:
+                break
 
 
     def visit_ClearNode(self, node):
@@ -270,6 +270,10 @@ class HexusInterpreter:
             return time.strftime("%M")
         elif value == "second":
             return time.strftime("%S")
+
+
+    def visit_BreakNode(self, node):
+        raise BreakException
 
 
 

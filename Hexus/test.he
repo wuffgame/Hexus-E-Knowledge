@@ -1,2 +1,9 @@
-send "TEST"
-send f"ttes"
+var = 1
+while var {
+if var == 3 {
+send "KONIEC"
+break
+}
+send var
+var = var + 1
+}
