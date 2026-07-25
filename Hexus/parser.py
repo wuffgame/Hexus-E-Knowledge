@@ -155,6 +155,12 @@ class LengthNode:
     def __repr__(self):
         return f"LengthNode(var={self.var})"
 
+class TimeNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"TimeNode(value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -342,6 +348,9 @@ class HexusParser:
         self.consume("VAR")
         if self.peek()[0] == "VAR" and self.peek()[1] == "length":
             text = self.parse_length()
+        elif self.peek()[0] == "VAR" and self.peek(1)[1] == ".":
+            if self.peek()[1] == "time":
+                text = self.parse_time()
         else:
             text = self.parse_expression()
         token_type, value = self.peek()
@@ -528,6 +537,24 @@ class HexusParser:
             self.consume_value("VAR", "of")
             var = self.parse_value()
             return LengthNode(var)
+
+
+    def parse_time(self):
+        self.consume_value("VAR", "time")
+        self.consume("DOT")
+        if self.peek()[1] == "hour":
+            self.consume_value("VAR", "hour")
+            value = "hour"
+        elif self.peek()[1] == "minute":
+            self.consume_value("VAR", "minute")
+            value = "minute"
+        elif self.peek()[1] == "second":
+            self.consume_value("VAR", "second")
+            value = "second"
+        else:
+            raise SyntaxError(f"???")
+        return TimeNode(value)
+
 
 
 

@@ -261,6 +261,16 @@ class HexusInterpreter:
         var = self.visit(node.var)
         return len(var)
 
+    def visit_TimeNode(self, node):
+        import time
+        value = node.value
+        if value == "hour":
+            return time.strftime("%H")
+        elif value == "minute":
+            return time.strftime("%M")
+        elif value == "second":
+            return time.strftime("%S")
+
 
 
 
