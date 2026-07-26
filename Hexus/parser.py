@@ -39,10 +39,10 @@ class ComNode:
         return f"ComNode(text={self.text_value})"
 
 class SetVar:
-    def __init__(self, var_name, value, list):
+    def __init__(self, var_name, value, is_list):
         self.var_name = var_name
         self.value = value
-        self.list = list
+        self.list = is_list
 
     def __repr__(self):
         return f"SetVarNode(var={self.var_name}, value={self.value}, list={self.list})"
@@ -197,7 +197,7 @@ class HexusParser:
     def peek(self, offset=0):
         if self.pos + offset <len(self.tokens):
             return self.tokens[self.pos + offset]
-        return ("EOF", "EOF")
+        return "EOF", "EOF"
 
     def consume(self, expected_type):
         token_type, value = self.peek()
@@ -271,6 +271,7 @@ class HexusParser:
         if token_type == "VAR":
             self.consume("VAR")
             return VariableNode(value)
+        raise SyntaxError(f"???")
 
     def parse_expression(self):
 
@@ -324,12 +325,11 @@ class HexusParser:
         return False
 
     def parse_var(self):
-        list = False
+        is_list = False
         var_name = self.consume("VAR")
 
         token_type, value = self.peek()
 
-        expr_value = None
         if token_type == "OP" and value == "=":
             self.consume("OP")
 
@@ -343,7 +343,7 @@ class HexusParser:
         is_empty_list = (self.peek()[0] == "LSBRACE" and self.peek(1)[0] == "RSBRACE")
 
         if is_empty_list or self.peek_is_list_expression():
-            list = True
+            is_list = True
 
             if is_empty_list:
                 self.consume("LSBRACE")
@@ -371,7 +371,7 @@ class HexusParser:
             expr_value = self.parse_expression()
 
         self.consume_end_of_statement()
-        return SetVar(var_name, expr_value, list)
+        return SetVar(var_name, expr_value, is_list)
 
 
 
@@ -466,7 +466,7 @@ class HexusParser:
         if token_type == "INT" or token_type == "VAR" or token_type == "STRING":
             value = self.parse_value()
         self.consume_value("VAR", "to")
-        list = self.parse_vara()
+        is_list = self.parse_vara()
         if self.peek()[0] == "VAR" and self.peek()[1] == "at":
             self.consume_value("VAR", "at")
             if self.peek()[0] == "VAR" and self.peek()[1] == "pos":
@@ -474,7 +474,7 @@ class HexusParser:
                 if self.peek()[0] == "INT":
                     pos = self.parse_value()
         self.consume_end_of_statement()
-        return ListAddNode(list, value, pos)
+        return ListAddNode(is_list, value, pos)
 
 
     def parse_listremove(self):
@@ -489,8 +489,8 @@ class HexusParser:
         elif token_type == "INT" or token_type == "VAR" or token_type == "STRING":
             value = self.parse_value()
         self.consume_value("VAR", "from")
-        list = self.parse_vara()
-        return ListRemoveNode(list, pos, value)
+        is_list = self.parse_vara()
+        return ListRemoveNode(is_list, pos, value)
 
     def parse_wait(self):
         self.consume_value("VAR", "wait")
@@ -500,6 +500,7 @@ class HexusParser:
                 value2 = self.parse_value()
                 self.consume_end_of_statement()
                 return WaitNode(value, value2)
+        raise SyntaxError(f"???")
 
     def parse_while(self):
         self.consume_value("VAR", "while")
@@ -510,6 +511,7 @@ class HexusParser:
             self.loop_depth -= 1
             self.consume_end_of_statement()
             return WhileNode(exp, value)
+        raise SyntaxError(f"???")
 
 
     def parse_repeat(self):
@@ -544,7 +546,7 @@ class HexusParser:
             if self.peek()[0] == "VAR" and self.peek()[1] == "lower":
                 value = "lower"
                 self.consume("VAR")
-            if self.peek()[0] == "VAR" and self.peek()[1] == "upper":
+            elif self.peek()[0] == "VAR" and self.peek()[1] == "upper":
                 value = "upper"
                 self.consume("VAR")
             else:
@@ -561,12 +563,14 @@ class HexusParser:
         if self.peek()[0] == "INT":
             value = self.parse_value()
             return MinusNode(value)
+        raise SyntaxError("???")
 
     def parse_plus(self):
         self.consume("OP")
         if self.peek()[0] == "INT":
             value = self.parse_value()
             return PlusNode(value)
+        raise SyntaxError("???")
 
 
     def parse_length(self):
@@ -575,6 +579,7 @@ class HexusParser:
             self.consume_value("VAR", "of")
             var = self.parse_value()
             return LengthNode(var)
+        raise SyntaxError("???")
 
 
     def parse_time(self):
