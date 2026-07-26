@@ -48,8 +48,8 @@ class HexusInterpreter:
     def generic_visit(self, node):
         raise Exception(f"Interpreter error: No visit method defined for {type(node).__name__}")
 
-
-    def visit_NumberNode(self, node):
+    @staticmethod
+    def visit_NumberNode(node):
         return int(node.value)
 
 
@@ -86,12 +86,14 @@ class HexusInterpreter:
             return self.env.get(node.name)
         raise NameError(f"Variable '{node.name}' is not defined!!!")
 
-    def visit_NowNode(self):
+    @staticmethod
+    def visit_NowNode():
         import time
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         return now
 
-    def visit_BoolNode(self, node):
+    @staticmethod
+    def visit_BoolNode(node):
         return bool(node.value)
 
 
@@ -156,7 +158,7 @@ class HexusInterpreter:
 
     def visit_IfNode(self, node):
         exp = self.visit(node.exp)
-        if bool(exp) == True:
+        if exp:
             for val in node.value:
                 self.visit(val)
             return
@@ -256,8 +258,8 @@ class HexusInterpreter:
             except BreakException:
                 break
 
-
-    def visit_ClearNode(self):
+    @staticmethod
+    def visit_ClearNode():
         import subprocess
         import os
         subprocess.run('cls' if os.name == 'nt' else 'clear', shell=True)
@@ -306,7 +308,8 @@ class HexusInterpreter:
         var = self.visit(node.var)
         return len(var)
 
-    def visit_TimeNode(self, node):
+    @staticmethod
+    def visit_TimeNode(node):
         import time
         value = node.value
         if value == "hour":
