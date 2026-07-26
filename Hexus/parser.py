@@ -169,6 +169,27 @@ class ContinueNode:
     def __repr__(self):
         return "ContinueNode()"
 
+class FunctionDefNode:
+    def __init__(self, name, para, body):
+        self.name = name
+        self.para = para
+        self.body = body
+    def __repr__(self):
+        return f"FunctionDefNode(name={self.name} para={self.para} body={self.body})"
+
+class FunctionCallNode:
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+    def __repr__(self):
+        return f"FunctionCallNode(name={self.name} args={self.args})"
+
+class ReturnNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"ReturnNode(value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -230,8 +251,10 @@ class HexusParser:
             self.consume("VAR")
             return NowNode()
         elif token_type == "VAR":
-            self.consume("VAR")
-            return VariableNode(value)
+            var_name = self.consume("VAR")
+            if self.peek()[0] == "LPAREN":
+                return self.parse_func_call(var_name)
+            return VariableNode(var_name)
         elif token_type == "STRING":
             val = self.consume("STRING")
             val = val.split()
@@ -584,6 +607,46 @@ class HexusParser:
         return ContinueNode()
 
 
+    def parse_func(self):
+        self.consume_value("VAR", "func")
+        func_name = self.consume("VAR")
+        self.consume("LPAREN")
+        para = []
+        if self.peek()[0] != "RPAREN":
+            para.append(self.consume("VAR"))
+            while self.peek()[0] == "COMMA":
+                self.consume("COMMA")
+                para.append(self.consume("VAR"))
+        self.consume("RPAREN")
+        body = self.parse_block()
+        self.consume_end_of_statement()
+        return FunctionDefNode(func_name, para, body)
+
+
+    def parse_func_call(self, func_name):
+        self.consume("LPAREN")
+        args = []
+        if self.peek()[0] != "RPAREN":
+            args.append(self.parse_expression())
+            while self.peek()[0] == "COMMA":
+                self.consume("COMMA")
+                args.append(self.parse_expression())
+        self.consume("RPAREN")
+        return FunctionCallNode(func_name, args)
+
+
+    def parse_return(self):
+        self.consume_value("VAR", "return")
+        token_type, _ = self.peek()
+        if token_type in ["NEWLINE", "EOF", "RBRACE"]:
+            value = None
+        else:
+            value = self.parse_expression()
+        self.consume_end_of_statement()
+        return ReturnNode(value)
+
+
+
 
 
     def parse_statement(self):
@@ -622,6 +685,10 @@ class HexusParser:
             return self.parse_plus()
         elif token_type == "VAR" and value == "stop":
             return self.parse_stop()
+        elif token_type == "VAR" and value == "func":
+            return self.parse_func()
+        elif token_type == "VAR" and value == "return":
+            return self.parse_return()
         elif token_type == "VAR" and value == "break":
             if self.loop_depth > 0:
                 return self.parse_break()
@@ -632,9 +699,16 @@ class HexusParser:
                 return self.parse_continue()
             else:
                 raise SyntaxError(f"[LINE: {self.current_line}] You can't use continue outside of loop")
-        elif token_type == "INT" or token_type == "VAR":
+        elif token_type == "INT":
+            return self.parse_expression()
+        elif token_type == "VAR":
+            if self.peek(1)[0] == "LPAREN":
+                func_name = self.consume("VAR")
+                node = self.parse_func_call(func_name)
+                self.consume_end_of_statement()
+                return node
             next_type, next_value = self.peek(1)
-            if token_type == "VAR" and ((next_type == "OP" and next_value == "=") or (next_type == "VAR" and next_value == "is")):
+            if (next_type == "OP" and next_value == "=") or (next_type == "VAR" and next_value == "is"):
                 return self.parse_var()
             else:
                 return self.parse_expression()
