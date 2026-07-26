@@ -1,4 +1,5 @@
 from Hexus.parser import FunctionDefNode
+from typing import Any, Callable
 
 
 class BreakException(Exception):
@@ -39,9 +40,9 @@ class HexusInterpreter:
     def __init__(self):
         self.env = Environment()
 
-    def visit(self, node):
+    def visit(self, node) -> Any:
         method_name = f"visit_{type(node).__name__}"
-        visitor = getattr(self, method_name, self.generic_visit)
+        visitor: Callable[[Any], Any] = getattr(self, method_name, self.generic_visit)
         return visitor(node)
 
     def generic_visit(self, node):
@@ -85,7 +86,7 @@ class HexusInterpreter:
             return self.env.get(node.name)
         raise NameError(f"Variable '{node.name}' is not defined!!!")
 
-    def visit_NowNode(self, node):
+    def visit_NowNode(self):
         import time
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         return now
@@ -110,6 +111,7 @@ class HexusInterpreter:
         if node.op == "<": return left_val < right_val
         if node.op == "<=": return left_val <= right_val
         if node.op == ">=": return left_val >= right_val
+        raise ValueError(f"Unknown binary operator: {node.op}")
 
     def visit_SendCommandNode(self, node):
         result = self.visit(node.text_value)
@@ -118,8 +120,8 @@ class HexusInterpreter:
 
     def visit_SetVar(self, node):
         var = node.var_name.strip()
-        if node.list == True:
-            if node.value == None:
+        if node.list is True:
+            if node.value is None:
                 self.env.set(var, [])
                 return
             elif node.value:
@@ -135,6 +137,7 @@ class HexusInterpreter:
     def visit_ReadCommandNode(self, node):
         value = self.visit(node.text_value)
         var = node.var_name.strip()
+        v = None
         if node.target == "console":
             v = input(value)
 
@@ -254,18 +257,19 @@ class HexusInterpreter:
                 break
 
 
-    def visit_ClearNode(self, node):
+    def visit_ClearNode(self):
+        import subprocess
         import os
-        os.system('cls' if os.name == 'nt' else 'clear')
+        subprocess.run('cls' if os.name == 'nt' else 'clear', shell=True)
 
 
     def visit_StopNode(self, node):
-        if node.value == None:
+        if node.value is None:
             value = None
         else:
             value = self.visit(node.value)
         import sys
-        if value == None:
+        if value is None:
             sys.exit("Program stop")
         else:
             sys.exit(value)
@@ -311,6 +315,8 @@ class HexusInterpreter:
             return time.strftime("%M")
         elif value == "second":
             return time.strftime("%S")
+        else:
+            raise NameError(f"Don't know {value}")
 
 
     def visit_BreakNode(self, node):
