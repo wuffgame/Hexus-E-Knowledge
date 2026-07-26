@@ -1,12 +1,43 @@
+from Hexus.parser import FunctionDefNode
+
+
 class BreakException(Exception):
     pass
 
 class ContinueException(Exception):
     pass
 
+class ReturnException(Exception):
+    def __init__(self, value):
+        self.value = value
+
+class Environment:
+    def __init__(self, parent=None):
+        self.vars = {}
+        self.parent = parent
+
+    def get(self, name):
+        if name in self.vars:
+            return self.vars[name]
+        if self.parent:
+            return self.parent.get(name)
+        raise NameError(f"Variable '{name}' is not defined!!!")
+
+    def set(self, name, value):
+        self.vars[name] = value
+
+    def __contains__(self, name):
+        try:
+            self.get(name)
+            return True
+        except NameError:
+            return False
+
+
+
 class HexusInterpreter:
     def __init__(self):
-        self.env = {}
+        self.env = Environment()
 
     def visit(self, node):
         method_name = f"visit_{type(node).__name__}"
@@ -51,7 +82,7 @@ class HexusInterpreter:
 
     def visit_VariableNode(self, node):
         if node.name in self.env:
-            return self.env[node.name]
+            return self.env.get(node.name)
         raise NameError(f"Variable '{node.name}' is not defined!!!")
 
     def visit_NowNode(self, node):
@@ -89,17 +120,17 @@ class HexusInterpreter:
         var = node.var_name.strip()
         if node.list == True:
             if node.value == None:
-                self.env[var] = []
+                self.env.set(var, [])
                 return
             elif node.value:
-                list = []
+                list_val = []
                 for v in node.value:
                     result = self.visit(v)
-                    list.append(result)
-                self.env[var] = list
+                    list_val.append(result)
+                self.env.set(var, list_val)
                 return
         value = self.visit(node.value)
-        self.env[var] = value
+        self.env.set(var, value)
 
     def visit_ReadCommandNode(self, node):
         value = self.visit(node.text_value)
@@ -115,7 +146,7 @@ class HexusInterpreter:
                 except ValueError:
                     pass
 
-        self.env[var] = v
+        self.env.set(var, v)
 
     def visit_ComNode(self, node):
         pass
@@ -150,7 +181,7 @@ class HexusInterpreter:
                 pos = self.visit(node.pos)
             pos -= 1
             current_value.insert(pos, value)
-            self.env[var_name] = current_value
+            self.env.set(var_name, current_value)
         else:
             raise NameError(f"Interpreter Error: Variable '{var_name}' (value: {current_value}) is not a list")
 
@@ -165,10 +196,10 @@ class HexusInterpreter:
                 pos = self.visit(node.pos)
                 pos -= 1
                 current_value.pop(pos)
-                self.env[var_name] = current_value
+                self.env.set(var_name, current_value)
             elif value:
                 current_value.remove(value)
-                self.env[var_name] = current_value
+                self.env.set(var_name, current_value)
         else:
             raise NameError(f"Interpreter Error: Variable '{var_name}' (value: {current_value}) is not a list")
 
@@ -243,10 +274,11 @@ class HexusInterpreter:
     def visit_MakeNode(self, node):
         var = node.var.strip()
         value = node.value
+        current_str = self.env.get(var)
         if value == "lower":
-            self.env[var] = self.env[var].lower()
+            self.env.set(var, current_str.lower())
         elif value == "upper":
-            self.env[var] = self.env[var].upper()
+            self.env.set(var, current_str.upper())
 
 
     def visit_MinusNode(self, node):
@@ -287,6 +319,41 @@ class HexusInterpreter:
 
     def visit_ContinueNode(self, node):
         raise ContinueException
+
+
+    def visit_FunctionDefNode(self, node):
+        self.env.set(node.name, node)
+
+
+    def visit_ReturnNode(self, node):
+        value = None
+        if node.value is not None:
+            value = self.visit(node.value)
+        raise ReturnException(value)
+
+
+    def visit_FunctionCallNode(self, node):
+        func_node = self.env.get(node.name)
+        if not isinstance(func_node, FunctionDefNode):
+            raise TypeError(f"'{node.name}' is not a function")
+        if len(node.args) != len(func_node.para):
+            raise TypeError(f"Function '{node.name}' expects {len(func_node.para)} arguments, but got {len(node.args)}")
+        arg_values = [self.visit(arg) for arg in node.args]
+        previous_env = self.env
+        local_env = Environment(parent=previous_env)
+        for para_name, val in zip (func_node.para, arg_values):
+            local_env.set(para_name, val)
+        self.env = local_env
+        return_value = None
+        try:
+            for stmt in func_node.body:
+                self.visit(stmt)
+        except ReturnException as ret:
+            return_value = ret.value
+        finally:
+            self.env = previous_env
+
+        return return_value
 
 
 
