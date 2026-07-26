@@ -715,6 +715,7 @@ class HexusParser:
         else:
             raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Unknown start instruction: {token_type} ('{value}')")
 
+
     def parse(self):
         program_nodes = []
         while self.peek()[0] != "EOF":
