@@ -208,6 +208,9 @@ class HexusParser:
                 filepath = os.path.join(modules_dir, filename)
 
                 spec = importlib.util.spec_from_file_location(mod_name, filepath)
+
+                if spec is None or spec.loader is None:
+                    continue
                 py_mod = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(py_mod)
 
@@ -266,7 +269,7 @@ class HexusParser:
             node = self.parse_builtin_dot_call()
 
             if getattr(node, "is_expression", True) is False:
-                raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] '{value}' command does not return a value and connot be use inside expression command")
+                raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] '{value}' command does not return a value and can not be use inside expression command")
             return node
         elif token_type == "INT":
             self.consume("INT")
