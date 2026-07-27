@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class TimeHourNode:
     is_expression = True
     def __repr__(self):
@@ -28,7 +30,7 @@ class TimeParser:
             return TimeParser.parse_minute(parser)
         elif token_type == "VAR" and value == "second":
             parser.consume_value("VAR", "second")
-            return TimeParser.parse_second()
+            return TimeParser.parse_second(parser)
         raise SyntaxError(f"SyntaxError [time module]: Unknown command 'time.{value}'")
 
     @staticmethod
@@ -52,18 +54,18 @@ class TimeInterpreter:
     def register_handlers(interpreter):
 
         def visit_TimeHourNode(self, node):
-            import time
-            hour = time.strftime("%H")
+            _ = self, node
+            hour = datetime.now().strftime("%H")
             return hour
 
         def visit_TimeMinuteNode(self, node):
-            import time
-            minute = time.strftime("%M")
+            _ = self, node
+            minute = datetime.now().strftime("%M")
             return minute
 
         def visit_TimeSecNode(self, node):
-            import time
-            sec = time.strftime("%S")
+            _ = self, node
+            sec = datetime.now().strftime("%S")
             return sec
 
         setattr(interpreter.__class__, "visit_TimeHourNode", visit_TimeHourNode)
