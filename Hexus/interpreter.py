@@ -1,3 +1,5 @@
+from sys import modules
+
 from Hexus.parser import FunctionDefNode
 from typing import Any, Callable
 
@@ -39,6 +41,31 @@ class Environment:
 class HexusInterpreter:
     def __init__(self):
         self.env = Environment()
+        self._register_type1_modules()
+
+    def _register_type1_modules(self):
+        import os
+        import importlib.util
+
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        modules_dir = os.path.join(base_dir, "modules")
+
+        if not os.path.exists(modules_dir):
+            return
+
+        for filename in os.listdir(modules_dir):
+            if filename.endswith(".py") and not filename.endswith("_ext.py"):
+                mod_name = filename[:-3]
+                filepath = os.path.join(modules_dir, filename)
+
+                spec = importlib.util.spec_from_file_location(mod_name, filepath)
+                py_mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(py_mod)
+
+                for attr_name in dir(py_mod):
+                    attr = getattr(py_mod, attr_name)
+                    if attr_name.endswith("Interpreter") and hasattr(attr, "register_handlers"):
+                        attr.register_handlers(self)
 
     def visit(self, node) -> Any:
         method_name = f"visit_{type(node).__name__}"

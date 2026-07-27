@@ -1,3 +1,7 @@
+import os.path
+import os
+import importlib.util
+
 class NumberNode:
     def __init__(self, value):
         self.value = value
@@ -152,12 +156,6 @@ class LengthNode:
     def __repr__(self):
         return f"LengthNode(var={self.var})"
 
-class TimeNode:
-    def __init__(self, value):
-        self.value = value
-    def __repr__(self):
-        return f"TimeNode(value={self.value})"
-
 class BreakNode:
     def __repr__(self):
         return "BreakNode()"
@@ -193,6 +191,30 @@ class HexusParser:
         self.pos = 0
         self.loop_depth = 0
         self.current_line = 1
+        self.builtin_modules = {}
+        self._load_type1_modules()
+
+    def _load_type1_modules(self):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        modules_dir = os.path.join(base_dir, "modules")
+
+        if not os.path.exists(modules_dir):
+            os.makedirs(modules_dir)
+            return
+
+        for filename in os.listdir(modules_dir):
+            if filename.endswith(".py") and not filename.endswith("_ext.py"):
+                mod_name = filename[:-3]
+                filepath = os.path.join(modules_dir, filename)
+
+                spec = importlib.util.spec_from_file_location(mod_name, filepath)
+                py_mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(py_mod)
+
+                for attr_name in dir(py_mod):
+                    attr = getattr(py_mod, attr_name)
+                    if attr_name.endswith("Parser") and hasattr(attr, "name") and hasattr(attr, "parse"):
+                        self.builtin_modules[attr.name] = attr
 
     def peek(self, offset=0):
         if self.pos + offset <len(self.tokens):
@@ -240,7 +262,13 @@ class HexusParser:
     def parse_value(self):
         token_type, value = self.peek()
 
-        if token_type == "INT":
+        if token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":
+            node = self.parse_builtin_dot_call()
+
+            if getattr(node, "is_expression", True) is False:
+                raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] '{value}' command does not return a value and connot be use inside expression command")
+            return node
+        elif token_type == "INT":
             self.consume("INT")
             value = int(value)
             return NumberNode(value)
@@ -380,11 +408,6 @@ class HexusParser:
         self.consume("VAR")
         if self.peek()[0] == "VAR" and self.peek()[1] == "length":
             text = self.parse_length()
-        elif self.peek()[0] == "VAR" and self.peek(1)[1] == ".":
-            if self.peek()[1] == "time":
-                text = self.parse_time()
-            else:
-                raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Library not found.")
         else:
             text = self.parse_expression()
         token_type, value = self.peek()
@@ -582,23 +605,6 @@ class HexusParser:
         raise SyntaxError("???")
 
 
-    def parse_time(self):
-        self.consume_value("VAR", "time")
-        self.consume("DOT")
-        if self.peek()[1] == "hour":
-            self.consume_value("VAR", "hour")
-            value = "hour"
-        elif self.peek()[1] == "minute":
-            self.consume_value("VAR", "minute")
-            value = "minute"
-        elif self.peek()[1] == "second":
-            self.consume_value("VAR", "second")
-            value = "second"
-        else:
-            raise SyntaxError(f"SyntaxError [Line: {self.current_line}] Expect hour/minute/second, but found {self.peek()[1]}")
-        return TimeNode(value)
-
-
     def parse_break(self):
         self.consume_value("VAR", "break")
         return BreakNode()
@@ -648,6 +654,13 @@ class HexusParser:
         return ReturnNode(value)
 
 
+    def parse_builtin_dot_call(self):
+        mod_name = self.consume("VAR")
+        self.consume("DOT")
+        module_class = self.builtin_modules[mod_name]
+        return module_class.parse(self)
+
+
 
 
 
@@ -657,7 +670,9 @@ class HexusParser:
 
         token_type, value = self.peek()
 
-        if token_type == "VAR" and value == "send":
+        if token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":
+            return self.parse_builtin_dot_call()
+        elif token_type == "VAR" and value == "send":
             return self.parse_send()
         elif token_type == "VAR" and value == "read":
             return self.parse_read()

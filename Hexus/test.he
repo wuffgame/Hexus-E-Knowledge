@@ -1,9 +1,1 @@
-var = 1
-repeat 6 times {
-if var == 3 {
-var = var + 1
-continue
-}
-send var
-var = var + 1
-}
+send time.hour
