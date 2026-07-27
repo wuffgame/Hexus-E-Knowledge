@@ -1,5 +1,3 @@
-from sys import modules
-
 from Hexus.parser import FunctionDefNode
 from typing import Any, Callable
 
@@ -59,6 +57,10 @@ class HexusInterpreter:
                 filepath = os.path.join(modules_dir, filename)
 
                 spec = importlib.util.spec_from_file_location(mod_name, filepath)
+
+                if spec is None or spec.loader is None:
+                    continue
+
                 py_mod = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(py_mod)
 
