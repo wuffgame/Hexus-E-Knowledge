@@ -32,6 +32,21 @@ class TimeSecNode:
     def __repr__(self):
         return "TimeSecNode()"
 
+class TimeDayNode:
+    is_expression = True
+    def __repr__(self):
+        return "TimeDayNode()"
+
+class TimeMonthNode:
+    is_expression = True
+    def __repr__(self):
+        return "TimeMonthNode()"
+
+class TimeYearNode:
+    is_expression = True
+    def __repr__(self):
+        return "TimeYearNode()"
+
 
 class TimeTimeNode:
     is_expression = True
@@ -65,6 +80,15 @@ class TimeParser:
         elif token_type == "VAR" and value == "second":
             parser.consume_value("VAR", "second")
             return TimeParser.parse_second(parser)
+        elif token_type == "VAR" and value == "day":
+            parser.consume_value("VAR", "day")
+            return TimeParser.parse_day(parser)
+        elif token_type == "VAR" and value == "month":
+            parser.consume_value("VAR", "month")
+            return TimeParser.parse_month(parser)
+        elif token_type == "VAR" and value == "year":
+            parser.consume_value("VAR", "year")
+            return TimeParser.parse_year(parser)
         elif token_type == "VAR" and value == "get":
             parser.consume_value("VAR", "get")
             return TimeParser.parse_time(parser)
@@ -84,6 +108,21 @@ class TimeParser:
     def parse_second(parser):
         parser.consume_end_of_statement()
         return TimeSecNode()
+
+    @staticmethod
+    def parse_day(parser):
+        parser.consume_end_of_statement()
+        return TimeDayNode()
+
+    @staticmethod
+    def parse_month(parser):
+        parser.consume_end_of_statement()
+        return TimeMonthNode()
+
+    @staticmethod
+    def parse_year(parser):
+        parser.consume_end_of_statement()
+        return TimeYearNode()
 
     @staticmethod
     def parse_time(parser):
