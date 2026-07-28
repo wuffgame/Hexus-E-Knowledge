@@ -1,1 +1,3 @@
 # send time.get time "%H:%M:%S"
+
+send time.get time UTC+05:30

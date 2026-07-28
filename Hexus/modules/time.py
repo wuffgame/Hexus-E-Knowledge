@@ -1,19 +1,37 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+class _UTC:
+    def __add__(self, h):
+        return timezone(timedelta(hours=int(h)))
+
+    def __sub__(self, h):
+        return timezone(timedelta(hours=-int(h)))
+
+    def __repr__(self):
+        return "UTC"
+
+
+UTC = _UTC()
+
+
 
 class TimeHourNode:
     is_expression = True
     def __repr__(self):
-        return f"TimeHourNode()"
+        return "TimeHourNode()"
+
 
 class TimeMinuteNode:
     is_expression = True
     def __repr__(self):
-        return f"TimeMinuteNode()"
+        return "TimeMinuteNode()"
+
 
 class TimeSecNode:
     is_expression = True
     def __repr__(self):
-        return f"TimeSecNode()"
+        return "TimeSecNode()"
+
 
 class TimeTimeNode:
     is_expression = True
@@ -21,6 +39,15 @@ class TimeTimeNode:
         self.value = value
     def __repr__(self):
         return f"TimeTimeNode(value={self.value})"
+
+
+class TimeUTCNode:
+    is_expression = True
+    def __init__(self, value_node):
+        self.value_node = value_node
+    def __repr__(self):
+        return f"TimeUTCNode(value={self.value_node})"
+
 
 
 class TimeParser:
@@ -65,33 +92,43 @@ class TimeParser:
             if parser.peek()[0] == "STRING":
                 value = parser.parse_value()
                 return TimeTimeNode(value)
+            else:
+                expr_node = parser.parse_expression()
+                return TimeUTCNode(expr_node)
+        else:
+            raise SyntaxError("SyntaxError [time module]: Expected 'time' after 'get'")
+
 
 
 class TimeInterpreter:
     @staticmethod
     def register_handlers(interpreter):
+        interpreter.env.set("UTC", UTC)
 
         def visit_TimeHourNode(self, node):
-            _ = self, node
-            hour = datetime.now().strftime("%H")
-            return hour
+            return datetime.now().strftime("%H")
 
         def visit_TimeMinuteNode(self, node):
-            _ = self, node
-            minute = datetime.now().strftime("%M")
-            return minute
+            return datetime.now().strftime("%M")
 
         def visit_TimeSecNode(self, node):
-            _ = self, node
-            sec = datetime.now().strftime("%S")
-            return sec
+            return datetime.now().strftime("%S")
 
         def visit_TimeTimeNode(self, node):
-            _ = self
             value = interpreter.visit(node.value)
             return datetime.now().strftime(value)
+
+        def visit_TimeUTCNode(self, node):
+            tz_val = interpreter.visit(node.value_node)
+            if isinstance(tz_val, _UTC):
+                tz_val = timezone.utc
+            elif isinstance(tz_val, int):
+                tz_val = timezone(timedelta(hours=tz_val))
+
+            return datetime.now(tz_val).strftime("%Y-%m-%d %H:%M:%S")
 
         setattr(interpreter.__class__, "visit_TimeHourNode", visit_TimeHourNode)
         setattr(interpreter.__class__, "visit_TimeMinuteNode", visit_TimeMinuteNode)
         setattr(interpreter.__class__, "visit_TimeSecNode", visit_TimeSecNode)
         setattr(interpreter.__class__, "visit_TimeTimeNode", visit_TimeTimeNode)
+        setattr(interpreter.__class__, "visit_TimeUTCNode", visit_TimeUTCNode)
