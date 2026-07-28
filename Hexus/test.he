@@ -1,1 +1,1 @@
-send time.minute
+# send time.get time "%H:%M:%S"

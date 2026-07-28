@@ -15,6 +15,13 @@ class TimeSecNode:
     def __repr__(self):
         return f"TimeSecNode()"
 
+class TimeTimeNode:
+    is_expression = True
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"TimeTimeNode(value={self.value})"
+
 
 class TimeParser:
     name = "time"
@@ -31,6 +38,9 @@ class TimeParser:
         elif token_type == "VAR" and value == "second":
             parser.consume_value("VAR", "second")
             return TimeParser.parse_second(parser)
+        elif token_type == "VAR" and value == "get":
+            parser.consume_value("VAR", "get")
+            return TimeParser.parse_time(parser)
         raise SyntaxError(f"SyntaxError [time module]: Unknown command 'time.{value}'")
 
     @staticmethod
@@ -47,6 +57,14 @@ class TimeParser:
     def parse_second(parser):
         parser.consume_end_of_statement()
         return TimeSecNode()
+
+    @staticmethod
+    def parse_time(parser):
+        if parser.peek()[0] == "VAR" and parser.peek()[1] == "time":
+            parser.consume_value("VAR", "time")
+            if parser.peek()[0] == "STRING":
+                value = parser.parse_value()
+                return TimeTimeNode(value)
 
 
 class TimeInterpreter:
@@ -68,6 +86,12 @@ class TimeInterpreter:
             sec = datetime.now().strftime("%S")
             return sec
 
+        def visit_TimeTimeNode(self, node):
+            _ = self
+            value = interpreter.visit(node.value)
+            return datetime.now().strftime(value)
+
         setattr(interpreter.__class__, "visit_TimeHourNode", visit_TimeHourNode)
         setattr(interpreter.__class__, "visit_TimeMinuteNode", visit_TimeMinuteNode)
         setattr(interpreter.__class__, "visit_TimeSecNode", visit_TimeSecNode)
+        setattr(interpreter.__class__, "visit_TimeTimeNode", visit_TimeTimeNode)
