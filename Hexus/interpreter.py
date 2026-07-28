@@ -40,6 +40,9 @@ class HexusInterpreter:
     def __init__(self):
         self.env = Environment()
         self._register_type1_modules()
+        self.timer = 0
+        self.timer2 = 0
+        self.timerset = False
 
     def _register_type1_modules(self):
         import os
@@ -392,6 +395,31 @@ class HexusInterpreter:
             self.env = previous_env
 
         return return_value
+
+
+    def visit_StartTimerNode(self, node):
+        _ = node
+        import time
+        self.timer = time.time()
+        self.timerset = False
+
+
+    def visit_StopTimerNode(self, node):
+        _ = node
+        import time
+        now = time.time()
+        self.timer2 = round(now - self.timer)
+        self.timerset = True
+
+    def visit_TimerNode(self, node):
+        _ = node
+        if not self.timerset:
+            import time
+            now = time.time()
+            self.timer2 = round(now - self.timer)
+            return self.timer2
+        else:
+            return self.timer2
 
 
 

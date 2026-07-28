@@ -1,0 +1,6 @@
+timer start
+wait 2 s
+send timer
+wait 1 s
+timer stop
+send timer

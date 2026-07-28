@@ -193,6 +193,10 @@ class StopTimerNode:
     def __repr__(self):
         return f"StopTimerNode()"
 
+class TimerNode:
+    def __repr__(self):
+        return f"TimerNode()"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -286,6 +290,9 @@ class HexusParser:
         elif token_type == "VAR" and value == "now":
             self.consume("VAR")
             return NowNode()
+        elif token_type == "VAR" and value == "timer":
+            self.consume("VAR")
+            return TimerNode()
         elif token_type == "VAR":
             var_name = self.consume("VAR")
             if self.peek()[0] == "LPAREN":
@@ -675,8 +682,10 @@ class HexusParser:
     def parse_timer(self):
         self.consume_value("VAR", "timer")
         if self.peek()[0] == "VAR" and self.peek()[1] == "start":
+            self.consume_value("VAR", "start")
             return StartTimerNode()
         elif self.peek()[0] == "VAR" and self.peek()[1] == "stop":
+            self.consume_value("VAR", "stop")
             return StopTimerNode()
         else:
             raise SyntaxError(f"???")
