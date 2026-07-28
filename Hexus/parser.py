@@ -185,6 +185,14 @@ class ReturnNode:
     def __repr__(self):
         return f"ReturnNode(value={self.value})"
 
+class StartTimerNode:
+    def __repr__(self):
+        return f"StartTimerNode()"
+
+class StopTimerNode:
+    def __repr__(self):
+        return f"StopTimerNode()"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -664,6 +672,16 @@ class HexusParser:
         return module_class.parse(self)
 
 
+    def parse_timer(self):
+        self.consume_value("VAR", "timer")
+        if self.peek()[0] == "VAR" and self.peek()[1] == "start":
+            return StartTimerNode()
+        elif self.peek()[0] == "VAR" and self.peek()[1] == "stop":
+            return StopTimerNode()
+        else:
+            raise SyntaxError(f"???")
+
+
 
 
 
@@ -709,6 +727,8 @@ class HexusParser:
             return self.parse_func()
         elif token_type == "VAR" and value == "return":
             return self.parse_return()
+        elif token_type == "VAR" and value == "timer":
+            return self.parse_timer()
         elif token_type == "VAR" and value == "break":
             if self.loop_depth > 0:
                 return self.parse_break()
