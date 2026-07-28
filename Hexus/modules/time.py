@@ -106,19 +106,24 @@ class TimeInterpreter:
         interpreter.env.set("UTC", UTC)
 
         def visit_TimeHourNode(self, node):
+            _ = self, node
             return datetime.now().strftime("%H")
 
         def visit_TimeMinuteNode(self, node):
+            _ = self, node
             return datetime.now().strftime("%M")
 
         def visit_TimeSecNode(self, node):
+            _ = self, node
             return datetime.now().strftime("%S")
 
         def visit_TimeTimeNode(self, node):
+            _ = self
             value = interpreter.visit(node.value)
             return datetime.now().strftime(value)
 
         def visit_TimeUTCNode(self, node):
+            _ = self
             tz_val = interpreter.visit(node.value_node)
             if isinstance(tz_val, _UTC):
                 tz_val = timezone.utc
