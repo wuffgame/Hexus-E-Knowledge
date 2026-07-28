@@ -28,6 +28,9 @@
             <a href="#start" class="active">First steps</a>
             <a href="#send">Send Command</a>
             <a href="#read">Read Command</a>
+            <a href="#data-storage">Types of data storage</a>
+            <a href="#if/elif/else">If/Elif/Else</a>
+            <a href="#loops">Loops</a>
             </div>
         </aside>
         <div class="docs-content">
@@ -45,8 +48,8 @@
                 <section class="docs-section" id="send">
                     <h2>Send command</h2>
                     <p></p>
-                    <pre class="code-block"><code>send "Hello World!!!"</code></pre>
                     <p>Use <code class="inline">send</code> to send something to console</p>
+                    <pre class="code-block"><code>send "Hello World!!!"</code></pre>
                 </section>
 
                 <section class="docs-section" id="read">
@@ -55,9 +58,51 @@
                     <pre class="code-block"><code>Read "Write something: " to var</code></pre>
                 </section>
 
-                <section class="docs-section" id="1">
-                    <h2>Something</h2>
-                    <pre class="code-block"><code></code></pre>
+                <section class="docs-section" id="data-storage">
+                    <h2>Types of data storage</h2>
+                    <h3>Zmienne</h3>
+                    <p>Aby przypisać wartość do zmiennej użyj:</p>
+                    <pre class="code-block"><code>nazwa_zmiennej =/is wartość_zmiennej</code></pre>
+                    <h3>Listy</h3>
+                    <p>Aby przypisać wartości do listy użyj:</p>
+                    <pre class="code-block"><code>nazwa_listy = wartość, wartość,</code></pre>
+                    <p><b>Przecinek po ostatniej wartości jest ważny, bez tego nie utworzysz listy!!!</b></p>
+                    <p>Aby przypisać jedną wartość do listy użyj:</p>
+                    <pre class="code-block"><code>nazwa_listy = wartość,</code></pre>
+                    <p>Można też stworzyć pustą listę za pomocą:</p>
+                    <pre class="code-block"><code>nazwa_listy = []</code></pre>
+                </section>
+
+                <section class="docs-section" id="if/elif/else">
+                    <h2>If/Elif/Else</h2>
+                    <h3>If</h3>
+                    <p>Aby sprawdzić warunek możemy użyć komendy If:</p>
+                    <pre class="code-block"><code>if warunek {
+send "Wykonam się jeśli warunek jest prawdziwy"
+}</code></pre>
+                    <h3>Else</h3>
+                    <p>Jeśli chcemy coś wykonać jeśli warunek nie jest prawdziwy, ale tylko i wyłącznie wtedy używamy komendy else:</p>
+                    <pre class="code-block"><code>if warunek {
+send "Wykonam się jeśli warunek jest prawdziwy"
+}
+else {
+send "Wykonam się jeśli warunek <b>NIE</b> jest prawdziwy"
+}</code></pre>
+                    <h3>Elif</h3>
+                    <p>Jeśli chcemy sprawdzić kilka warunków możemy użyć elif:</p>
+                    <pre class="code-block"><code>if watunek {
+send "Wykonam się jeśli warunek jest prawdziwy"
+}
+elif warunek2 {
+send "Wykonam się jeśli warunek2 jest prawdziwy"
+}
+else {
+send "Wykonam się jeśli żaden z powyższych warunków nie jest prawdziwy"
+}                    </code></pre>
+                </section>
+                <section class="docs-section" id="loops">
+                    <h2>Pętle</h2>
+                    <p>...</p>
                 </section>
 
                 <!-- Sample of table
