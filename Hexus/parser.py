@@ -597,17 +597,13 @@ class HexusParser:
 
     def parse_minus(self):
         self.consume("OP")
-        if self.peek()[0] == "INT":
-            value = self.parse_value()
-            return MinusNode(value)
-        raise SyntaxError("???")
+        value = self.parse_value()
+        return MinusNode(value)
 
     def parse_plus(self):
         self.consume("OP")
-        if self.peek()[0] == "INT":
-            value = self.parse_value()
-            return PlusNode(value)
-        raise SyntaxError("???")
+        value = self.parse_value()
+        return PlusNode(value)
 
 
     def parse_break(self):

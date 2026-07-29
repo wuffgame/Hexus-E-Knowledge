@@ -213,7 +213,7 @@ class HexusInterpreter:
         value = self.visit(node.value)
         if isinstance(current_value, list):
             if not node.pos:
-                pos = 1
+                pos = len(current_value) + 1
             else:
                 pos = self.visit(node.pos)
             pos -= 1
@@ -320,15 +320,11 @@ class HexusInterpreter:
 
 
     def visit_MinusNode(self, node):
-        value = int(self.visit(node.value))
-        value = -value
-        return value
+        return -self.visit(node.value)
 
 
     def visit_PlusNode(self, node):
-        value = int(self.visit(node.value))
-        value = +value
-        return value
+        return +self.visit(node.value)
 
 
     def visit_NotNode(self, node):
@@ -427,7 +423,7 @@ class HexusInterpreter:
         target = self.visit(node.target)
         pos = self.visit(node.pos)
         try:
-            return target[pos]
+            return target[pos - 1]
         except Exception:
             raise TypeError(f"{target} is not a list")
 
