@@ -197,6 +197,13 @@ class TimerNode:
     def __repr__(self):
         return f"TimerNode()"
 
+class IndexNode:
+    def __init__(self, target, pos):
+        self.target = target
+        self.pos = pos
+    def __repr__(self):
+        return f"IndexNode(pos={self.pos}, target={self.target})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -277,7 +284,24 @@ class HexusParser:
     def parse_value(self):
         token_type, value = self.peek()
 
-        if token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":
+        if token_type == "VAR" and value == "pos":
+            self.consume("VAR")
+            pos_expr = self.parse_value()
+            if self.peek()[0] == "VAR" and self.peek()[1] == "of":
+                self.consume_value("VAR", "of")
+            else:
+                raise SyntaxError(f"[Line: {self.current_line}] ???")
+            target_expr = self.parse_value()
+            return IndexNode(target=target_expr, pos=pos_expr)
+        elif token_type == "VAR" and value == "length":
+            self.consume("VAR")
+            if self.peek()[0] == "VAR" and self.peek()[1] == "of":
+                self.consume_value("VAR", "of")
+                target_expr = self.parse_value()
+                return LengthNode(target_expr)
+            else:
+                raise SyntaxError(f"[Line: {self.current_line}] ???")
+        elif token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":
             node = self.parse_builtin_dot_call()
 
             if getattr(node, "is_expression", True) is False:
@@ -424,10 +448,9 @@ class HexusParser:
     def parse_send(self):
         target = "console"
         self.consume("VAR")
-        if self.peek()[0] == "VAR" and self.peek()[1] == "length":
-            text = self.parse_length()
-        else:
-            text = self.parse_expression()
+
+        text = self.parse_expression()
+
         token_type, value = self.peek()
         if token_type == "VAR" and value == "to":
             self.consume_value("VAR", "to")
@@ -614,15 +637,6 @@ class HexusParser:
         raise SyntaxError("???")
 
 
-    def parse_length(self):
-        self.consume("VAR")
-        if self.peek()[0] == "VAR" and self.peek()[1] == "of":
-            self.consume_value("VAR", "of")
-            var = self.parse_value()
-            return LengthNode(var)
-        raise SyntaxError("???")
-
-
     def parse_break(self):
         self.consume_value("VAR", "break")
         return BreakNode()
@@ -724,8 +738,6 @@ class HexusParser:
             return self.parse_clear()
         elif token_type == "VAR" and value == "make":
             return self.parse_make()
-        elif token_type == "VAR" and value == "length":
-            return self.parse_length()
         elif token_type == "OP" and value == "-":
             return self.parse_minus()
         elif token_type == "OP" and value == "+":
