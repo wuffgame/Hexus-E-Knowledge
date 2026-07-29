@@ -88,14 +88,14 @@ class ListRemoveNode:
         self.value = value
         self.pos = pos
     def __repr__(self):
-        return f"ListRemoveNode(var={self.var} value={self.value} pos={self.pos}"
+        return f"ListRemoveNode(var={self.var} value={self.value} pos={self.pos})"
 
 class WaitNode:
     def __init__(self, value, value2):
         self.value = value
         self.value2 = value2
     def __repr__(self):
-        return f"WaitNode(value={self.value} vale2={self.value2}"
+        return f"WaitNode(value={self.value} value2={self.value2})"
 
 class NowNode:
     def __repr__(self):
@@ -106,14 +106,14 @@ class WhileNode:
         self.exp = exp
         self.value = value
     def __repr__(self):
-        return f"WhileNode(exp={self.exp} value={self.value}"
+        return f"WhileNode(exp={self.exp} value={self.value})"
 
 class RepeatNode:
     def __init__(self, value, value2):
         self.value = value
         self.value2 = value2
     def __repr__(self):
-        return f"RepeatNode(number={self.value} value={self.value2}"
+        return f"RepeatNode(number={self.value} value={self.value2})"
 
 class ClearNode:
     def __repr__(self):
@@ -151,8 +151,8 @@ class NotNode:
         return f"NotNode(value={self.value})"
 
 class LengthNode:
-    def __init__(self, var):
-        self.var = var
+    def __init__(self, target_expr):
+        self.var = target_expr
     def __repr__(self):
         return f"LengthNode(var={self.var})"
 
@@ -429,7 +429,6 @@ class HexusParser:
         else:
             expr_value = self.parse_expression()
 
-        self.consume_end_of_statement()
         return SetVar(var_name, expr_value, is_list)
 
 
@@ -444,7 +443,6 @@ class HexusParser:
         if token_type == "VAR" and value == "to":
             self.consume_value("VAR", "to")
             target = self.consume("VAR")
-        self.consume_end_of_statement()
         return SendCommandNode(text, target)
 
     def parse_read(self):
@@ -457,7 +455,6 @@ class HexusParser:
         if token_type == "VAR" and value == "from":
             self.consume_value("VAR", "from")
             target = self.consume("VAR")
-        self.consume_end_of_statement()
         return ReadCommandNode(text, var, target)
 
     def parse_stop(self):
@@ -465,7 +462,6 @@ class HexusParser:
         self.consume("VAR")
         if self.peek()[0] == "STRING":
             value = self.parse_value()
-        self.consume_end_of_statement()
         return StopNode(value)
 
     def parse_com(self):
@@ -473,7 +469,6 @@ class HexusParser:
         self.consume("HASH")
         while self.peek()[0] != "NEWLINE" and self.peek()[0] != "EOF":
             text.append(self.advance())
-        self.consume_end_of_statement()
         return ComNode(" ".join(text))
 
     def parse_if(self):
@@ -486,12 +481,10 @@ class HexusParser:
             elexp = self.parse_expression()
             elvalue = self.parse_block()
             elifv[elexp] = elvalue
-            self.consume_end_of_statement()
         value2 = None
         if self.peek()[0] == "VAR" and self.peek()[1] == "else":
             self.consume_value("VAR", "else")
             value2 = self.parse_block()
-        self.consume_end_of_statement()
         return IfNode(exp, value, value2, elifv)
 
     def parse_block(self):
@@ -523,7 +516,6 @@ class HexusParser:
             if self.peek()[0] == "VAR" and self.peek()[1] == "pos":
                 self.consume_value("VAR", "pos")
                 pos = self.parse_value()
-        self.consume_end_of_statement()
         return ListAddNode(is_list, value, pos)
 
 
@@ -540,7 +532,6 @@ class HexusParser:
             value = self.parse_value()
         self.consume_value("VAR", "from")
         is_list = self.parse_value()
-        self.consume_end_of_statement()
         return ListRemoveNode(is_list, pos, value)
 
     def parse_wait(self):
@@ -549,7 +540,6 @@ class HexusParser:
             value = self.parse_value()
             if self.peek()[0] == "VAR" and (self.peek()[1] == "s" or self.peek()[1] == "m" or self.peek()[1] == "h" or self.peek()[1] == "d"):
                 value2 = self.parse_value()
-                self.consume_end_of_statement()
                 return WaitNode(value, value2)
         raise SyntaxError(f"???")
 
@@ -560,7 +550,6 @@ class HexusParser:
             self.loop_depth += 1
             value = self.parse_block()
             self.loop_depth -= 1
-            self.consume_end_of_statement()
             return WhileNode(exp, value)
         raise SyntaxError(f"???")
 
@@ -574,7 +563,6 @@ class HexusParser:
                 self.loop_depth += 1
                 value2 = self.parse_block()
                 self.loop_depth -= 1
-                self.consume_end_of_statement()
                 return RepeatNode(value, value2)
             else:
                 raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected 'times' but found {self.peek()[1]}")
@@ -586,7 +574,6 @@ class HexusParser:
         self.consume_value("VAR", "clear")
         if self.peek()[0] == "VAR" and self.peek()[1] == "screen":
             self.consume_value("VAR", "screen")
-        self.consume_end_of_statement()
         return ClearNode()
 
 
@@ -602,7 +589,6 @@ class HexusParser:
                 self.consume("VAR")
             else:
                 raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected lower or upper but found {self.peek()[0]}")
-            self.consume_end_of_statement()
             return MakeNode(var, value)
         else:
             raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected VAR but found {self.peek()[0]}")
@@ -646,7 +632,6 @@ class HexusParser:
                 para.append(self.consume("VAR"))
         self.consume("RPAREN")
         body = self.parse_block()
-        self.consume_end_of_statement()
         return FunctionDefNode(func_name, para, body)
 
 
@@ -669,7 +654,6 @@ class HexusParser:
             value = None
         else:
             value = self.parse_expression()
-        self.consume_end_of_statement()
         return ReturnNode(value)
 
 

@@ -422,6 +422,16 @@ class HexusInterpreter:
             return self.timer2
 
 
+    def visit_IndexNode(self, node):
+        target = self.visit(node.target)
+        pos = self.visit(node.pos)
+        try:
+            return target[pos]
+        except Exception:
+            raise TypeError(f"{target} is not a list")
+
+
+
 
 
 

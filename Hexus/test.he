@@ -1,6 +1,2 @@
-timer start
-wait 2 s
-send timer
-wait 1 s
-timer stop
-send timer
+test = "COS", "COS2",
+send pos 1 of test
