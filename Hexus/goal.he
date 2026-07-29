@@ -1,3 +1,2 @@
 # Next Goal
-make var uppercase
-make var lowercase
+send pos 1 of list
