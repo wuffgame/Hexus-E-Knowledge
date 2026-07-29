@@ -422,6 +422,7 @@ class HexusInterpreter:
             return self.timer2
 
 
+
     def visit_IndexNode(self, node):
         target = self.visit(node.target)
         pos = self.visit(node.pos)
