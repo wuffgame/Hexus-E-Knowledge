@@ -34,7 +34,7 @@ class StopNode:
     def __init__(self, value):
         self.value = value
     def __repr__(self):
-        return f"StopNode()"
+        return f"StopNode(value={self.value})"
 
 class ComNode:
     def __init__(self, text_value):
@@ -336,13 +336,6 @@ class HexusParser:
         else:
             raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expect number or variable, but found '{token_type}' ('{value}')")
 
-    def parse_vara(self):
-        token_type, value = self.peek()
-        if token_type == "VAR":
-            self.consume("VAR")
-            return VariableNode(value)
-        raise SyntaxError(f"???")
-
     def parse_expression(self):
 
         token_type, value = self.peek()
@@ -350,10 +343,6 @@ class HexusParser:
             self.consume("VAR")
             value = self.parse_value()
             return NotNode(value)
-        if token_type == "STRING":
-            val = self.consume("STRING")
-            val = val.split()
-            return StringNode(val)
         left = self.parse_value()
 
         while True:
@@ -526,17 +515,14 @@ class HexusParser:
     def parse_listadd(self):
         pos = None
         self.consume_value("VAR", "add")
-        token_type, value = self.peek(0)
-        if token_type == "INT" or token_type == "VAR" or token_type == "STRING":
-            value = self.parse_value()
+        value = self.parse_value()
         self.consume_value("VAR", "to")
-        is_list = self.parse_vara()
+        is_list = self.parse_value()
         if self.peek()[0] == "VAR" and self.peek()[1] == "at":
             self.consume_value("VAR", "at")
             if self.peek()[0] == "VAR" and self.peek()[1] == "pos":
                 self.consume_value("VAR", "pos")
-                if self.peek()[0] == "INT":
-                    pos = self.parse_value()
+                pos = self.parse_value()
         self.consume_end_of_statement()
         return ListAddNode(is_list, value, pos)
 
@@ -553,7 +539,8 @@ class HexusParser:
         elif token_type == "INT" or token_type == "VAR" or token_type == "STRING":
             value = self.parse_value()
         self.consume_value("VAR", "from")
-        is_list = self.parse_vara()
+        is_list = self.parse_value()
+        self.consume_end_of_statement()
         return ListRemoveNode(is_list, pos, value)
 
     def parse_wait(self):
@@ -713,68 +700,66 @@ class HexusParser:
             self.consume("NEWLINE")
 
         token_type, value = self.peek()
-
-        if token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":
-            return self.parse_builtin_dot_call()
-        elif token_type == "VAR" and value == "send":
-            return self.parse_send()
-        elif token_type == "VAR" and value == "read":
-            return self.parse_read()
-        elif token_type == "HASH" and value == "#":
-            return self.parse_com()
-        elif token_type == "VAR" and value == "if":
+        if token_type == "VAR" and value == "if":
             return self.parse_if()
-        elif token_type == "VAR" and value == "add":
-            return self.parse_listadd()
-        elif token_type == "VAR" and value == "remove":
-            return self.parse_listremove()
-        elif token_type == "VAR" and value == "wait":
-            return self.parse_wait()
         elif token_type == "VAR" and value == "while":
             return self.parse_while()
         elif token_type == "VAR" and value == "repeat":
             return self.parse_repeat()
-        elif token_type == "VAR" and value == "clear":
-            return self.parse_clear()
-        elif token_type == "VAR" and value == "make":
-            return self.parse_make()
-        elif token_type == "OP" and value == "-":
-            return self.parse_minus()
-        elif token_type == "OP" and value == "+":
-            return self.parse_plus()
-        elif token_type == "VAR" and value == "stop":
-            return self.parse_stop()
         elif token_type == "VAR" and value == "func":
             return self.parse_func()
+        elif token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":
+            node = self.parse_builtin_dot_call()
+        elif token_type == "VAR" and value == "send":
+            node = self.parse_send()
+        elif token_type == "VAR" and value == "read":
+            node = self.parse_read()
+        elif token_type == "HASH" and value == "#":
+            node = self.parse_com()
+        elif token_type == "VAR" and value == "add":
+            node = self.parse_listadd()
+        elif token_type == "VAR" and value == "remove":
+            node = self.parse_listremove()
+        elif token_type == "VAR" and value == "wait":
+            node = self.parse_wait()
+        elif token_type == "VAR" and value == "clear":
+            node = self.parse_clear()
+        elif token_type == "VAR" and value == "make":
+            node = self.parse_make()
+        elif token_type == "OP" and value == "-":
+            node = self.parse_minus()
+        elif token_type == "OP" and value == "+":
+            node = self.parse_plus()
+        elif token_type == "VAR" and value == "stop":
+            node = self.parse_stop()
         elif token_type == "VAR" and value == "return":
-            return self.parse_return()
+            node = self.parse_return()
         elif token_type == "VAR" and value == "timer":
-            return self.parse_timer()
+            node = self.parse_timer()
         elif token_type == "VAR" and value == "break":
             if self.loop_depth > 0:
-                return self.parse_break()
+                node = self.parse_break()
             else:
                 raise SyntaxError(f"[LINE: {self.current_line}] You can't use break outside of loop")
         elif token_type == "VAR" and value == "continue":
             if self.loop_depth > 0:
-                return self.parse_continue()
+                node = self.parse_continue()
             else:
                 raise SyntaxError(f"[LINE: {self.current_line}] You can't use continue outside of loop")
-        elif token_type == "INT":
-            return self.parse_expression()
         elif token_type == "VAR":
             if self.peek(1)[0] == "LPAREN":
                 func_name = self.consume("VAR")
                 node = self.parse_func_call(func_name)
-                self.consume_end_of_statement()
-                return node
-            next_type, next_value = self.peek(1)
-            if (next_type == "OP" and next_value == "=") or (next_type == "VAR" and next_value == "is"):
-                return self.parse_var()
             else:
-                return self.parse_expression()
+                next_type, next_value = self.peek(1)
+                if (next_type == "OP" and next_value == "=") or (next_type == "VAR" and next_value == "is"):
+                    node = self.parse_var()
+                else:
+                    node = self.parse_expression()
         else:
             raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Unknown start instruction: {token_type} ('{value}')")
+        self.consume_end_of_statement()
+        return node
 
 
     def parse(self):
