@@ -28,6 +28,7 @@
             <a href="#start" class="active">First steps</a>
             <a href="#send">Send Command</a>
             <a href="#read">Read Command</a>
+            <a href="#comm">Comments</a>
             <a href="#data-storage">Types of data storage</a>
             <a href="#if/elif/else">If/Elif/Else</a>
             <a href="#loops">Loops</a>
@@ -68,8 +69,19 @@ send "Database connection established" to logger</code></pre>
 
                 <section class="docs-section" id="read">
                     <h2>Read command</h2>
-                    <p>Using this command you can save something that you write to variable</p>
-                    <pre class="code-block"><code>Read "Write something: " to var</code></pre>
+                    <p>The <code class="lede">read</code> statement prompts the user or external system for input, displays a prompt message, and immediately stores the received value into a specified variable. Similar to the <code>send</code> command, it supports routing input requests from different targets using the <code>from</code> keyword, defaulting to the console.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>read &lt;prompt_expression&gt; to &lt;var_name&gt;</code></pre>
+                    <pre class="code-block"><code>read &lt;prompt_expression&gt; to &lt;var_name&gt; from &lt;target&gt;</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Reading input from the console into a variable named user_name
+read "Please enter your username: " to user_name
+
+# Printing the variable back out
+send "Hello, {user_name}"
+
+# Reading input from a specific streaqm or target
+read "Waiting for payload..." to payload_data from network</code></pre>
                 </section>
 
                 <section class="docs-section" id="data-storage">
