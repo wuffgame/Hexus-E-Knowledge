@@ -284,6 +284,11 @@ class HexusParser:
     def parse_value(self):
         token_type, value = self.peek()
 
+        if token_type == "LPAREN":
+            self.consume("LPAREN")
+            node = self.parse_expression()
+            self.consume("RPAREN")
+            return node
         if token_type == "VAR" and value == "pos":
             self.consume("VAR")
             pos_expr = self.parse_value()
