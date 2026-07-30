@@ -38,6 +38,7 @@
                 <p class="eyebrow">Documentation</p>
                 <h1>Hexus documentation</h1>
                 <p class="lede">Full documentation of Hexus-lang (E-Knowledge).</p>
+                <p class="lede">Welcome to the official documentation of the Hexus programming language. Hexus was designed to combine real programming languages with a very simple syntax.</p>
 
                 <section class="docs-section" id="start">
                     <h2>First steps</h2>
@@ -47,9 +48,22 @@
 
                 <section class="docs-section" id="send">
                     <h2>Send command</h2>
-                    <p></p>
-                    <p>Use <code class="inline">send</code> to send something to console</p>
-                    <pre class="code-block"><code>send "Hello World!!!"</code></pre>
+                    <p>The <code class="inline">send</code> statement is the primary method for outputting data, strings, numbers and expression results to a destination target. By default, the output target is set to the system console, but it can also be explicitly routed to a specific target name using the <code class="inline">to</code> keyword.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>send &lt;expression&gt;</code></pre>
+                    <pre class="code-block"><code>send &lt;expression&gt; to &lt;target&gt;</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code>#Simple string output to the console
+send "Welcome to the Hexus Programming Language!"
+
+# Sending numerical values, expressions and variable
+send 42
+send 10 + 20 * 2
+send name
+
+# Explicitly specifying the target destination
+send "Log message: Application initialized" to console
+send "Database connection established" to logger</code></pre>
                 </section>
 
                 <section class="docs-section" id="read">
