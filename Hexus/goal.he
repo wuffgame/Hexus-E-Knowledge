@@ -1,3 +1,5 @@
 # Next Goal
 num = 0
 send num % 2
+
+# Float type!!!
