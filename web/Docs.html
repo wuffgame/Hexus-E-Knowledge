@@ -30,6 +30,7 @@
             <a href="#read">Read Command</a>
             <a href="#comm">Comments</a>
             <a href="#var">Variable Declaration & Assignment</a>
+            <a href="#if">Conditional Statements (if/elif/else)</a>
             </div>
         </aside>
         <div class="docs-content">
@@ -121,6 +122,57 @@ fruits is "apple", "banana", "cherry",
 # List declaration with one element
 name = "Hexus",</code></pre>
                     <p>In list declaration end comma is very important!!!</p>
+                </section>
+
+                <section class="docs-section" id="if">
+                    <h2>Conditional Statements (if/elif/else)</h2>
+                    <p>Conditional blocks are used to execute specific sections of code only when certain conditions evaluate to true. In Hexus, condition blocks are wrapped in curly braces (<code class="lede">{}</code>), making structure visual and clean. You can chain multiple confitions using <code class="lede">elif</code> and provide a fallback block using <code class="lede">else</code>.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>if &lt;expression&gt; {
+    # Code executed if condition is true
+} elif &lt;expression&gt; {
+    # Optional alternative condition
+} else {
+    # Optional fallback code
+}</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Basic conditional check
+age = 18
+
+if age >= 18 {
+    send "Access granted. Welcome to the system!"
+} else {
+    send "Access denied. You must be at least 18 years old."
+}
+
+# Advanced logical evaluation with elif chains
+score = 85
+
+if score >= 90 {
+    send "Grade: A - Outstanding performance!"
+} elif score >= 75 {
+    send "Grade: B - Great job!"
+} elif score >= 50 {
+    send "Grade: C - You passed."
+} else {
+    send "Grade: F - Needs improvement."
+}
+
+# Combining logic with boolean operators (and, or, not)
+is_admin = True
+has_key = False
+
+if is_admin or has_key {
+    send "Security check passed. Opening door..."
+}
+
+if not has_key {
+    send "Warning: You are missing the required access key!"
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Validating input received from <code class="lede">read</code> commands before processing data.</p>
+                    <p>- Creating decision paths in text-based adventure games or interactive console tools.</p>
+                    <p>- Checking system flags, permissions, or game state variables.</p>
                 </section>
 
                 <!-- Sample of table
