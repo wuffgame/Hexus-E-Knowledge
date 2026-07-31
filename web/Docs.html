@@ -34,6 +34,7 @@
             <a href="#while">Conditional Loops (while)</a>
             <a href="#repeat">Fixed-Iteration Loops (repeat)</a>
             <a href="#break">Loop Control Commands (break & continue)</a>
+            <a href="#func">Custom Functions (func & return)</a>
             <details class="docs-subgroup">
                 <summary>Utility Commands</summary>
                 <a href="#wait" class="sub-link">Wait Command</a>
@@ -295,6 +296,50 @@ while num < 10 {
                     <p>Practical Use Cases:</p>
                     <p>- Stopping an infinite searching loop the moment an item or solution is found (<code class="inline">break</code>).</p>
                     <p>- Filtering out invalid data or blank lines inside a processing loop without stopping the loop (<code class="inline">continue</code>)</p>
+                </section>
+
+                <section class="docs-section" id="func">
+                    <h2>Custom Functions (func & return)</h2>
+                    <p>Functions allow you to wrap reusable blocks of code into named units. You can pass arguments into functions, process data, and return calculated results back using the <code class="inline">return</code> statement. If no return value is specified, the function simply exits after executing its code block.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>func &lt;function_name&gt;(&lt;param1&gt;, &lt;param2&gt;, ...) {
+    # Code block
+    return &lt;expression&gt;
+}</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Simple procedure with no parameters or return value
+func greet_user() {
+    send "----------------------------------------"
+    send "Welcome back to the Hexus Application!"
+    send "----------------------------------------"
+}
+
+# Calling the custom function
+greet_user()
+
+# Function with parameters returning a calculated result
+func calculate_total(price, tax_rate) {
+    total = price + (price * tax_rate)
+    return total
+}
+
+# Storing the returned value in a variable
+final_price = calculate_total(100, 0.23)
+send "Total price with tax: {final_price}
+
+#Early return for validation
+func process_age(user_age) {
+    if user_age < 0 {
+        send "Error: Invalid age provided."
+        return False
+    }
+    send "Age registered successfully."
+    return True
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Eliminating repetitive code by grouping frequently used calculations or UI displays.</p>
+                    <p>- Structuring complex scripts into isolated, easy-to-maintain modules.</p>
+                    <p>- Processing input validation and returning pass/fail boolean flags.</p>
                 </section>
 
                 <section class="docs-section" id="utility">
