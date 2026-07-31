@@ -28,9 +28,11 @@
             <a href="#start" class="active">First steps</a>
             <a href="#send">Send Command</a>
             <a href="#read">Read Command</a>
-            <a href="#data-storage">Types of data storage</a>
-            <a href="#if/elif/else">If/Elif/Else</a>
-            <a href="#loops">Loops</a>
+            <a href="#comm">Comments</a>
+            <a href="#var">Variable Declaration & Assignment</a>
+            <a href="#if">Conditional Statements (if/elif/else)</a>
+            <a href="#while">Conditional Loops (while)</a>
+            <a href="#repeat">Fixed-Iteration Loops (repeat)</a>
             </div>
         </aside>
         <div class="docs-content">
@@ -38,6 +40,7 @@
                 <p class="eyebrow">Documentation</p>
                 <h1>Hexus documentation</h1>
                 <p class="lede">Full documentation of Hexus-lang (E-Knowledge).</p>
+                <p class="lede">Welcome to the official documentation of the Hexus programming language. Hexus was designed to combine real programming languages with a very simple syntax.</p>
 
                 <section class="docs-section" id="start">
                     <h2>First steps</h2>
@@ -47,62 +50,206 @@
 
                 <section class="docs-section" id="send">
                     <h2>Send command</h2>
-                    <p></p>
-                    <p>Use <code class="inline">send</code> to send something to console</p>
-                    <pre class="code-block"><code>send "Hello World!!!"</code></pre>
+                    <p>The <code class="inline">send</code> statement is the primary method for outputting data, strings, numbers and expression results to a destination target. By default, the output target is set to the system console, but it can also be explicitly routed to a specific target name using the <code class="inline">to</code> keyword.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>send &lt;expression&gt;</code></pre>
+                    <pre class="code-block"><code>send &lt;expression&gt; to &lt;target&gt;</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code>#Simple string output to the console
+send "Welcome to the Hexus Programming Language!"
+
+# Sending numerical values, expressions and variable
+send 42
+send 10 + 20 * 2
+send name
+
+# Explicitly specifying the target destination
+send "Log message: Application initialized" to console
+send "Database connection established" to logger</code></pre>
                 </section>
 
                 <section class="docs-section" id="read">
                     <h2>Read command</h2>
-                    <p>Using this command you can save something that you write to variable</p>
-                    <pre class="code-block"><code>Read "Write something: " to var</code></pre>
+                    <p>The <code class="lede">read</code> statement prompts the user or external system for input, displays a prompt message, and immediately stores the received value into a specified variable. Similar to the <code>send</code> command, it supports routing input requests from different targets using the <code>from</code> keyword, defaulting to the console.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>read &lt;prompt_expression&gt; to &lt;var_name&gt;</code></pre>
+                    <pre class="code-block"><code>read &lt;prompt_expression&gt; to &lt;var_name&gt; from &lt;target&gt;</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Reading input from the console into a variable named user_name
+read "Please enter your username: " to user_name
+
+# Printing the variable back out
+send "Hello, {user_name}"
+
+# Reading input from a specific streaqm or target
+read "Waiting for payload..." to payload_data from network</code></pre>
                 </section>
 
-                <section class="docs-section" id="data-storage">
-                    <h2>Types of data storage</h2>
-                    <h3>Zmienne</h3>
-                    <p>Aby przypisać wartość do zmiennej użyj:</p>
-                    <pre class="code-block"><code>nazwa_zmiennej =/is wartość_zmiennej</code></pre>
-                    <h3>Listy</h3>
-                    <p>Aby przypisać wartości do listy użyj:</p>
-                    <pre class="code-block"><code>nazwa_listy = wartość, wartość,</code></pre>
-                    <p><b>Przecinek po ostatniej wartości jest ważny, bez tego nie utworzysz listy!!!</b></p>
-                    <p>Aby przypisać jedną wartość do listy użyj:</p>
-                    <pre class="code-block"><code>nazwa_listy = wartość,</code></pre>
-                    <p>Można też stworzyć pustą listę za pomocą:</p>
-                    <pre class="code-block"><code>nazwa_listy = []</code></pre>
+                <section class="docs-section" id="comm">
+                    <h2>Comments</h2>
+                    <p>Comments are used to leave human-readable notes inside your code. Any text following the hash symbol (#) until the end of the line is completely ignored by the parser during execution.</p>
+                    <pre class="code-block"><code># This is a single line comment in Hexus
+
+send "Hello World!" # You can also add comments at the end of statements</code></pre>
+                    <p>When writing clean Hexus programs, use comments liberally to describe complex logic, mark TODO sections, or document custom function inputs.</p>
                 </section>
 
-                <section class="docs-section" id="if/elif/else">
-                    <h2>If/Elif/Else</h2>
-                    <h3>If</h3>
-                    <p>Aby sprawdzić warunek możemy użyć komendy If:</p>
-                    <pre class="code-block"><code>if warunek {
-send "Wykonam się jeśli warunek jest prawdziwy"
-}</code></pre>
-                    <h3>Else</h3>
-                    <p>Jeśli chcemy coś wykonać jeśli warunek nie jest prawdziwy, ale tylko i wyłącznie wtedy używamy komendy else:</p>
-                    <pre class="code-block"><code>if warunek {
-send "Wykonam się jeśli warunek jest prawdziwy"
-}
-else {
-send "Wykonam się jeśli warunek <b>NIE</b> jest prawdziwy"
-}</code></pre>
-                    <h3>Elif</h3>
-                    <p>Jeśli chcemy sprawdzić kilka warunków możemy użyć elif:</p>
-                    <pre class="code-block"><code>if watunek {
-send "Wykonam się jeśli warunek jest prawdziwy"
-}
-elif warunek2 {
-send "Wykonam się jeśli warunek2 jest prawdziwy"
-}
-else {
-send "Wykonam się jeśli żaden z powyższych warunków nie jest prawdziwy"
-}                    </code></pre>
+                <section class="docs-section" id="var">
+                    <h2>Variable Declaration & Assignment</h2>
+                    <p>Variables in Hexus are declared using either the <code class="lede">=</code> operator or the <code class="lede">is</code> keyword. You can store numbers, strings, booleans, evaluation results, or lists. List assignments are automatically detected when square brackets <code class="lede">[]</code> are used or when values are separated by commas.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>&lt;var_name&gt; = &lt;expression&gt;</code></pre>
+                    <pre class="code-block"><code>&lt;var_name&gt; is &lt;expression&gt;</code></pre>
+                    <pre class="code-block"><code>&lt;var_name&gt; =/is []</code></pre>
+                    <pre class="code-block"><code>&lt;var_name&gt; =/is &lt;element1&gt;, &lt;element2&gt;,</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Variable assignments using "="
+age = 25
+score = 100 + 50
+greeting = "Hello Hexus"
+
+# Alternative variable assignments using "is"
+speed is 60
+status is "active"
+is_logged_in is true
+
+# Empty list declaration
+inventory = []
+users is []
+
+#List declaration with elements
+number = 1, 2, 3, 4, 5,
+fruits is "apple", "banana", "cherry",
+
+# List declaration with one element
+name = "Hexus",</code></pre>
+                    <p>In list declaration end comma is very important!!!</p>
                 </section>
-                <section class="docs-section" id="loops">
-                    <h2>Pętle</h2>
-                    <p>...</p>
+
+                <section class="docs-section" id="if">
+                    <h2>Conditional Statements (if/elif/else)</h2>
+                    <p>Conditional blocks are used to execute specific sections of code only when certain conditions evaluate to true. In Hexus, condition blocks are wrapped in curly braces (<code class="lede">{}</code>), making structure visual and clean. You can chain multiple confitions using <code class="lede">elif</code> and provide a fallback block using <code class="lede">else</code>.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>if &lt;expression&gt; {
+    # Code executed if condition is true
+} elif &lt;expression&gt; {
+    # Optional alternative condition
+} else {
+    # Optional fallback code
+}</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Basic conditional check
+age = 18
+
+if age >= 18 {
+    send "Access granted. Welcome to the system!"
+} else {
+    send "Access denied. You must be at least 18 years old."
+}
+
+# Advanced logical evaluation with elif chains
+score = 85
+
+if score >= 90 {
+    send "Grade: A - Outstanding performance!"
+} elif score >= 75 {
+    send "Grade: B - Great job!"
+} elif score >= 50 {
+    send "Grade: C - You passed."
+} else {
+    send "Grade: F - Needs improvement."
+}
+
+# Combining logic with boolean operators (and, or, not)
+is_admin = True
+has_key = False
+
+if is_admin or has_key {
+    send "Security check passed. Opening door..."
+}
+
+if not has_key {
+    send "Warning: You are missing the required access key!"
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Validating input received from <code class="lede">read</code> commands before processing data.</p>
+                    <p>- Creating decision paths in text-based adventure games or interactive console tools.</p>
+                    <p>- Checking system flags, permissions, or game state variables.</p>
+                </section>
+
+                <section class="docs-section" id="while">
+                    <h2>Conditional Loops (while)</h2>
+                    <p>The <code class="lede">while</code> loop ccontinuously executes a block of code as long as the specified expression evaluates to <code class="lede">True</code>. It is used then you do not know in advance how many times a loop needs to run, such as waiting for specific user input or maintaining an active game state.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>while &lt;expression&gt; {
+    # Code executed repeatedly while condition remains True
+}</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Simple counter loop
+count = 1
+
+while count <= 5 {
+    send "Current iteration count: {count}"
+    count = count + 1
+}
+
+send "Loop completed successfully!"
+
+# Interactive menu loop
+user_choice = ""
+
+while user_choice != "exit" {
+    read "Enter command (start/settings/exit): " to user_choice
+
+    if user_choice == "start" {
+        send "Starting application..."
+    } elif user_choice == "settings" {
+        send "Opening settings menu..."
+    }
+}
+
+send "Goodbye!"</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Running the main game loop until the player dies or chooses to exit.</p>
+                    <p>- Polling a network socket or file system until a required resource becomes available.</p>
+                    <p>- Keeping a terminal menu alive for continuous interaction.</p>
+                </section>
+
+                <section class="docs-section" id="repeat">
+                    <h2>Fixed-Iteration Loops (repeat)</h2>
+                    <p>The <code class="lede">repeat</code> loop allows you to execute a block of code a fixed number of times. Unlike <code class="lede">while</code>, which checks a conditional expression, <code class="lede">repeat</code> takes a number directly (or a variable containing a number) followed by the <code class="lede">times</code> keyword. It is cleaner and less error-prone when the total number of iterations is known in advance.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>repeat &lt;number_or_var&gt; times {
+    # Code executed a specified number of times
+}</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Repeating an action a hardcoded number of times
+send "Initiating launch sequence..."
+
+repeat 3 times {
+    send "Beep!"
+}
+
+send "Liftoff!"
+
+# Using a variable to control repetition count
+total_rounds = 5
+
+repeat total_rounds times {
+    send "Spawning enemy wave..."
+}
+
+# Nested repeat loops for grid rendering
+repeat 3 times {
+    send "--- Row Start ---"
+    repeat 2 times {
+        send " [ Slot ]"
+    }
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Printing repeated separators or decorative borders in terminal interfaces.</p>
+                    <p>- Generating fixed-size batches of objects, items, or enemy spawns in games.</p>
+                    <p>- Performing batch mathematical calculations.</p>
                 </section>
 
                 <!-- Sample of table
