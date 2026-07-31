@@ -301,6 +301,76 @@ pre.code-block {
     margin-top: 0;
 }
 
+.docs-subgroup {
+    margin: 0;
+}
+
+.docs-subgroup summary {
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: var(--display);
+    font-size: 0.98rem;
+    padding: 0.45rem 0.75rem;
+    border-left: 2px solid transparent;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    list-style: none;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.docs-subgroup summary::-webkit-details-marker {
+    display: none;
+}
+
+.docs-subgroup summary::before {
+    content: "▸";
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-right: 0.5rem;
+    transition: transform 0.15s ease;
+}
+
+.docs-subgroup[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.docs-subgroup summary:hover {
+    color: var(--text);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.docs-subgroup a.sub-link {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: var(--display);
+    font-size: 0.88rem;
+    padding: 0.4rem 0.75rem 0.4rem 2.1rem;
+    border-left: 2px solid transparent;
+    border-radius: 0 4px 4px 0;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.docs-subgroup a.sub-link:hover,
+.docs-subgroup a.sub-link:focus-visible {
+    color: var(--text);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.docs-subgroup a.sub-link.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background-color: rgba(111, 168, 220, 0.08);
+}
+
+.docs-subsection {
+    scroll-margin-top: calc(var(--nav-height) + 1rem);
+    margin-top: 1.5rem;
+}
+
 table.ref-table {
     width: 100%;
     border-collapse: collapse;

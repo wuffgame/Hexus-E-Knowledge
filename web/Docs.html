@@ -33,6 +33,12 @@
             <a href="#if">Conditional Statements (if/elif/else)</a>
             <a href="#while">Conditional Loops (while)</a>
             <a href="#repeat">Fixed-Iteration Loops (repeat)</a>
+            <a href="#break">Loop Control Commands (break & continue)</a>
+            <details class="docs-subgroup">
+                <summary>Utility Commands</summary>
+                <a href="#wait" class="sub-link">Wait Command</a>
+                <a href="#clear" class="sub-link">Clear Command</a>
+            </details>
             </div>
         </aside>
         <div class="docs-content">
@@ -70,7 +76,7 @@ send "Database connection established" to logger</code></pre>
 
                 <section class="docs-section" id="read">
                     <h2>Read command</h2>
-                    <p>The <code class="lede">read</code> statement prompts the user or external system for input, displays a prompt message, and immediately stores the received value into a specified variable. Similar to the <code>send</code> command, it supports routing input requests from different targets using the <code>from</code> keyword, defaulting to the console.</p>
+                    <p>The <code class="inline">read</code> statement prompts the user or external system for input, displays a prompt message, and immediately stores the received value into a specified variable. Similar to the <code class="inline">send</code> command, it supports routing input requests from different targets using the <code class="inline">from</code> keyword, defaulting to the console.</p>
                     <p>Syntax:</p>
                     <pre class="code-block"><code>read &lt;prompt_expression&gt; to &lt;var_name&gt;</code></pre>
                     <pre class="code-block"><code>read &lt;prompt_expression&gt; to &lt;var_name&gt; from &lt;target&gt;</code></pre>
@@ -96,7 +102,7 @@ send "Hello World!" # You can also add comments at the end of statements</code><
 
                 <section class="docs-section" id="var">
                     <h2>Variable Declaration & Assignment</h2>
-                    <p>Variables in Hexus are declared using either the <code class="lede">=</code> operator or the <code class="lede">is</code> keyword. You can store numbers, strings, booleans, evaluation results, or lists. List assignments are automatically detected when square brackets <code class="lede">[]</code> are used or when values are separated by commas.</p>
+                    <p>Variables in Hexus are declared using either the <code class="inline">=</code> operator or the <code class="inline">is</code> keyword. You can store numbers, strings, booleans, evaluation results, or lists. List assignments are automatically detected when square brackets <code class="inline">[]</code> are used or when values are separated by commas.</p>
                     <p>Syntax:</p>
                     <pre class="code-block"><code>&lt;var_name&gt; = &lt;expression&gt;</code></pre>
                     <pre class="code-block"><code>&lt;var_name&gt; is &lt;expression&gt;</code></pre>
@@ -128,7 +134,7 @@ name = "Hexus",</code></pre>
 
                 <section class="docs-section" id="if">
                     <h2>Conditional Statements (if/elif/else)</h2>
-                    <p>Conditional blocks are used to execute specific sections of code only when certain conditions evaluate to true. In Hexus, condition blocks are wrapped in curly braces (<code class="lede">{}</code>), making structure visual and clean. You can chain multiple confitions using <code class="lede">elif</code> and provide a fallback block using <code class="lede">else</code>.</p>
+                    <p>Conditional blocks are used to execute specific sections of code only when certain conditions evaluate to true. In Hexus, condition blocks are wrapped in curly braces (<code class="inline">{}</code>), making structure visual and clean. You can chain multiple confitions using <code class="inline">elif</code> and provide a fallback block using <code class="inline">else</code>.</p>
                     <p>Syntax:</p>
                     <pre class="code-block"><code>if &lt;expression&gt; {
     # Code executed if condition is true
@@ -172,14 +178,14 @@ if not has_key {
     send "Warning: You are missing the required access key!"
 }</code></pre>
                     <p>Practical Use Cases:</p>
-                    <p>- Validating input received from <code class="lede">read</code> commands before processing data.</p>
+                    <p>- Validating input received from <code class="inline">read</code> commands before processing data.</p>
                     <p>- Creating decision paths in text-based adventure games or interactive console tools.</p>
                     <p>- Checking system flags, permissions, or game state variables.</p>
                 </section>
 
                 <section class="docs-section" id="while">
                     <h2>Conditional Loops (while)</h2>
-                    <p>The <code class="lede">while</code> loop ccontinuously executes a block of code as long as the specified expression evaluates to <code class="lede">True</code>. It is used then you do not know in advance how many times a loop needs to run, such as waiting for specific user input or maintaining an active game state.</p>
+                    <p>The <code class="inline">while</code> loop ccontinuously executes a block of code as long as the specified expression evaluates to <code class="inline">True</code>. It is used then you do not know in advance how many times a loop needs to run, such as waiting for specific user input or maintaining an active game state.</p>
                     <p>Syntax:</p>
                     <pre class="code-block"><code>while &lt;expression&gt; {
     # Code executed repeatedly while condition remains True
@@ -217,7 +223,7 @@ send "Goodbye!"</code></pre>
 
                 <section class="docs-section" id="repeat">
                     <h2>Fixed-Iteration Loops (repeat)</h2>
-                    <p>The <code class="lede">repeat</code> loop allows you to execute a block of code a fixed number of times. Unlike <code class="lede">while</code>, which checks a conditional expression, <code class="lede">repeat</code> takes a number directly (or a variable containing a number) followed by the <code class="lede">times</code> keyword. It is cleaner and less error-prone when the total number of iterations is known in advance.</p>
+                    <p>The <code class="inline">repeat</code> loop allows you to execute a block of code a fixed number of times. Unlike <code class="inline">while</code>, which checks a conditional expression, <code class="inline">repeat</code> takes a number directly (or a variable containing a number) followed by the <code class="inline">times</code> keyword. It is cleaner and less error-prone when the total number of iterations is known in advance.</p>
                     <p>Syntax:</p>
                     <pre class="code-block"><code>repeat &lt;number_or_var&gt; times {
     # Code executed a specified number of times
@@ -250,6 +256,88 @@ repeat 3 times {
                     <p>- Printing repeated separators or decorative borders in terminal interfaces.</p>
                     <p>- Generating fixed-size batches of objects, items, or enemy spawns in games.</p>
                     <p>- Performing batch mathematical calculations.</p>
+                </section>
+
+                <section class="docs-section" id="break">
+                    <h2>Loop Control Commands (break & continue)</h2>
+                    <p>Hexus probides fine-grained control over loop execution through <code class="inline">break</code> and <code class="inline"></code>.</p>
+                    <p>- <code class="inline">break</code>: Immediately terminates the active loop and jumps out of it.</p>
+                    <p>- <code class="inline">continue</code>: Skips the rest of the current iteration and jumps directly to the next loop cycle.</p>
+                    <p>Note: Using <code class="inline">break</code> or <code class="inline">continue</code> outside of an active loop block will raise a syntax error.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>break
+continue</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Using break to exit an infinite loop prematurely
+search_target = 7
+current_num = 1
+
+while True {
+    if current_num == search_target {
+        send "Target number found! Exiting search loop..."
+        break
+    }
+}
+
+# Using continue to skip unwanted numbers (e.g., skip even numbers)
+num = 0
+
+while num < 10 {
+    num = num + 1
+
+    # If the number is even, skip printing
+    if num % 2 == 0 {
+        continue
+    }
+
+    send "Odd number: {num}"
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Stopping an infinite searching loop the moment an item or solution is found (<code class="inline">break</code>).</p>
+                    <p>- Filtering out invalid data or blank lines inside a processing loop without stopping the loop (<code class="inline">continue</code>)</p>
+                </section>
+
+                <section class="docs-section" id="utility">
+                    <h2>Utility Commands</h2>
+                    <p>Hexus includes built-in system utility commands for pausing execution and clearing the terminal view.</p>
+
+                    <section class="docs-subsection" id="wait">
+                        <h3>Wait Command</h3>
+                        <p>Pauses execution for a specified duration using time units (<code class="inline">s</code> for seconds, <code class="inline">m</code> for minutes, <code class="inline">h</code> for hours, <code class="inline">d</code> for days).</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>wait &lt;number&gt; &lt;unit&gt;</code></pre>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Delaying execution for animations or timers
+send "Loading resources, please wait..."
+wait 2 s
+send "Resources loaded successfully!"</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Controlling the frame pace or delay in terminal animations and text games.</p>
+                    </section>
+
+                    <section class="docs-section" id="clear">
+                        <h3>Clear Command</h3>
+                        <p>Clears all text the current console display window, giving you a fresh screen</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>clear screen</code></pre>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Creating a timed contdown with screen clearing
+send "3..."
+wait 1 s
+clear screen
+
+send "2..."
+wait 1 s
+clear screen
+
+send "1..."
+wait 1 s
+clear screen
+
+send "GO!"</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Refreshing the dashboard or terminal screen to create a clean UI layout.</p>
+                    </section>
                 </section>
 
                 <!-- Sample of table
