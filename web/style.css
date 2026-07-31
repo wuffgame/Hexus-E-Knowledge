@@ -366,6 +366,11 @@ pre.code-block {
     background-color: rgba(111, 168, 220, 0.08);
 }
 
+.docs-subsection {
+    scroll-margin-top: calc(var(--nav-height) + 1rem);
+    margin-top: 1.5rem;
+}
+
 table.ref-table {
     width: 100%;
     border-collapse: collapse;

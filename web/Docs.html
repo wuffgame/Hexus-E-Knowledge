@@ -299,7 +299,45 @@ while num < 10 {
 
                 <section class="docs-section" id="utility">
                     <h2>Utility Commands</h2>
+                    <p>Hexus includes built-in system utility commands for pausing execution and clearing the terminal view.</p>
 
+                    <section class="docs-subsection" id="wait">
+                        <h3>Wait Command</h3>
+                        <p>Pauses execution for a specified duration using time units (<code class="inline">s</code> for seconds, <code class="inline">m</code> for minutes, <code class="inline">h</code> for hours, <code class="inline">d</code> for days).</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>wait &lt;number&gt; &lt;unit&gt;</code></pre>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Delaying execution for animations or timers
+send "Loading resources, please wait..."
+wait 2 s
+send "Resources loaded successfully!"</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Controlling the frame pace or delay in terminal animations and text games.</p>
+                    </section>
+
+                    <section class="docs-section" id="clear">
+                        <h3>Clear Command</h3>
+                        <p>Clears all text the current console display window, giving you a fresh screen</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>clear screen</code></pre>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Creating a timed contdown with screen clearing
+send "3..."
+wait 1 s
+clear screen
+
+send "2..."
+wait 1 s
+clear screen
+
+send "1..."
+wait 1 s
+clear screen
+
+send "GO!"</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Refreshing the dashboard or terminal screen to create a clean UI layout.</p>
+                    </section>
                 </section>
 
                 <!-- Sample of table
