@@ -1,2 +1,3 @@
 # Next Goal
-send pos 1 of list
+num = 0
+send num % 2
