@@ -217,6 +217,39 @@ send "Goodbye!"</code></pre>
 
                 <section class="docs-section" id="repeat">
                     <h2>Fixed-Iteration Loops (repeat)</h2>
+                    <p>The <code class="lede">repeat</code> loop allows you to execute a block of code a fixed number of times. Unlike <code class="lede">while</code>, which checks a conditional expression, <code class="lede">repeat</code> takes a number directly (or a variable containing a number) followed by the <code class="lede">times</code> keyword. It is cleaner and less error-prone when the total number of iterations is known in advance.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>repeat &lt;number_or_var&gt; times {
+    # Code executed a specified number of times
+}</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Repeating an action a hardcoded number of times
+send "Initiating launch sequence..."
+
+repeat 3 times {
+    send "Beep!"
+}
+
+send "Liftoff!"
+
+# Using a variable to control repetition count
+total_rounds = 5
+
+repeat total_rounds times {
+    send "Spawning enemy wave..."
+}
+
+# Nested repeat loops for grid rendering
+repeat 3 times {
+    send "--- Row Start ---"
+    repeat 2 times {
+        send " [ Slot ]"
+    }
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Printing repeated separators or decorative borders in terminal interfaces.</p>
+                    <p>- Generating fixed-size batches of objects, items, or enemy spawns in games.</p>
+                    <p>- Performing batch mathematical calculations.</p>
                 </section>
 
                 <!-- Sample of table
