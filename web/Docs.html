@@ -31,6 +31,8 @@
             <a href="#comm">Comments</a>
             <a href="#var">Variable Declaration & Assignment</a>
             <a href="#if">Conditional Statements (if/elif/else)</a>
+            <a href="#while">Conditional Loops (while)</a>
+            <a href="#repeat">Fixed-Iteration Loops (repeat)</a>
             </div>
         </aside>
         <div class="docs-content">
@@ -173,6 +175,48 @@ if not has_key {
                     <p>- Validating input received from <code class="lede">read</code> commands before processing data.</p>
                     <p>- Creating decision paths in text-based adventure games or interactive console tools.</p>
                     <p>- Checking system flags, permissions, or game state variables.</p>
+                </section>
+
+                <section class="docs-section" id="while">
+                    <h2>Conditional Loops (while)</h2>
+                    <p>The <code class="lede">while</code> loop ccontinuously executes a block of code as long as the specified expression evaluates to <code class="lede">True</code>. It is used then you do not know in advance how many times a loop needs to run, such as waiting for specific user input or maintaining an active game state.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>while &lt;expression&gt; {
+    # Code executed repeatedly while condition remains True
+}</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Simple counter loop
+count = 1
+
+while count <= 5 {
+    send "Current iteration count: {count}"
+    count = count + 1
+}
+
+send "Loop completed successfully!"
+
+# Interactive menu loop
+user_choice = ""
+
+while user_choice != "exit" {
+    read "Enter command (start/settings/exit): " to user_choice
+
+    if user_choice == "start" {
+        send "Starting application..."
+    } elif user_choice == "settings" {
+        send "Opening settings menu..."
+    }
+}
+
+send "Goodbye!"</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Running the main game loop until the player dies or chooses to exit.</p>
+                    <p>- Polling a network socket or file system until a required resource becomes available.</p>
+                    <p>- Keeping a terminal menu alive for continuous interaction.</p>
+                </section>
+
+                <section class="docs-section" id="repeat">
+                    <h2>Fixed-Iteration Loops (repeat)</h2>
                 </section>
 
                 <!-- Sample of table
