@@ -40,6 +40,8 @@
                 <summary>Utility Commands</summary>
                 <a href="#wait" class="sub-link">Wait Command</a>
                 <a href="#clear" class="sub-link">Clear Command</a>
+                <a href="#make" class="sub-link">Make Command (lower & upper)</a>
+                <a href="#timer" class="sub-link">Timer Command</a>
             </details>
             <details class="docs-subgroup">
                 <summary>Modules</summary>
@@ -466,6 +468,36 @@ send title</code></pre>
                         <p>Practical Use Cases:</p>
                         <p>- Normalizing user input received from terminal prompts se case variations (<code class="inline">Yes</code>, <code class="inline">YES</code>, <code class="inline">yes</code>) do not break <code class="inline">if</code> checks.</p>
                         <p>- Formatting title headers, badges, or output logs to stand out in terminal environments.</p>
+                    </section>
+                    <section class="docs-subsection" id="timer">
+                        <h3>Timer Command</h3>
+                        <p>The built-in timer commands allow you to measure execution time down to precise fractions of a second. This is useful for benchmarking code performance or creating time-dependent mechanics.</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>timer start # Starts or resets the internal clock counter.</code></pre>
+                        <pre class="code-block"><code>timer stop # Stops tracking elapsed time.</code></pre>
+                        <pre class="code-block"><code>timer # Returns the current recorded time value.</code></pre>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code>send "Benchmarking execution speed..."
+
+# Start tracking time
+timer start
+
+# Perform a computational task
+counter = 0
+repeat 1000 times {
+    counter = counter + 1
+}
+
+# Stop the clock
+timer stop
+
+# Output the measured time
+elapsed = timer
+send "Task completed in: {elapsed} seconds."</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Benchmarking algorithm speeds (e.g., comparing how fast different function implementations run).</p>
+                        <p>- Creating game timers to measure how quickly a player completes a level or puzzle.</p>
+                        <p>- Profiling bottlenecks in your Hexus scripts.</p>
                     </section>
                 </section>
 
