@@ -1,17 +1,86 @@
+from parser import FunctionDefNode
+from typing import Any, Callable
+
+class BreakException(Exception):
+    pass
+
+class ContinueException(Exception):
+    pass
+
+class ReturnException(Exception):
+    def __init__(self, value):
+        self.value = value
+
+class Environment:
+    def __init__(self, parent=None):
+        self.vars = {}
+        self.parent = parent
+
+    def get(self, name):
+        if name in self.vars:
+            return self.vars[name]
+        if self.parent:
+            return self.parent.get(name)
+        raise NameError(f"Variable '{name}' is not defined!!!")
+
+    def set(self, name, value):
+        self.vars[name] = value
+
+    def __contains__(self, name):
+        try:
+            self.get(name)
+            return True
+        except NameError:
+            return False
+
+
+
 class HexusInterpreter:
     def __init__(self):
-        self.env = {}
+        self.env = Environment()
+        self._register_type1_modules()
+        self.timer = 0
+        self.timer2 = 0
+        self.timerset = False
 
-    def visit(self, node):
+    def _register_type1_modules(self):
+        import os
+        import importlib.util
+
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        modules_dir = os.path.join(base_dir, "modules")
+
+        if not os.path.exists(modules_dir):
+            return
+
+        for filename in os.listdir(modules_dir):
+            if filename.endswith(".py") and not filename.endswith("_ext.py"):
+                mod_name = filename[:-3]
+                filepath = os.path.join(modules_dir, filename)
+
+                spec = importlib.util.spec_from_file_location(mod_name, filepath)
+
+                if spec is None or spec.loader is None:
+                    continue
+
+                py_mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(py_mod)
+
+                for attr_name in dir(py_mod):
+                    attr = getattr(py_mod, attr_name)
+                    if attr_name.endswith("Interpreter") and hasattr(attr, "register_handlers"):
+                        attr.register_handlers(self)
+
+    def visit(self, node) -> Any:
         method_name = f"visit_{type(node).__name__}"
-        visitor = getattr(self, method_name, self.generic_visit)
+        visitor: Callable[[Any], Any] = getattr(self, method_name, self.generic_visit)
         return visitor(node)
 
     def generic_visit(self, node):
         raise Exception(f"Interpreter error: No visit method defined for {type(node).__name__}")
 
-
-    def visit_NumberNode(self, node):
+    @staticmethod
+    def visit_NumberNode(node):
         return int(node.value)
 
 
@@ -45,8 +114,18 @@ class HexusInterpreter:
 
     def visit_VariableNode(self, node):
         if node.name in self.env:
-            return self.env[node.name]
+            return self.env.get(node.name)
         raise NameError(f"Variable '{node.name}' is not defined!!!")
+
+    @staticmethod
+    def visit_NowNode():
+        import time
+        now = time.strftime("%Y-%m-%d %H:%M:%S")
+        return now
+
+    @staticmethod
+    def visit_BoolNode(node):
+        return bool(node.value)
 
 
     def visit_BinaryOpNode(self, node):
@@ -58,6 +137,14 @@ class HexusInterpreter:
         if node.op == "*": return left_val * right_val
         if node.op == "/": return left_val / right_val
         if node.op == "==": return left_val == right_val
+        if node.op == "!=": return left_val != right_val
+        if node.op == "and": return bool(left_val) and bool(right_val)
+        if node.op == "or": return bool(left_val) or bool(right_val)
+        if node.op == ">": return left_val > right_val
+        if node.op == "<": return left_val < right_val
+        if node.op == "<=": return left_val <= right_val
+        if node.op == ">=": return left_val >= right_val
+        raise ValueError(f"Unknown binary operator: {node.op}")
 
     def visit_SendCommandNode(self, node):
         result = self.visit(node.text_value)
@@ -66,23 +153,24 @@ class HexusInterpreter:
 
     def visit_SetVar(self, node):
         var = node.var_name.strip()
-        if node.list == True:
-            if node.value == None:
-                self.env[var] = []
+        if node.list is True:
+            if node.value is None:
+                self.env.set(var, [])
                 return
             elif node.value:
-                list = []
+                list_val = []
                 for v in node.value:
                     result = self.visit(v)
-                    list.append(result)
-                self.env[var] = list
+                    list_val.append(result)
+                self.env.set(var, list_val)
                 return
         value = self.visit(node.value)
-        self.env[var] = value
+        self.env.set(var, value)
 
     def visit_ReadCommandNode(self, node):
         value = self.visit(node.text_value)
         var = node.var_name.strip()
+        v = None
         if node.target == "console":
             v = input(value)
 
@@ -94,33 +182,27 @@ class HexusInterpreter:
                 except ValueError:
                     pass
 
-        self.env[var] = v
+        self.env.set(var, v)
 
     def visit_ComNode(self, node):
         pass
 
     def visit_IfNode(self, node):
         exp = self.visit(node.exp)
-        if exp == True:
-            value = node.value
-            while value:
-                val = value.pop(0)
+        if exp:
+            for val in node.value:
                 self.visit(val)
             return
         elifv = node.elifv
         if elifv:
-            for exp, value in elifv.items():
-                exp = self.visit(exp)
-                if exp == True:
-                    while value:
-                        val = value.pop(0)
+            for e_exp, e_value in elifv.items():
+                if bool(self.visit(e_exp)):
+                    for val in e_value:
                         self.visit(val)
                     return
 
         if node.value2:
-            value2 = node.value2
-            while value2:
-                val = value2.pop(0)
+            for val in node.value2:
                 self.visit(val)
 
 
@@ -130,12 +212,12 @@ class HexusInterpreter:
         value = self.visit(node.value)
         if isinstance(current_value, list):
             if not node.pos:
-                pos = 1
+                pos = len(current_value) + 1
             else:
                 pos = self.visit(node.pos)
             pos -= 1
             current_value.insert(pos, value)
-            self.env[var_name] = current_value
+            self.env.set(var_name, current_value)
         else:
             raise NameError(f"Interpreter Error: Variable '{var_name}' (value: {current_value}) is not a list")
 
@@ -150,12 +232,200 @@ class HexusInterpreter:
                 pos = self.visit(node.pos)
                 pos -= 1
                 current_value.pop(pos)
-                self.env[var_name] = current_value
+                self.env.set(var_name, current_value)
             elif value:
                 current_value.remove(value)
-                self.env[var_name] = current_value
+                self.env.set(var_name, current_value)
         else:
             raise NameError(f"Interpreter Error: Variable '{var_name}' (value: {current_value}) is not a list")
+
+
+    def visit_WaitNode(self, node):
+        import time
+
+        value = self.visit(node.value)
+
+        if hasattr(node.value2, "name"):
+            value2 = node.value2.name
+        else:
+            value2 = self.visit(node.value2)
+
+        if value2 == "s":
+            time.sleep(value)
+        elif value2 == "m":
+            time.sleep(value * 60)
+        elif value2 == "h":
+            time.sleep(value * 60 * 60)
+        elif value2 == "d":
+            time.sleep(value * 60 * 60 * 24)
+        else:
+            raise ValueError(f"Unknown wait unit: {value2}")
+
+
+    def visit_WhileNode(self, node):
+        while bool(self.visit(node.exp)):
+            try:
+                for val in node.value:
+                    try:
+                        self.visit(val)
+                    except ContinueException:
+                        break
+            except BreakException:
+                break
+
+
+    def visit_RepeatNode(self, node):
+        value = self.visit(node.value)
+        value2 = node.value2
+        time = 1
+        while time <= value:
+            try:
+                for val in value2:
+                    try:
+                        self.visit(val)
+                    except ContinueException:
+                        break
+                time += 1
+            except BreakException:
+                break
+
+    @staticmethod
+    def visit_ClearNode():
+        import subprocess
+        import os
+        subprocess.run('cls' if os.name == 'nt' else 'clear', shell=True)
+
+
+    def visit_StopNode(self, node):
+        if node.value is None:
+            value = None
+        else:
+            value = self.visit(node.value)
+        import sys
+        if value is None:
+            sys.exit("Program stop")
+        else:
+            sys.exit(value)
+
+
+    def visit_MakeNode(self, node):
+        var = node.var.strip()
+        value = node.value
+        current_str = self.env.get(var)
+        if value == "lower":
+            self.env.set(var, current_str.lower())
+        elif value == "upper":
+            self.env.set(var, current_str.upper())
+
+
+    def visit_MinusNode(self, node):
+        return -self.visit(node.value)
+
+
+    def visit_PlusNode(self, node):
+        return +self.visit(node.value)
+
+
+    def visit_NotNode(self, node):
+        value = self.visit(node.value)
+        return not value
+
+
+    def visit_LengthNode(self, node):
+        var = self.visit(node.var)
+        return len(var)
+
+    @staticmethod
+    def visit_TimeNode(node):
+        import time
+        value = node.value
+        if value == "hour":
+            return time.strftime("%H")
+        elif value == "minute":
+            return time.strftime("%M")
+        elif value == "second":
+            return time.strftime("%S")
+        else:
+            raise NameError(f"Don't know {value}")
+
+
+    def visit_BreakNode(self, node):
+        raise BreakException
+
+
+    def visit_ContinueNode(self, node):
+        raise ContinueException
+
+
+    def visit_FunctionDefNode(self, node):
+        self.env.set(node.name, node)
+
+
+    def visit_ReturnNode(self, node):
+        value = None
+        if node.value is not None:
+            value = self.visit(node.value)
+        raise ReturnException(value)
+
+
+    def visit_FunctionCallNode(self, node):
+        func_node = self.env.get(node.name)
+        if not isinstance(func_node, FunctionDefNode):
+            raise TypeError(f"'{node.name}' is not a function")
+        if len(node.args) != len(func_node.para):
+            raise TypeError(f"Function '{node.name}' expects {len(func_node.para)} arguments, but got {len(node.args)}")
+        arg_values = [self.visit(arg) for arg in node.args]
+        previous_env = self.env
+        local_env = Environment(parent=previous_env)
+        for para_name, val in zip (func_node.para, arg_values):
+            local_env.set(para_name, val)
+        self.env = local_env
+        return_value = None
+        try:
+            for stmt in func_node.body:
+                self.visit(stmt)
+        except ReturnException as ret:
+            return_value = ret.value
+        finally:
+            self.env = previous_env
+
+        return return_value
+
+
+    def visit_StartTimerNode(self, node):
+        _ = node
+        import time
+        self.timer = time.time()
+        self.timerset = False
+
+
+    def visit_StopTimerNode(self, node):
+        _ = node
+        import time
+        now = time.time()
+        self.timer2 = round(now - self.timer)
+        self.timerset = True
+
+    def visit_TimerNode(self, node):
+        _ = node
+        if not self.timerset:
+            import time
+            now = time.time()
+            self.timer2 = round(now - self.timer)
+            return self.timer2
+        else:
+            return self.timer2
+
+
+
+    def visit_IndexNode(self, node):
+        target = self.visit(node.target)
+        pos = self.visit(node.pos)
+        try:
+            return target[pos - 1]
+        except Exception:
+            raise TypeError(f"{target} is not a list")
+
 
 
 

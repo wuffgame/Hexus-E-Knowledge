@@ -3,14 +3,9 @@ import re
 token_pattern = [
         ("HASH", r"#"),
         ("INT", r"\d+"),
-        ("PLUS", r"\+"),
-        ("MINUS", r"-"),
-        ("EQUALS", r'=='),
-        ("EQUAL", r"="),
-        ("MUL", r"\*"),
-        ("DIV", r"/"),
+        ("BOOL", r"\b(True|False)\b"),
+        ("OP", r">=|<=|==|!=|[+\-=*/><]"),
         ("STRING", r'"[^"\\]*(?:\\.[^"\\]*)*"'),
-        ("KEYWORD", r'\b(send|to|read|from|if|is|or|else|stop|elif|add|remove|at|pos)\b'),
         ("VAR", r'[a-zA-Z_][a-zA-Z0-9_]*'),
         ("LBRACE", r'\{'),
         ("RBRACE", r'\}'),
@@ -18,7 +13,10 @@ token_pattern = [
         ("RSBRACE", r"\]"),
         ("SKIP", r'[ \t]+'),
         ("NEWLINE", r'\n'),
-        ("COMMA", r"\,")
+        ("COMMA", r"\,"),
+        ("DOT", r"\."),
+        ("LPAREN", r"\("),
+        ("RPAREN", r"\)")
     ]
 
 def tokenizer(text, definition):
