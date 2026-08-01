@@ -35,10 +35,18 @@
             <a href="#repeat">Fixed-Iteration Loops (repeat)</a>
             <a href="#break">Loop Control Commands (break & continue)</a>
             <a href="#func">Custom Functions (func & return)</a>
+            <a href="#list">List Management (add, remove, length of, pos of)</a>
             <details class="docs-subgroup">
                 <summary>Utility Commands</summary>
                 <a href="#wait" class="sub-link">Wait Command</a>
                 <a href="#clear" class="sub-link">Clear Command</a>
+            </details>
+            <details class="docs-subgroup">
+                <summary>Modules</summary>
+                <details class="docs-subgroup">
+                    <summary>Time</summary>
+                    <a href="#day" class="sub-link">Day Command</a>
+                </details>
             </details>
             </div>
         </aside>
@@ -340,6 +348,53 @@ func process_age(user_age) {
                     <p>- Eliminating repetitive code by grouping frequently used calculations or UI displays.</p>
                     <p>- Structuring complex scripts into isolated, easy-to-maintain modules.</p>
                     <p>- Processing input validation and returning pass/fail boolean flags.</p>
+                </section>
+
+                <section class="docs-subgroup" id="list">
+                    <h2>List Management (add, remove, length of, pos of)</h2>
+                    <p>Lists in Hexus are dynamic collections. You can append new elements, insert items at specific positions, remove items by value or index, inspect list size, and access individual elements using indices.</p>
+                    <p>Syntax:</p>
+                    <p>- Append/Insert:</p>
+                    <pre class="code-block"><code>add &lt;value&gt; to &lt;list_var&gt;</code></pre>
+                    <pre class="code-block"><code>add &lt;value&gt; to &lt;list_var&gt; at pos &lt;index&gt;</code></pre>
+                    <p>- Remove:</p>
+                    <pre class="code-block"><code>remove &lt;value&gt; from &lt;list_var&gt;</code></pre>
+                    <pre class="code-block"><code>remove pos &lt;index&gt; from &lt;list_var&gt;</code></pre>
+                    <p>- Get length:</p>
+                    <pre class="code-block"><code>length of &lt;list_var&gt;</code></pre>
+                    <p>- Access index:</p>
+                    <pre class="code-block"><code>pos &lt;index&gt; of &lt;list_var&gt;</code></pre>
+                    <p>Code Examples:</p>
+                    <pre class="code-block"><code># Initializing a list
+inventory = "sword", "shield",
+
+# Appending items to the end of a list
+add "potion" to inventory
+send inventory
+# Output: ["sword", "shield", "potion"]
+
+# Inserting an item at a specific position
+add "helmet" to inventory at pos 1
+send inventory
+# Output: ["helmet", "sword", "shield", "potion"]
+
+# Finding the length of a list
+total_items = length of inventory
+send "Current inventory size: {total_items}"
+
+# Accessing a specific element by position
+first_item = pos 1 of inventory
+send "Equipped item: {first_item}"
+
+# Removing items by value
+remove "shield" from inventory
+
+# Removing items by index position
+remove pos 1 from inventory</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Managing player inventories, active party members, or high-score leaderboards in games.</p>
+                    <p>- Collecting dynamic data from user input loops before batch processing.</p>
+                    <p>- Creating queue systems where items are continuously added and removed.</p>
                 </section>
 
                 <section class="docs-section" id="utility">
