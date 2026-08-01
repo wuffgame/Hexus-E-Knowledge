@@ -47,7 +47,6 @@
                 <summary>Modules</summary>
                 <details class="docs-subgroup">
                     <summary>Time</summary>
-                    <a href="#day" class="sub-link">Day Command</a>
                 </details>
             </details>
             </div>
@@ -61,8 +60,7 @@
 
                 <section class="docs-section" id="start">
                     <h2>First steps</h2>
-                    <p>Krótki przykład pokazujący, jak wygląda podstawowy program w Hexusie.</p>
-                    <pre class="code-block"><code># Code</code></pre>
+                    <p>Nothing there.</p>
                 </section>
 
                 <section class="docs-section" id="send">
@@ -98,7 +96,7 @@ read "Please enter your username: " to user_name
 # Printing the variable back out
 send "Hello, {user_name}"
 
-# Reading input from a specific streaqm or target
+# Reading input from a specific stream or target
 read "Waiting for payload..." to payload_data from network</code></pre>
                 </section>
 
@@ -128,7 +126,7 @@ greeting = "Hello Hexus"
 # Alternative variable assignments using "is"
 speed is 60
 status is "active"
-is_logged_in is true
+is_logged_in is True
 
 # Empty list declaration
 inventory = []
@@ -145,10 +143,10 @@ name = "Hexus",</code></pre>
 
                 <section class="docs-section" id="if">
                     <h2>Conditional Statements (if/elif/else)</h2>
-                    <p>Conditional blocks are used to execute specific sections of code only when certain conditions evaluate to true. In Hexus, condition blocks are wrapped in curly braces (<code class="inline">{}</code>), making structure visual and clean. You can chain multiple confitions using <code class="inline">elif</code> and provide a fallback block using <code class="inline">else</code>.</p>
+                    <p>Conditional blocks are used to execute specific sections of code only when certain conditions evaluate to True. In Hexus, condition blocks are wrapped in curly braces (<code class="inline">{}</code>), making structure visual and clean. You can chain multiple conditions using <code class="inline">elif</code> and provide a fallback block using <code class="inline">else</code>.</p>
                     <p>Syntax:</p>
                     <pre class="code-block"><code>if &lt;expression&gt; {
-    # Code executed if condition is true
+    # Code executed if condition is True
 } elif &lt;expression&gt; {
     # Optional alternative condition
 } else {
@@ -271,7 +269,7 @@ repeat 3 times {
 
                 <section class="docs-section" id="break">
                     <h2>Loop Control Commands (break & continue)</h2>
-                    <p>Hexus probides fine-grained control over loop execution through <code class="inline">break</code> and <code class="inline"></code>.</p>
+                    <p>Hexus provides fine-grained control over loop execution through <code class="inline">break</code> and <code class="inline">continue</code>.</p>
                     <p>- <code class="inline">break</code>: Immediately terminates the active loop and jumps out of it.</p>
                     <p>- <code class="inline">continue</code>: Skips the rest of the current iteration and jumps directly to the next loop cycle.</p>
                     <p>Note: Using <code class="inline">break</code> or <code class="inline">continue</code> outside of an active loop block will raise a syntax error.</p>
@@ -335,7 +333,7 @@ func calculate_total(price, tax_rate) {
 
 # Storing the returned value in a variable
 final_price = calculate_total(100, 0.23)
-send "Total price with tax: {final_price}
+send "Total price with tax: {final_price}"
 
 #Early return for validation
 func process_age(user_age) {
@@ -423,7 +421,7 @@ send "Resources loaded successfully!"</code></pre>
                         <p>Syntax:</p>
                         <pre class="code-block"><code>clear screen</code></pre>
                         <p>Code Examples:</p>
-                        <pre class="code-block"><code># Creating a timed contdown with screen clearing
+                        <pre class="code-block"><code># Creating a timed countdown with screen clearing
 send "3..."
 wait 1 s
 clear screen
@@ -443,7 +441,7 @@ send "GO!"</code></pre>
 
                     <section class="docs-subsection" id="make">
                         <h3>Make Command (lower & upper)</h3>
-                        <p>Hexus probides built-in keywords to convert string variables directly into all-lowercase or all-uppercase text. This modifies the target variable in-place.</p>
+                        <p>Hexus provides built-in keywords to convert string variables directly into all-lowercase or all-uppercase text. This modifies the target variable in-place.</p>
                         <p>Syntax:</p>
                         <pre class="code-block"><code>make &lt;var_name&gt; lower</code></pre>
                         <pre class="code-block"><code>make &lt;var_name&gt; upper</code></pre>
@@ -466,7 +464,7 @@ make title upper
 
 send title</code></pre>
                         <p>Practical Use Cases:</p>
-                        <p>- Normalizing user input received from terminal prompts se case variations (<code class="inline">Yes</code>, <code class="inline">YES</code>, <code class="inline">yes</code>) do not break <code class="inline">if</code> checks.</p>
+                        <p>- Normalizing user input received from terminal prompts so case variations (<code class="inline">Yes</code>, <code class="inline">YES</code>, <code class="inline">yes</code>) do not break <code class="inline">if</code> checks.</p>
                         <p>- Formatting title headers, badges, or output logs to stand out in terminal environments.</p>
                     </section>
                     <section class="docs-subsection" id="timer">
