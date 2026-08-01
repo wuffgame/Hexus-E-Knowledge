@@ -5,3 +5,4 @@ send num % 2
 # Float type!!!
 # Fix time.day!!!
 # Fix modules in playground!!!
+# Move html files and update all links (/Docs, not /Docs.html)
