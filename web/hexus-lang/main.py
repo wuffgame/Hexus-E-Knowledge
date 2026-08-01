@@ -28,7 +28,7 @@ def main():
         print(f"File {file_name} not found!!!")
         return
 
-    print(uruchom(source_code))
+    print(start(source_code))
 
 
 if __name__ == "__main__":
