@@ -439,7 +439,34 @@ send "GO!"</code></pre>
                         <p>- Refreshing the dashboard or terminal screen to create a clean UI layout.</p>
                     </section>
 
+                    <section class="docs-subsection" id="make">
+                        <h3>Make Command (lower & upper)</h3>
+                        <p>Hexus probides built-in keywords to convert string variables directly into all-lowercase or all-uppercase text. This modifies the target variable in-place.</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>make &lt;var_name&gt; lower</code></pre>
+                        <pre class="code-block"><code>make &lt;var_name&gt; upper</code></pre>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Converting user input to lowercase for case-insencitive matching
+read "Do you want to continue? (YES/no): " to user_response
 
+# Convert the variable content to lowercase
+make user_response lower
+
+if user_response == "yes" or user_response == "y" {
+    send "Continuing execution..."
+} else {
+    send "Aborting operation..."
+}
+
+# Converting strings to uppercase for display headers
+title = "welcome to hexus"
+make title upper
+
+send title</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Normalizing user input received from terminal prompts se case variations (<code class="inline">Yes</code>, <code class="inline">YES</code>, <code class="inline">yes</code>) do not break <code class="inline">if</code> checks.</p>
+                        <p>- Formatting title headers, badges, or output logs to stand out in terminal environments.</p>
+                    </section>
                 </section>
 
                 <!-- Sample of table
