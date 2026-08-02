@@ -42,6 +42,7 @@
                 <a href="#dynamic">Dynamic Typing System Overview</a>
                 <a href="#numbers">Numbers (Integer & Floating-Point)</a>
                 <a href="#string">Strings (Text Blocks)</a>
+                <a href="#bool">Booleans (Logical Flags)</a>
             </details>
             <details class="docs-subgroup">
                 <summary>Utility Commands</summary>
@@ -439,7 +440,15 @@ user_role = "Administrator"
 send greeting</code></pre>
                     </section>
                     <section class="docs-subsection" id="bool">
-                        
+                        <h3>Booleans (Logical Flags)</h3>
+                        <p>Booleans represent truth values and can only be set to <code class="inline">True</code> or <code class="inline">False</code>. They are primary used for condition flags inside <code class="inline">if</code> statements and <code class="inline">while</code> loops.</p>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Boolean flag initialization
+is_running = True
+has_permission = False
+
+# Logical evaluations automatically yield boolean results
+can_enter = is_running and not has_permission</code></pre>
                     </section>
 
                 </section>
