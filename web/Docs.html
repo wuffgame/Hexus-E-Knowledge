@@ -43,6 +43,7 @@
                 <a href="#numbers">Numbers (Integer & Floating-Point)</a>
                 <a href="#string">Strings (Text Blocks)</a>
                 <a href="#bool">Booleans (Logical Flags)</a>
+                <a href="#variable">Variables (state Management)</a>
             </details>
             <details class="docs-subgroup">
                 <summary>Utility Commands</summary>
@@ -449,6 +450,28 @@ has_permission = False
 
 # Logical evaluations automatically yield boolean results
 can_enter = is_running and not has_permission</code></pre>
+                    </section>
+                    <section class="docs-subsection" id="variable">
+                        <h3>Variables (State Management)</h3>
+                        <p>Variables in Hexus are used to store data in memory so it can be referenced, updated, and manipulated throughout your script. You do not need to specify a data type when creating a variable; the language automatically manages variable creation upon assignment.</p>
+                        <p>Hexus provides two equivalent syntaxes for creating and updating variables:</p>
+                        <p>yhe standard equal sign operator (<code class="inline">=</code>) and the readable descriptive keyword <code class="inline">is</code>.</p>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Declaring variables using the "=" operator
+user_score = 0
+player_name = "Alex"
+is_active = True
+
+# Declaring variables using the "is" keyword
+max_attempts is 3
+server_status is "online"
+game_over is False
+
+# Reassigning and updating existing variables
+user_score = user_score + 10
+server_status is "offline"
+
+send "Player {player_name} has a score of: {user_score}"</code></pre>
                     </section>
 
                 </section>
