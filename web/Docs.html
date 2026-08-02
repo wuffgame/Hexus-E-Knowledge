@@ -38,6 +38,10 @@
             <a href="#func">Custom Functions (func & return)</a>
             <a href="#list">List Management (add, remove, length of, pos of)</a>
             <details class="docs-subgroup">
+                <summary>Data Types</summary>
+                <a href="#dynamic">Dynamic Typing System Overview</a>
+            </details>
+            <details class="docs-subgroup">
                 <summary>Utility Commands</summary>
                 <a href="#wait" class="sub-link">Wait Command</a>
                 <a href="#clear" class="sub-link">Clear Command</a>
@@ -396,6 +400,17 @@ remove pos 1 from inventory</code></pre>
                     <p>- Managing player inventories, active party members, or high-score leaderboards in games.</p>
                     <p>- Collecting dynamic data from user input loops before batch processing.</p>
                     <p>- Creating queue systems where items are continuously added and removed.</p>
+                </section>
+
+                <section class="docs-section"></section>
+                    <h2>Data Types</h2>
+                    <p>While Hexus does not require you to expicitly declare data types when creating variables, it features a dynamic typing system under the hood. Variables automatically infer their type based on the value assigned to them. Understanding how these types interact is crucial for writing bug-free scripts.</p>
+                    <section class="docs-subsection" id="dynamic">
+                        <h3>Dynamic Typing System Overview</h3>
+                        <p>In Hexus, you do not write explicit type annotations like <code class="inline">int x = 5</code>. Instead, you simply assign values using <code class="inline">=</code> or <code class="inline">is</code>.</p>
+                        <p>However, Hexus is strongly typed at runtime. This means the language will not automatically convert incompatible types during mathematical or string operations. For example, trying to add a number directly to a raw text string without proper formatting will cause a runtime evaluation error.</p>
+                    </section>
+
                 </section>
 
                 <section class="docs-section" id="utility">
