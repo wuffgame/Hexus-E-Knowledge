@@ -40,6 +40,8 @@
             <details class="docs-subgroup">
                 <summary>Data Types</summary>
                 <a href="#dynamic">Dynamic Typing System Overview</a>
+                <a href="#numbers">Numbers (Integer & Floating-Point)</a>
+                <a href="#string">Strings (Text Blocks)</a>
             </details>
             <details class="docs-subgroup">
                 <summary>Utility Commands</summary>
@@ -402,13 +404,32 @@ remove pos 1 from inventory</code></pre>
                     <p>- Creating queue systems where items are continuously added and removed.</p>
                 </section>
 
-                <section class="docs-section"></section>
+                <section class="docs-section">
                     <h2>Data Types</h2>
                     <p>While Hexus does not require you to expicitly declare data types when creating variables, it features a dynamic typing system under the hood. Variables automatically infer their type based on the value assigned to them. Understanding how these types interact is crucial for writing bug-free scripts.</p>
                     <section class="docs-subsection" id="dynamic">
                         <h3>Dynamic Typing System Overview</h3>
                         <p>In Hexus, you do not write explicit type annotations like <code class="inline">int x = 5</code>. Instead, you simply assign values using <code class="inline">=</code> or <code class="inline">is</code>.</p>
                         <p>However, Hexus is strongly typed at runtime. This means the language will not automatically convert incompatible types during mathematical or string operations. For example, trying to add a number directly to a raw text string without proper formatting will cause a runtime evaluation error.</p>
+                    </section>
+                    <section class="docs-subsection" id="numbers">
+                        <h3>Numbers (Integer & Floating-Point)</h3>
+                        <p>Hexus handles numerical values directly. Whether you work with whole integers or numbers containing decimal points, Hexus parses them into numerical expressions ready for arithmetic operations.</p>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Whole integers
+player_health = 100
+enemies_killed = 0
+
+# Decimal numbers (floating-point)
+speed_multiplier = 1.5
+pi_value = 3.14159
+
+# Arithmetic with mixed numerical types
+total_speed = 10 * speed_multiplier
+send "Calculated speed: {total_speed}"</code></pre>
+                    </section>
+                    <section class="docs-subgroup" id="string">
+                        <h3>Strings (Text Blocks)</h3>
                     </section>
 
                 </section>
