@@ -82,7 +82,10 @@ class HexusInterpreter:
 
     @staticmethod
     def visit_NumberNode(node):
-        return int(node.value)
+        value = str(node.value)
+        if "." in value:
+            return float(value)
+        return int(value)
 
 
     def visit_StringNode(self, node):

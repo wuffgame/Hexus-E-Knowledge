@@ -314,7 +314,12 @@ class HexusParser:
             return node
         elif token_type == "INT":
             self.consume("INT")
-            value = int(value)
+            if self.peek()[0] == "DOT":
+                self.consume("DOT")
+                value2 = self.consume("INT")
+                value = float(f"{value}.{value2}")
+            else:
+                value = int(value)
             return NumberNode(value)
         elif token_type == "VAR" and value == "now":
             self.consume("VAR")
