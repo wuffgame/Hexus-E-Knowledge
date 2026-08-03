@@ -44,6 +44,8 @@
                 <a href="#string">Strings (Text Blocks)</a>
                 <a href="#bool">Booleans (Logical Flags)</a>
                 <a href="#variable">Variables (state Management)</a>
+                <a href="#listss">Lists (Dynamic Collections)</a>
+                <a href="#strict">Strict Type Operations & Common Mistakes</a>
             </details>
             <details class="docs-subgroup">
                 <summary>Utility Commands</summary>
@@ -472,6 +474,34 @@ user_score = user_score + 10
 server_status is "offline"
 
 send "Player {player_name} has a score of: {user_score}"</code></pre>
+                    </section>
+                    <section class="docs-subsection" id="listss">
+                        <h3>Lists (Dynamic Collections)</h3>
+                        <p>Lists are ordered containers that hold multiple items. They can be created empty or initialized with elements separated by commas or enclosed in square brackets.</p>
+                        <p>Code Examples:</p>
+                        <pre class="code-block"><code># Initializing lists
+items = "apple", "banana", "orange",
+scores = 10, 20, 30, 40,</code></pre>
+                    </section>
+                    <section class="docs-subsection" id="strict">
+                        <h3>Strict Type Operations & Common Mistakes</h3>
+                        <p>Because Hexus enforces strict runtime evaluations, mixing non-compatible types in mathematical operations will fail.</p>
+                        <h3>Correct Type Handling vs Incompatible Types</h3>
+                        <pre class="code-block"><code># VALID: Adding numbers together
+score = 50 + 25
+
+# VALID: Concatenating strings together
+first_name = "John"
+last_name = "Doe"
+full_name = "{first_name} {last_name}"
+# Result: "John Doe"
+
+# INVALID: Mixing raw strings and numbers in arithmetic directly
+# age = "25" + 5 <-- This will cause an evaluation error!
+
+# CORRECT WAY: Converting or formatting values cleanly
+age_val = 25 + 5
+send "Your current age is: {age_val}"</code></pre>
                     </section>
 
                 </section>
