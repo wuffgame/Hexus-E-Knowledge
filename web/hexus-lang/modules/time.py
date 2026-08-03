@@ -156,6 +156,18 @@ class TimeInterpreter:
             _ = self, node
             return datetime.now().strftime("%S")
 
+        def visit_TimeDayNode(self, node):
+            _ = self, node
+            return datetime.now().strftime("%d")
+
+        def visit_TimeMonthNode(self, node):
+            _ = self, node
+            return datetime.now().strftime("%m")
+
+        def visit_TimeYearNode(self, node):
+            _ = self, node
+            return datetime.now().strftime("%Y")
+
         def visit_TimeTimeNode(self, node):
             _ = self
             value = interpreter.visit(node.value)
@@ -174,5 +186,8 @@ class TimeInterpreter:
         setattr(interpreter.__class__, "visit_TimeHourNode", visit_TimeHourNode)
         setattr(interpreter.__class__, "visit_TimeMinuteNode", visit_TimeMinuteNode)
         setattr(interpreter.__class__, "visit_TimeSecNode", visit_TimeSecNode)
+        setattr(interpreter.__class__, "visit_TimeDayNode", visit_TimeDayNode)
+        setattr(interpreter.__class__, "visit_TimeMonthNode", visit_TimeMonthNode)
+        setattr(interpreter.__class__, "visit_TimeYearNode", visit_TimeYearNode)
         setattr(interpreter.__class__, "visit_TimeTimeNode", visit_TimeTimeNode)
         setattr(interpreter.__class__, "visit_TimeUTCNode", visit_TimeUTCNode)

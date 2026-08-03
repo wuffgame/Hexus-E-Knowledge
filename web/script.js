@@ -37,6 +37,22 @@ async function initPyodide() {
         pyodide.FS.writeFile(name, text);
     }
 
+    const manifestRes = await fetch(`${python_folder}/modules/manifest.json`);
+    if (!manifestRes.ok) {
+        throw new Error(`Not found: ${python_folder}/modules/manifest.json`);
+    }
+    const module_files = await manifestRes.json();
+
+    pyodide.FS.mkdir("modules");
+    for (const name of module_files) {
+        const ans = await fetch(`${python_folder}/modules/${name}`);
+        if (!ans.ok) {
+            throw new Error(`Not found: ${python_folder}/modules/${name}`);
+        }
+        const text = await ans.text();
+        pyodide.FS.writeFile(`modules/${name}`, text);
+    }
+
     pyodide.runPython(`
 import sys
 if '.' not in sys.path:
