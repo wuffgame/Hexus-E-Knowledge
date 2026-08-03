@@ -6,3 +6,4 @@ send num % 2
 # Fix time.day!!!
 # Fix modules in playground!!!
 # Move html files and update all links (/Docs, not /Docs.html)
+# Fix now in send command
