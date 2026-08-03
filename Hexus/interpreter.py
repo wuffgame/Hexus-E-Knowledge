@@ -122,7 +122,8 @@ class HexusInterpreter:
         raise NameError(f"Variable '{node.name}' is not defined!!!")
 
     @staticmethod
-    def visit_NowNode():
+    def visit_NowNode(node):
+        _ = node
         import time
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         return now
