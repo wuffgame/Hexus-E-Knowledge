@@ -11,7 +11,7 @@ window.hexusPrompt = function (promptText) {
 }
 
 const python_file = ["main.py", "lexer.py", "parser.py", "interpreter.py"];
-const python_folder = "hexus-lang";
+const python_folder = "../hexus-lang";
 
 function setStatus(state) {
     statusText.textContent = state
