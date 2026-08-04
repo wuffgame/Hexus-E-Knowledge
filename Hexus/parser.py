@@ -264,9 +264,9 @@ class HexusParser:
 
     def consume_value(self, expected_type, expected_value):
         token_type, value = self.peek()
-        if token_type == "NEWLINE":
-            self.current_line += 1
         if token_type == expected_type and value == expected_value:
+            if token_type == "NEWLINE":
+                self.current_line += 1
             self.pos += 1
             return value
         else:
@@ -281,7 +281,7 @@ class HexusParser:
         elif token_type == "EOF":
             pass
         else:
-            raise SyntaxError(f"SynaxError: [Line: {self.current_line}] Expected end of line, but found token of type '{token_type}'")
+            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected end of line, but found token of type '{token_type}'")
 
     def parse_value(self):
         token_type, value = self.peek()
@@ -377,14 +377,7 @@ class HexusParser:
 
         return left
 
-    def parse_expression(self):
-
-        token_type, value = self.peek()
-        if token_type == "VAR" and value == "not":
-            self.consume("VAR")
-            val = self.parse_value()
-            return NotNode(val)
-
+    def parse_comparison(self):
         left = self.parse_term()
 
         while True:
@@ -402,15 +395,30 @@ class HexusParser:
                 op = "=="
                 right = self.parse_term()
                 left = BinaryOpNode(left, op, right)
-            elif next_type == "VAR" and value in ["and", "or"]:
-                self.consume("VAR")
-                op = value
-                right = self.parse_expression()
-                left = BinaryOpNode(left, op, right)
-            elif next_type == "OP":
+            elif next_type == "OP" and value in ["<", ">", "<=", ">="]:
                 op = self.consume("OP")
-
                 right = self.parse_term()
+                left = BinaryOpNode(left, op, right)
+            else:
+                break
+        return left
+
+    def parse_expression(self):
+
+        token_type, value = self.peek()
+        if token_type == "VAR" and value == "not":
+            self.consume("VAR")
+            val = self.parse_expression()
+            return NotNode(val)
+
+        left = self.parse_comparison()
+
+        while True:
+            next_type, value = self.peek()
+
+            if next_type == "VAR" and value in ["and", "or"]:
+                op = self.consume("VAR")
+                right = self.parse_comparison()
                 left = BinaryOpNode(left, op, right)
             else:
                 break
@@ -581,6 +589,7 @@ class HexusParser:
         if self.peek()[0] == "VAR" and (self.peek()[1] == "s" or self.peek()[1] == "m" or self.peek()[1] == "h" or self.peek()[1] == "d"):
             value2 = self.parse_value()
             return WaitNode(value, value2)
+        raise SyntaxError(f"[Line: {self.current_line}] ???")
 
     def parse_while(self):
         self.consume_value("VAR", "while")
@@ -594,7 +603,7 @@ class HexusParser:
     def parse_repeat(self):
         self.consume_value("VAR", "repeat")
         if self.peek()[0] == "INT" or self.peek()[0] == "VAR":
-            value = self.parse_value()
+            value = self.parse_expression()
             if self.peek()[0] == "VAR" and self.peek()[1] == "times":
                 self.consume_value("VAR", "times")
                 self.loop_depth += 1
