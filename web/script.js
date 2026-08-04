@@ -11,9 +11,27 @@ window.hexusPrompt = function (promptText) {
 }
 
 const python_file = ["main.py", "lexer.py", "parser.py", "interpreter.py"];
-const python_folder = location.hostname === "localhost" || location.hostname === "127.0.0.1"
-    ? "/web/hexus-lang"
-    : "/hexus-lang";
+
+async function findPythonFolder() {
+    const candidates = [
+        "/hexus-lang",
+        "/web/hexus-lang",
+        "../hexus-lang",
+        "hexus-lang"
+    ];
+
+    for (const folder of candidates) {
+        try {
+            const res = await fetch(`${folder}/main.py`, { cache: "no-store" });
+            if (res.ok) {
+                return folder;
+            }
+        } catch (_) {
+        }
+    }
+
+    throw new Error("Cannot find hexus-lang/main.py");
+}
 
 function setStatus(state) {
     statusText.textContent = state
@@ -26,9 +44,10 @@ let pyodideInstance = null;
 
 async function initPyodide() {
     setStatus("loading...");
-    runBtn.disabled == true;
+    runBtn.disabled = true;
 
     const pyodide = await loadPyodide();
+    const python_folder = await findPythonFolder();
 
     for (const name of python_file) {
         const ans = await fetch(`${python_folder}/${name}`);
