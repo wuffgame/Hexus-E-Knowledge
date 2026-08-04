@@ -291,6 +291,7 @@ class HexusParser:
             node = self.parse_expression()
             self.consume("RPAREN")
             return node
+
         if token_type == "VAR" and value == "pos":
             self.consume("VAR")
             pos_expr = self.parse_value()
@@ -348,14 +349,43 @@ class HexusParser:
         else:
             raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expect number or variable, but found '{token_type}' ('{value}')")
 
+    def parse_factor(self):
+        left = self.parse_value()
+
+        while True:
+            next_type, value = self.peek()
+            if next_type == "OP" and value in ["*", "/", "%"]:
+                op = self.consume("OP")
+                right = self.parse_value()
+                left = BinaryOpNode(left, op, right)
+            else:
+                break
+
+        return left
+
+    def parse_term(self):
+        left = self.parse_factor()
+
+        while True:
+            next_type, value = self.peek()
+            if next_type == "OP" and value in ["+", "-"]:
+                op = self.consume("OP")
+                right = self.parse_factor()
+                left = BinaryOpNode(left, op, right)
+            else:
+                break
+
+        return left
+
     def parse_expression(self):
 
         token_type, value = self.peek()
         if token_type == "VAR" and value == "not":
             self.consume("VAR")
-            value = self.parse_value()
-            return NotNode(value)
-        left = self.parse_value()
+            val = self.parse_value()
+            return NotNode(val)
+
+        left = self.parse_term()
 
         while True:
             next_type, value = self.peek()
@@ -365,12 +395,12 @@ class HexusParser:
                 if self.peek()[1] == "not":
                     self.consume("VAR")
                 op = "!="
-                right = self.parse_value()
+                right = self.parse_term()
                 left = BinaryOpNode(left, op, right)
             elif (next_type == "OP" and value == "==") or (next_type == "VAR" and value == "is"):
                 self.consume(next_type)
                 op = "=="
-                right = self.parse_value()
+                right = self.parse_term()
                 left = BinaryOpNode(left, op, right)
             elif next_type == "VAR" and value in ["and", "or"]:
                 self.consume("VAR")
@@ -380,7 +410,7 @@ class HexusParser:
             elif next_type == "OP":
                 op = self.consume("OP")
 
-                right = self.parse_value()
+                right = self.parse_term()
                 left = BinaryOpNode(left, op, right)
             else:
                 break
