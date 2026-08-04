@@ -2,5 +2,4 @@
 num = 0
 send num % 2
 
-# Move html files and update all links (/Docs, not /Docs.html)
 # Complete the Now section in docs
