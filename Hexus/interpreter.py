@@ -135,6 +135,7 @@ class HexusInterpreter:
         if node.op == "<": return left_val < right_val
         if node.op == "<=": return left_val <= right_val
         if node.op == ">=": return left_val >= right_val
+        if node.op == "%": return left_val % right_val
         raise ValueError(f"Unknown binary operator: {node.op}")
 
     def visit_SendCommandNode(self, node):

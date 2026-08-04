@@ -1,1 +1,1 @@
-send time.day
+send 6 % 4
