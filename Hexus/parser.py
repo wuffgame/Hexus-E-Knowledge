@@ -264,6 +264,8 @@ class HexusParser:
 
     def consume_value(self, expected_type, expected_value):
         token_type, value = self.peek()
+        if token_type == "NEWLINE":
+            self.current_line += 1
         if token_type == expected_type and value == expected_value:
             self.pos += 1
             return value
@@ -358,12 +360,7 @@ class HexusParser:
         while True:
             next_type, value = self.peek()
 
-            if next_type == "OP":
-                op = self.consume("OP")
-
-                right = self.parse_value()
-                left = BinaryOpNode(left, op, right)
-            elif (next_type == "OP" and value == "!=") or (next_type == "VAR" and value == "is" and self.peek(1)[1] == "not"):
+            if (next_type == "OP" and value == "!=") or (next_type == "VAR" and value == "is" and self.peek(1)[1] == "not"):
                 self.consume(next_type)
                 if self.peek()[1] == "not":
                     self.consume("VAR")
@@ -379,6 +376,11 @@ class HexusParser:
                 self.consume("VAR")
                 op = value
                 right = self.parse_expression()
+                left = BinaryOpNode(left, op, right)
+            elif next_type == "OP":
+                op = self.consume("OP")
+
+                right = self.parse_value()
                 left = BinaryOpNode(left, op, right)
             else:
                 break
@@ -536,8 +538,7 @@ class HexusParser:
         token_type, valuee = self.peek(0)
         if token_type == "VAR" and valuee == "pos":
             self.consume_value("VAR", "pos")
-            if self.peek()[0] == "INT":
-                pos = self.parse_value()
+            pos = self.parse_value()
         elif token_type == "INT" or token_type == "VAR" or token_type == "STRING":
             value = self.parse_value()
         self.consume_value("VAR", "from")
@@ -546,22 +547,18 @@ class HexusParser:
 
     def parse_wait(self):
         self.consume_value("VAR", "wait")
-        if self.peek()[0] == "INT":
-            value = self.parse_value()
-            if self.peek()[0] == "VAR" and (self.peek()[1] == "s" or self.peek()[1] == "m" or self.peek()[1] == "h" or self.peek()[1] == "d"):
-                value2 = self.parse_value()
-                return WaitNode(value, value2)
-        raise SyntaxError(f"???")
+        value = self.parse_expression()
+        if self.peek()[0] == "VAR" and (self.peek()[1] == "s" or self.peek()[1] == "m" or self.peek()[1] == "h" or self.peek()[1] == "d"):
+            value2 = self.parse_value()
+            return WaitNode(value, value2)
 
     def parse_while(self):
         self.consume_value("VAR", "while")
-        if self.peek()[0] == "INT" or self.peek()[0] == "VAR":
-            exp = self.parse_expression()
-            self.loop_depth += 1
-            value = self.parse_block()
-            self.loop_depth -= 1
-            return WhileNode(exp, value)
-        raise SyntaxError(f"???")
+        exp = self.parse_expression()
+        self.loop_depth += 1
+        value = self.parse_block()
+        self.loop_depth -= 1
+        return WhileNode(exp, value)
 
 
     def parse_repeat(self):
