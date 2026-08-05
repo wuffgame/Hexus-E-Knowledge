@@ -419,6 +419,13 @@ class HexusInterpreter:
             raise TypeError(f"{target} is not a list")
 
 
+    def visit_RandomNode(self, node):
+        value1 = self.visit(node.value1)
+        value2 = self.visit(node.value2)
+        import random
+        return random.randrange(value1, value2)
+
+
 
 
 
