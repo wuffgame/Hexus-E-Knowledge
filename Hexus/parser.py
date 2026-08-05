@@ -204,6 +204,13 @@ class IndexNode:
     def __repr__(self):
         return f"IndexNode(pos={self.pos}, target={self.target})"
 
+class RandomNode:
+    def __init__(self, value1, value2):
+        self.value1 = value1
+        self.value2 = value2
+    def __repr__(self):
+        return f"RandomNode(value1={self.value1}, value2={self.value2})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -330,6 +337,9 @@ class HexusParser:
         elif token_type == "VAR" and value == "timer":
             self.consume("VAR")
             return TimerNode()
+        elif token_type == "VAR" and value == "get":
+            self.consume("VAR")
+            return self.parse_random()
         elif token_type == "VAR":
             var_name = self.consume("VAR")
             if self.peek()[0] == "LPAREN":
@@ -716,6 +726,17 @@ class HexusParser:
             return StopTimerNode()
         else:
             raise SyntaxError(f"???")
+
+
+    def parse_random(self):
+        self.consume_value("VAR", "random")
+        self.consume_value("VAR", "number")
+        self.consume_value("VAR", "from")
+        value1 = self.parse_value()
+        self.consume_value("VAR", "to")
+        value2 = self.parse_value()
+        return RandomNode(value1, value2)
+
 
 
 
