@@ -282,7 +282,8 @@ class HexusInterpreter:
                 break
 
     @staticmethod
-    def visit_ClearNode():
+    def visit_ClearNode(node):
+        _ = node
         import subprocess
         import os
         subprocess.run('cls' if os.name == 'nt' else 'clear', shell=True)
