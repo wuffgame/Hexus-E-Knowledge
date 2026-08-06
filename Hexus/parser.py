@@ -211,6 +211,14 @@ class RandomNode:
     def __repr__(self):
         return f"RandomNode(value1={self.value1}, value2={self.value2})"
 
+class ForNode:
+    def __init__(self, value, list_value, value2):
+        self.value = value
+        self.list_value = list_value
+        self.value2 = value2
+    def __repr__(self):
+        return f"ForNode(value={self.value}, list_value={self.list_value}, value2={self.value2})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -738,6 +746,18 @@ class HexusParser:
         return RandomNode(value1, value2)
 
 
+    def parse_for(self):
+        self.consume_value("VAR", "for")
+        self.consume_value("VAR", "each")
+        value = self.parse_value()
+        self.consume_value("VAR", "in")
+        list_value = self.parse_value()
+        self.loop_depth += 1
+        value2 = self.parse_block()
+        self.loop_depth -= 1
+        return ForNode(value, list_value, value2)
+
+
 
 
 
@@ -753,6 +773,8 @@ class HexusParser:
             return self.parse_while()
         elif token_type == "VAR" and value == "repeat":
             return self.parse_repeat()
+        elif token_type == "VAR" and value == "for":
+            return self.parse_for()
         elif token_type == "VAR" and value == "func":
             return self.parse_func()
         elif token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":

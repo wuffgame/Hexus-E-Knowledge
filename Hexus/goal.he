@@ -3,7 +3,6 @@ num = 0
 send num % 2
 
 # Complete the Now section in docs
-# Fix clear node in interpreter
 # Think about lists (przecinek na końcu to jest takie cholerstwo jak niektórzy mówią)
 # loop for
 # Naprawa playgroundu żeby dało się więcej kodu dać (tzn szerokości)
