@@ -1,3 +1,6 @@
+item = "TEST10"
+list = "TEST", "TEST2",
 for each item in list {
 send item
 }
+send item

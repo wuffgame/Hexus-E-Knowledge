@@ -428,6 +428,34 @@ class HexusInterpreter:
 
 
 
+    def visit_ForNode(self, node):
+        if hasattr(node.value, "name"):
+            var_name = node.value.name
+        else:
+            raise TypeError("???")
+        list_value = self.visit(node.list_value)
+        had_var = var_name in self.env.vars
+        old_value = self.env.vars.get(var_name)
+        try:
+            for item in list(list_value):
+                self.env.set(var_name, item)
+                try:
+                    for stmt in node.value2:
+                        try:
+                            self.visit(stmt)
+                        except ContinueException:
+                            break
+                except BreakException:
+                    break
+        finally:
+            if had_var:
+                self.env.vars[var_name] = old_value
+            else:
+                self.env.vars.pop(var_name, None)
+
+
+
+
 
 
 
