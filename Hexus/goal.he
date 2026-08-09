@@ -1,8 +1,17 @@
 # Next Goal
-num = 0
-send num % 2
+for i from 1 to 10 {
+    send i
+}
+score = 0
+score += 1
+# or score++
 
 # Complete the Now section in docs
 # Think about lists (przecinek na końcu to jest takie cholerstwo jak niektórzy mówią)
-# loop for
 # Naprawa playgroundu żeby dało się więcej kodu dać (tzn szerokości)
+# Dodać słowniki
+# większe komentarze
+# Zastanowić się nad switch/match lub/i status = "OK" if x > 0 else "BAD"
+# import młasnych modułów i modułów type2
+# Obsługa błędów czyli try/except/finally
+# Dodać [] do parse_value jako lista
