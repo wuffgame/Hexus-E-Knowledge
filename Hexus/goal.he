@@ -14,4 +14,4 @@ score += 1
 # Zastanowić się nad switch/match lub/i status = "OK" if x > 0 else "BAD"
 # import młasnych modułów i modułów type2
 # Obsługa błędów czyli try/except/finally
-# Dodać [] do parse_value jako lista
+# Dodać [] do parse_value jako lista (może nie jako [] jak tak teraz myśle, tylko poprostu "test, test1,"

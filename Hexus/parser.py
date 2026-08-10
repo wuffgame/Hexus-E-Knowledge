@@ -219,6 +219,18 @@ class ForNode:
     def __repr__(self):
         return f"ForNode(value={self.value}, list_value={self.list_value}, value2={self.value2})"
 
+class VarPlusNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"VarPlusNode(value={self.value})"
+
+class VarMinusNode:
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f"VarMinusNode(value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -757,6 +769,31 @@ class HexusParser:
         self.loop_depth -= 1
         return ForNode(value, list_value, value2)
 
+    def parse_varplus(self):
+        self.consume("VAR")
+        self.consume_value("VAR", "+")
+        if self.peek()[1] == "+":
+            self.consume_value("VAR", "+")
+            return VarPlusNode(1)
+        elif self.peek()[1] == "=":
+            self.consume_value("VAR", "=")
+            value = self.parse_value()
+            return VarPlusNode(value)
+        raise SyntaxError("???")
+
+
+    def parse_varminus(self):
+        self.consume("VAR")
+        self.consume_value("VAR", "-")
+        if self.peek()[1] == "-":
+            self.consume_value("VAR", "-")
+            return VarMinusNode(1)
+        elif self.peek()[1] == "=":
+            self.consume_value("VAR", "=")
+            value = self.parse_value()
+            return VarMinusNode(value)
+        raise SyntaxError("???")
+
 
 
 
@@ -816,7 +853,11 @@ class HexusParser:
             else:
                 raise SyntaxError(f"[LINE: {self.current_line}] You can't use continue outside of loop")
         elif token_type == "VAR":
-            if self.peek(1)[0] == "LPAREN":
+            if self.peek(1)[0] == "OP" and self.peek(1)[1] == "+":
+                node = self.parse_varplus
+            elif self.peek(1)[0] == "MINUS" and self.peek(1)[1] == "-":
+                node = self.parse_varminus
+            elif self.peek(1)[0] == "LPAREN":
                 func_name = self.consume("VAR")
                 node = self.parse_func_call(func_name)
             else:
