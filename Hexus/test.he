@@ -1,6 +1,9 @@
-item = "TEST10"
-list = "TEST", "TEST2",
-for each item in list {
-send item
-}
-send item
+score = 2
+score -= 4
+send score
+score --
+send score
+score ++
+send score
+score += 4
+send score

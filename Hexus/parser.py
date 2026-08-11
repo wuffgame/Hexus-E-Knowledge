@@ -220,16 +220,18 @@ class ForNode:
         return f"ForNode(value={self.value}, list_value={self.list_value}, value2={self.value2})"
 
 class VarPlusNode:
-    def __init__(self, value):
+    def __init__(self, var, value):
+        self.var = var
         self.value = value
     def __repr__(self):
-        return f"VarPlusNode(value={self.value})"
+        return f"VarPlusNode(var={self.var}, value={self.value})"
 
 class VarMinusNode:
-    def __init__(self, value):
+    def __init__(self, var, value):
+        self.var = var
         self.value = value
     def __repr__(self):
-        return f"VarMinusNode(value={self.value})"
+        return f"VarMinusNode(var={self.var}, value={self.value})"
 
 class HexusParser:
     def __init__(self, tokens):
@@ -769,29 +771,30 @@ class HexusParser:
         self.loop_depth -= 1
         return ForNode(value, list_value, value2)
 
+
     def parse_varplus(self):
-        self.consume("VAR")
-        self.consume_value("VAR", "+")
+        var = self.consume("VAR")
+        self.consume_value("OP", "+")
         if self.peek()[1] == "+":
-            self.consume_value("VAR", "+")
-            return VarPlusNode(1)
+            self.consume_value("OP", "+")
+            return VarPlusNode(var, 1)
         elif self.peek()[1] == "=":
-            self.consume_value("VAR", "=")
-            value = self.parse_value()
-            return VarPlusNode(value)
+            self.consume_value("OP", "=")
+            value = self.consume("INT")
+            return VarPlusNode(var, value)
         raise SyntaxError("???")
 
 
     def parse_varminus(self):
-        self.consume("VAR")
-        self.consume_value("VAR", "-")
+        var = self.consume("VAR")
+        self.consume_value("OP", "-")
         if self.peek()[1] == "-":
-            self.consume_value("VAR", "-")
-            return VarMinusNode(1)
+            self.consume_value("OP", "-")
+            return VarMinusNode(var, 1)
         elif self.peek()[1] == "=":
-            self.consume_value("VAR", "=")
-            value = self.parse_value()
-            return VarMinusNode(value)
+            self.consume_value("OP", "=")
+            value = self.consume("INT")
+            return VarMinusNode(var, value)
         raise SyntaxError("???")
 
 
@@ -854,9 +857,9 @@ class HexusParser:
                 raise SyntaxError(f"[LINE: {self.current_line}] You can't use continue outside of loop")
         elif token_type == "VAR":
             if self.peek(1)[0] == "OP" and self.peek(1)[1] == "+":
-                node = self.parse_varplus
-            elif self.peek(1)[0] == "MINUS" and self.peek(1)[1] == "-":
-                node = self.parse_varminus
+                node = self.parse_varplus()
+            elif self.peek(1)[0] == "OP" and self.peek(1)[1] == "-":
+                node = self.parse_varminus()
             elif self.peek(1)[0] == "LPAREN":
                 func_name = self.consume("VAR")
                 node = self.parse_func_call(func_name)

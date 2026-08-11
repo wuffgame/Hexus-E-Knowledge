@@ -454,6 +454,25 @@ class HexusInterpreter:
 
 
 
+    def visit_VarPlusNode(self, node):
+        value = node.value
+        var = node.var.strip()
+        old_value = self.env.vars[var]
+        value = old_value + int(value)
+        self.env.vars[var] = value
+
+
+
+
+    def visit_VarMinusNode(self, node):
+        value = node.value
+        var = node.var.strip()
+        old_value = self.env.vars[var]
+        value = old_value - int(value)
+        self.env.vars[var] = value
+
+
+
 
 
 
