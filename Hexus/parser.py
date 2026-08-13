@@ -815,7 +815,7 @@ class HexusParser:
         self.consume_value("VAR", "to")
         value2 = self.parse_value()
         self.loop_depth += 1
-        block = self.parse_block
+        block = self.parse_block()
         self.loop_depth -= 1
         return NumberForNode(var, value, value2, block)
 
