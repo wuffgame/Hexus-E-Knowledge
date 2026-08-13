@@ -1,9 +1,3 @@
-score = 2
-score -= 4
-send score
-score --
-send score
-score ++
-send score
-score += 4
-send score
+for i from 1 to 10 {
+    send i
+}
