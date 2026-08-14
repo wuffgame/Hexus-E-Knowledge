@@ -4,6 +4,7 @@ token_pattern = [
         ("HASH", r"#"),
         ("INT", r"\d+"),
         ("BOOL", r"\b(True|False)\b"),
+        ("DASHS", r"\/\/"),
         ("OP", r">=|<=|==|!=|%|[+\-=*/><]"),
         ("STRING", r'"[^"\\]*(?:\\.[^"\\]*)*"'),
         ("VAR", r'[a-zA-Z_][a-zA-Z0-9_]*'),

@@ -562,6 +562,14 @@ class HexusParser:
             text.append(self.advance())
         return ComNode(" ".join(text))
 
+    def parse_bigcom(self):
+        text = []
+        self.consume("DASHS")
+        while self.peek()[0] != "DASHS":
+            text.append(self.advance())
+        self.consume("DASHS")
+        return ComNode(" ".join(text))
+
     def parse_if(self):
         self.consume_value("VAR", "if")
         exp = self.parse_expression()
@@ -850,6 +858,8 @@ class HexusParser:
             node = self.parse_read()
         elif token_type == "HASH" and value == "#":
             node = self.parse_com()
+        elif token_type == "DASHS" and value == "//":
+            node = self.parse_bigcom()
         elif token_type == "VAR" and value == "add":
             node = self.parse_listadd()
         elif token_type == "VAR" and value == "remove":
