@@ -443,17 +443,10 @@ table.ref-table code {
     line-height: 1.7;
     padding: 1.25rem;
     outline: none;
-    white-space: pre-wrap !important;
-    overflow-wrap: anywhere !important;
-    word-break: break-all !important;
-    overflow-x: hidden !important;
-    overflow-y: auto;
-}
-
-/* Nie pokazuj poziomego scrollbara w edytorze w przeglądarkach WebKit. */
-.pg-editor::-webkit-scrollbar:horizontal {
-    display: none;
-    height: 0;
+    white-space: pre !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    overflow: auto;
 }
 
 .pg-output {
