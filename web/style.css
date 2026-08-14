@@ -428,15 +428,21 @@ table.ref-table code {
 
 .pg-editor {
     flex: 1;
+    width: 100%;
+    min-height: 0;
+    box-sizing: border-box;
     background-color: transparent;
     color: var(--text);
     border: none;
-    resize: none;
+    resize: vertical;
     font-family: var(--mono);
     font-size: 1.05rem;
     line-height: 1.7;
     padding: 1.25rem;
     outline: none;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    overflow-x: hidden;
 }
 
 .pg-output {
