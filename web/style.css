@@ -19,6 +19,7 @@
 html, body {
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
     background-color: var(--bg);
     color: var(--text);
     font-family: var(--display);
@@ -399,8 +400,9 @@ table.ref-table code {
 
 .playground {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 1.25rem;
+    min-width: 0;
 }
 
 .pg-panel {
@@ -411,6 +413,7 @@ table.ref-table code {
     display: flex;
     flex-direction: column;
     min-height: 520px;
+    min-width: 0;
 }
 
 .pg-panel-header {
@@ -440,19 +443,30 @@ table.ref-table code {
     line-height: 1.7;
     padding: 1.25rem;
     outline: none;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    overflow: hidden auto;
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-all !important;
+    overflow-x: hidden !important;
+    overflow-y: auto;
+}
+
+/* Nie pokazuj poziomego scrollbara w edytorze w przeglądarkach WebKit. */
+.pg-editor::-webkit-scrollbar:horizontal {
+    display: none;
+    height: 0;
 }
 
 .pg-output {
     flex: 1;
+    min-width: 0;
     padding: 1.25rem;
     font-family: var(--mono);
     font-size: 1.02rem;
     color: var(--text-muted);
     white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    overflow-x: hidden;
 }
 
 .pg-toolbar {
