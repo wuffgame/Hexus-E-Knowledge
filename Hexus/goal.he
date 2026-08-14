@@ -1,4 +1,4 @@
-# Next Goal
+# Next Goal (done)
 for i from 1 to 10 {
     send i
 }
@@ -8,7 +8,6 @@ score += 1
 
 # Complete the Now section in docs
 # Think about lists (przecinek na końcu to jest takie cholerstwo jak niektórzy mówią)
-# Naprawa playgroundu żeby dało się więcej kodu dać (tzn szerokości)
 # Dodać słowniki
 # większe komentarze
 # Zastanowić się nad switch/match lub/i status = "OK" if x > 0 else "BAD"
