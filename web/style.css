@@ -443,10 +443,11 @@ table.ref-table code {
     line-height: 1.7;
     padding: 1.25rem;
     outline: none;
-    white-space: pre !important;
+    white-space: nowrap !important;
     overflow-wrap: normal !important;
     word-break: normal !important;
-    overflow: auto;
+    overflow-x: scroll !important;
+    overflow-y: auto;
 }
 
 .pg-output {
