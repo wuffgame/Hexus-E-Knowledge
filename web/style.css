@@ -442,7 +442,8 @@ table.ref-table code {
     outline: none;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    overflow-x: hidden;
+    word-break: break-word;
+    overflow: hidden auto;
 }
 
 .pg-output {
