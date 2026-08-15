@@ -1,1 +1,1 @@
-send "Hello"
+file.open "data.txt" as f

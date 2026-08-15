@@ -313,13 +313,13 @@ class HexusParser:
             )
 
     def consume_end_of_statement(self):
-        token_type, _ = self.peek()
+        token_type, value = self.peek()
         if token_type == "NEWLINE":
             self.consume("NEWLINE")
         elif token_type == "EOF":
             pass
         else:
-            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected end of line, but found token of type '{token_type}'")
+            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected end of line, but found token of type '{token_type}' and value '{value}'")
 
     def parse_value(self):
         token_type, value = self.peek()
