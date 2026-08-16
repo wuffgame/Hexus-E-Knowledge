@@ -1,5 +1,6 @@
 import types
 
+
 class FileOpenNode:
     is_expression = False
     def __init__(self, value, var):
@@ -7,6 +8,15 @@ class FileOpenNode:
         self.var = var
     def __repr__(self):
         return f"FileOpenNode(value={self.value}, var={self.var})"
+
+
+class FileReadNode:
+    is_expression = False
+    def __init__(self, file, var):
+        self.file = file
+        self.var = var
+    def __repr__(self):
+        return f"FileReadNode(file={self.file}, var={self.var})"
 
 class FileParser:
     name = "file"
@@ -17,6 +27,9 @@ class FileParser:
         if token_type == "VAR" and value == "open":
             parser.consume_value("VAR", "open")
             return FileParser.parse_open(parser)
+        elif token_type == "VAR" and value == "read":
+            parser.consume_value("VAR", "read")
+            return FileParser.parse_read(parser)
 
 
     @staticmethod
@@ -26,6 +39,16 @@ class FileParser:
         if parser.peek()[0] == "VAR":
             var = parser.parse_value()
             return FileOpenNode(value, var)
+        raise SyntaxError("???")
+
+    @staticmethod
+    def parse_read(parser):
+        if parser.peek()[0] == "VAR":
+            file = parser.parse_value()
+            parser.consume_value("VAR", "into")
+            if parser.peek()[0] == "VAR":
+                var = parser.parse_value()
+                return FileReadNode(file, var)
         raise SyntaxError("???")
 
 class FileInterpreter:
