@@ -64,9 +64,16 @@ class FileInterpreter:
                 file_obj = open(file_name, "w+", encoding="utf-8")
             self.env.set(var_name, file_obj)
 
+        def visit_FileReadNode(self, node):
+            file = self.visit(node.file)
+            var = node.var.name
+            file_read = file.read()
+            self.env.set(var, file_read)
+
 
         handlers = {
             "visit_FileOpenNode": visit_FileOpenNode,
+            "visit_FileReadNode": visit_FileReadNode,
         }
 
         for name, func in handlers.items():
