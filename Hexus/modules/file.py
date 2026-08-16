@@ -26,6 +26,13 @@ class FileReadLineNode:
     def __repr__(self):
         return f"FileReadLineNode(file={self.file}, var={self.var})"
 
+class FileWriteNode:
+    def __init__(self, value, file):
+        self.value = value
+        self.file = file
+    def __repr__(self):
+        return f"FileWriteNode(value={self.value}, file={self.file})"
+
 class FileParser:
     name = "file"
 
@@ -41,6 +48,9 @@ class FileParser:
         elif token_type == "VAR" and value == "readline":
             parser.consume_value("VAR", "readline")
             return FileParser.parse_readline(parser)
+        elif token_type == "VAR" and value == "write":
+            parser.consume_value("VAR", "write")
+            return FileParser.parse_write()
 
 
     @staticmethod
@@ -71,6 +81,21 @@ class FileParser:
                 var = parser.parse_value()
                 return FileReadLineNode(file, var)
         raise SyntaxError("???")
+
+    @staticmethod
+    def parse_write(parser):
+        value = parser.parse_value()
+        parser.consume_value("VAR", "to")
+        if parser.peek()[0] == "VAR":
+            file = parser.parse_value()
+            return FileWriteNode(value, file)
+        raise SyntaxError("???")
+
+
+
+
+
+
 
 class FileInterpreter:
     @staticmethod
