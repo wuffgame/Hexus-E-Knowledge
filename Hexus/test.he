@@ -1,3 +1,5 @@
 file.open "data.txt" as f
-file.read f into file
+file.readline f into file
+send file
+file.readline f into file
 send file

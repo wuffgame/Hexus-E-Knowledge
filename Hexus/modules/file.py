@@ -39,7 +39,7 @@ class FileParser:
             parser.consume_value("VAR", "read")
             return FileParser.parse_read(parser)
         elif token_type == "VAR" and value == "readline":
-            parser.consume_value("VAR")
+            parser.consume_value("VAR", "readline")
             return FileParser.parse_readline(parser)
 
 
@@ -91,10 +91,17 @@ class FileInterpreter:
             file_read = file.read()
             self.env.set(var, file_read)
 
+        def visit_FileReadLineNode(self, node):
+            file = self.visit(node.file)
+            var = node.var.name
+            line = file.readline()
+            self.env.set(var, line)
+
 
         handlers = {
             "visit_FileOpenNode": visit_FileOpenNode,
             "visit_FileReadNode": visit_FileReadNode,
+            "visit_FileReadLineNode": visit_FileReadLineNode,
         }
 
         for name, func in handlers.items():
