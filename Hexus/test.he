@@ -1,3 +1,4 @@
 file.open "data.txt" as f
 file.write "hello" to f
+file.append " world" to f
 file.close f

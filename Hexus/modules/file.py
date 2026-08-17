@@ -1,4 +1,5 @@
 import types
+from hashlib import file_digest
 from typing import Any
 
 
@@ -40,6 +41,13 @@ class FileCloseNode:
     def __repr__(self):
         return f"FileCloseNode(file={self.file})"
 
+class FileAppendNode:
+    def __init__(self, value, file):
+        self.value = value
+        self.file = file
+    def __repr__(self):
+        return f"FileAppendNode(value={self.value}, file={self.file})"
+
 class FileParser:
     name = "file"
 
@@ -61,6 +69,9 @@ class FileParser:
         elif token_type == "VAR" and value == "close":
             parser.consume_value("VAR", "close")
             return FileParser.parse_close(parser)
+        elif token_type == "VAR" and value == "append":
+            parser.consume_value("VAR", "append")
+            return FileParser.parse_append(parser)
 
 
     @staticmethod
@@ -108,6 +119,15 @@ class FileParser:
             return FileCloseNode(file)
         raise SyntaxError("???")
 
+    @staticmethod
+    def parse_append(parser):
+        value = parser.parse_value()
+        parser.consume_value("VAR", "to")
+        if parser.peek()[0] == "VAR":
+            file = parser.parse_value()
+            return FileAppendNode(value, file)
+        raise SyntaxError("???")
+
 
 
 
@@ -150,6 +170,12 @@ class FileInterpreter:
             file = self.visit(node.file)
             file.close()
 
+        def visit_FileAppendNode(self, node):
+            file = self.visit(node.file)
+            value = self.visit(node.value)
+            file.seek(0, 2)
+            file.write(value)
+
 
         handlers = {
             "visit_FileOpenNode": visit_FileOpenNode,
@@ -157,6 +183,7 @@ class FileInterpreter:
             "visit_FileReadLineNode": visit_FileReadLineNode,
             "visit_FileWriteNode": visit_FileWriteNode,
             "visit_FileCloseNode": visit_FileCloseNode,
+            "visit_FileAppendNode": visit_FileAppendNode,
         }
 
         for name, func in handlers.items():
