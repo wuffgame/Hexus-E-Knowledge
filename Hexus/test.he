@@ -1,5 +1,3 @@
 file.open "data.txt" as f
-file.readline f into file
-send file
-file.readline f into file
-send file
+file.write "hello" to f
+file.close f
