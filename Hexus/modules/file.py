@@ -50,7 +50,7 @@ class FileParser:
             return FileParser.parse_readline(parser)
         elif token_type == "VAR" and value == "write":
             parser.consume_value("VAR", "write")
-            return FileParser.parse_write()
+            return FileParser.parse_write(parser)
 
 
     @staticmethod
@@ -122,11 +122,17 @@ class FileInterpreter:
             line = file.readline()
             self.env.set(var, line)
 
+        def visit_FileWriteNode(self, node):
+            file = self.visit(node.file)
+            value = self.visit(node.value)
+            file.write(value)
+
 
         handlers = {
             "visit_FileOpenNode": visit_FileOpenNode,
             "visit_FileReadNode": visit_FileReadNode,
             "visit_FileReadLineNode": visit_FileReadLineNode,
+            "visit_FileWriteNode": visit_FileWriteNode,
         }
 
         for name, func in handlers.items():
