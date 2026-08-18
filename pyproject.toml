@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hexus-lang"
+version = "0.1.0b1"
+description = "Hexus (E-Knowledge) programming language"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+
+[project.scripts]
+hexus = "Hexus.cli:main"
+
+[tool.setuptools]
+packages = ["Hexus", "Hexus.modules"]
