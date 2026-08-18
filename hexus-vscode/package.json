@@ -1,0 +1,41 @@
+{
+  "name": "hexus-lang",
+  "displayName": "Hexus (E-Knowledge) Programming Language",
+  "description": "Syntax highlighting and runner for Hexus-lang",
+  "version": "0.1.0",
+  "publisher": "wuff",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:hexus"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "hexus",
+      "aliases": ["Hexus", "hexus"],
+      "extensions": [".he"]
+    }],
+    "grammars": [{
+      "language": "hexus",
+      "scopeName": "source.hexus",
+      "path": "./syntaxes/hexus.tmLanguage.json"
+    }],
+    "commands": [{
+      "command": "hexus.run",
+      "title": "Run Hexus File",
+      "icon": "$(play)"
+    }],
+    "menus": {
+      "editor/title": [{
+        "command": "hexus.run",
+        "group": "navigation",
+        "when": "resourceExtname == .he"
+      }]
+    }
+  }
+}
