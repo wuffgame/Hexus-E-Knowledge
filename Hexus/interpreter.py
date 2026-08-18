@@ -3,6 +3,7 @@ from typing import Any, Callable
 import importlib
 import pkgutil
 from Hexus import modules
+import re
 
 
 class BreakException(Exception):
@@ -23,11 +24,21 @@ class Environment:
     def get(self, name):
         if name in self.vars:
             return self.vars[name]
+
         if self.parent:
             return self.parent.get(name)
+
         raise NameError(f"Variable '{name}' is not defined!!!")
 
     def set(self, name, value):
+        if name in self.vars:
+            self.vars[name] = value
+            return
+
+        if self.parent and name in self.parent:
+            self.parent.set(name, value)
+            return
+
         self.vars[name] = value
 
     def __contains__(self, name):
@@ -74,34 +85,26 @@ class HexusInterpreter:
             return float(value)
         return int(value)
 
-
     def visit_StringNode(self, node):
-        if isinstance(node.value, str):
-            words_list = node.value.split()
-        else:
-            words_list = node.value
+        value = node.value
 
+        if not isinstance(value, str):
+            return value
 
-        if len(words_list) == 1:
-            text = words_list[0][1:-1]
-            if text.startswith("{") and text.endswith("}"):
-                var_name = text[1:-1]
-                if var_name in self.env:
-                    return str(self.env.get(var_name))
-            return text
-        first = words_list[0][1:]
-        middle = words_list[1:-1]
-        last = words_list[-1][:-1]
-        newtxt = [first] + middle + [last]
-        for i, t in enumerate(newtxt):
-            if t.startswith("{") and t.endswith("}"):
-                t = t[1:-1]
-                if t in self.env:
-                    txt = self.env.get(t)
-                    newtxt[i] = str(txt)
+        # Remove surrounding quotes if they are present.
+        if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+            value = value[1:-1]
 
-        full_txt = " ".join(newtxt)
-        return full_txt
+        def replace_variable(match):
+            var_name = match.group(1).strip()
+
+            if var_name in self.env:
+                return str(self.env.get(var_name))
+
+            # Keep unknown variables untouched.
+            return match.group(0)
+
+        return re.sub(r"\{([^{}]+)\}", replace_variable, value)
 
     def visit_VariableNode(self, node):
         if node.name in self.env:
@@ -452,24 +455,23 @@ class HexusInterpreter:
             else:
                 self.env.vars.pop(var_name, None)
 
-
-
     def visit_VarPlusNode(self, node):
         value = node.value
         var = node.var.strip()
-        old_value = self.env.vars[var]
-        value = old_value + int(value)
-        self.env.vars[var] = value
 
+        old_value = self.env.get(var)
+        new_value = old_value + int(value)
 
-
+        self.env.set(var, new_value)
 
     def visit_VarMinusNode(self, node):
         value = node.value
         var = node.var.strip()
-        old_value = self.env.vars[var]
-        value = old_value - int(value)
-        self.env.vars[var] = value
+
+        old_value = self.env.get(var)
+        new_value = old_value - int(value)
+
+        self.env.set(var, new_value)
 
 
 

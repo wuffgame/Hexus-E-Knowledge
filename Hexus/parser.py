@@ -378,7 +378,6 @@ class HexusParser:
             return VariableNode(var_name)
         elif token_type == "STRING":
             val = self.consume("STRING")
-            val = val.split()
             return StringNode(val)
         elif token_type == "BOOL":
             self.consume("BOOL")
