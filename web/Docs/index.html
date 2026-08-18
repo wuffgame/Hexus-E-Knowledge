@@ -38,6 +38,7 @@
             <a href="#break">Loop Control Commands (break & continue)</a>
             <a href="#func">Custom Functions (func & return)</a>
             <a href="#list">List Management (add, remove, length of, pos of)</a>
+            <a href="#for-each">For-Each Loop (Iterating Over Lists)</a>
             <details class="docs-subgroup">
                 <summary>Data Types</summary>
                 <a href="#dynamic">Dynamic Typing System Overview</a>
@@ -407,6 +408,39 @@ remove pos 1 from inventory</code></pre>
                     <p>- Managing player inventories, active party members, or high-score leaderboards in games.</p>
                     <p>- Collecting dynamic data from user input loops before batch processing.</p>
                     <p>- Creating queue systems where items are continuously added and removed.</p>
+                </section>
+
+                <section class="docs-section" id="for-each">
+                    <h2>For-Each Loop (Iterating Over Lists)</h2>
+                    <p>The <code class="inline">for each</code> loop allows you to iterate over every elements of a list variable. On each iteration, the current element is assigned to a temporary variable that you can use inside the loop body. The loop runs exactly once per list item, making it perfect for processing collections without manual index tracking.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>for each &lt;item_var&gt; in &lt;list_var&gt; {
+    # Code executed for each element
+}</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code>fruits = "apple", "banana", "cherry",
+
+for each fruit in fruits {
+    send "Current fruit: {fruit}"
+}
+# Output:
+# Current fruit: apple
+# Current fruit: banana
+# Current fruit: cherry
+
+# Using for each with numbers
+scores = 10, 20, 30, 40,
+total = 0
+
+for each score in scores {
+    total = total + score
+}
+send "Sum of all scores: {total}"
+# Output: Sum of all scores: 100</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Displaying all items from a player's inventory or shopping cart.</p>
+                    <p>- Calculating totals, averages, or statistics from a dynamic data set.</p>
+                    <p>- Filtering or transforming every element inside a list without manual indexing.</p>
                 </section>
 
                 <section class="docs-section">
