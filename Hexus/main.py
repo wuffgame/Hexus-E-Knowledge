@@ -1,6 +1,6 @@
 from Hexus.interpreter import HexusInterpreter
 from Hexus.parser import HexusParser
-from lexer import tokenizer_tokens
+from Hexus.lexer import tokenizer_tokens
 
 def main():
     file_name = "test.he"

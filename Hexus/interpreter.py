@@ -2,7 +2,7 @@ from Hexus.parser import FunctionDefNode
 from typing import Any, Callable
 import importlib
 import pkgutil
-import modules
+from Hexus import modules
 
 
 class BreakException(Exception):
