@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmLanguage.json",
+  "name": "Hexus",
+  "patterns": [
+    {
+      "name": "comment.line.number-sign.hexus",
+      "match": "#.*$"
+    },
+    {
+      "name": "commant.block.hexus",
+      "begin": "//",
+      "end": "//"
+    },
+    {
+      "name": "keyword.control.hexus",
+      "match": "\\b(if|elif|else|while|repeat|times|from|to|each|in|break|continue|func|return|stop|wait)\\b"
+    },
+    {
+      "name": "keyword.other.hexus",
+      "match": "\\b(send|read|add|remove|length of|pos|of|make|lower|upper|timer|start|now)\\b"
+    },
+    {
+      "name": "string.quoted.double.hexus",
+      "begin": "\"",
+      "end": "\""
+    },
+    {
+      "name": "constant.numeric.hexus",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
+    },
+    {
+      "name": "constant.language.boolean.hexus",
+      "match": "\\b(True|False)\\b"
+    }
+  ],
+  "scopeName": "source.hexus"
+}
