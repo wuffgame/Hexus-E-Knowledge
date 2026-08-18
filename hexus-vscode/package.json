@@ -4,6 +4,10 @@
   "description": "Syntax highlighting and runner for Hexus-lang",
   "version": "0.1.0",
   "publisher": "wuff",
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/wuff/Hexus-E-Knowledge"
+  },
   "engines": {
     "vscode": "^1.60.0"
   },
