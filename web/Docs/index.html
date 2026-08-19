@@ -69,6 +69,7 @@
             <details class="docs-subgroup">
                 <summary>Modules</summary>
                 <a href="#time-mod" class="sub-link">Time Module</a>
+                <a href="#file_mod" class="sub-link">File Module</a>
             </details>
             </div>
         </aside>
@@ -1157,6 +1158,71 @@ utc_plus_1 = UTC + 1</code></pre>
                         <p>- Generating date-stamped filenames or save-file names.</p>
                         <p>- Building countdown timers or scheduling systems based on current time components.</p>
                         <p>- Normalizing timestamps across different timezones using UTC offsets.</p>
+                    </section>
+                    <section class="docs-subsection" id="file_mod">
+                        <h3>File Module</h3>
+                        <p>The <code class="inline">File</code> module provides basic file input/output operations. It allows you to open files, read their contents (full or line-by-line), write data (overwrite or append), and close them. Files are opened in read-write mode, and if a file does not exist, it is automatically created.</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>file.open "&lt;filename&gt;" as &lt;var&gt;</code></pre>
+                        <pre class="code-block"><code>file.read &lt;file_var&gt; into &lt;var&gt;</code></pre>
+                        <pre class="code-block"><code>file.readline &lt;file_var&gt; into &lt;var&gt;</code></pre>
+                        <pre class="code-block"><code>file.write &lt;value&gt; to &lt;file_var&gt;</code></pre>
+                        <pre class="code-block"><code>file.append &lt;value&gt; to &lt;file_var&gt;</code></pre>
+                        <pre class="code-block"><code>file.close &lt;file_var&gt;</code></pre>
+                        <p>Module Functions Reference:</p>
+                        <table class="ref-table">
+                            <thead>
+                                <tr><th>Function</th><th>Description</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>file.open "&lt;path&gt;" as &lt;var&gt;</code></td><td>Opens a file (creates it if it doesn't exist) and stores the file handle in a variable</td></tr>
+                                <tr><td><code>file.read &lt;file_var&gt; into &lt;var&gt;</code></td><td>Reads the entire file content into a variable</td></tr>
+                                <tr><td><code>file.readline &lt;file_var&gt; into &lt;var&gt;</code></td><td>Reads a single line from the file into a variable</td></tr>
+                                <tr><td><code>file.write &lt;value&gt; to &lt;file_var&gt;</code></td><td>Overwrites the file with the given value</td></tr>
+                                <tr><td><code>file.append &lt;value&gt; to &lt;file_var&gt;</code></td><td>Appends the given value to the end of the file</td></tr>
+                                <tr><td><code>file.close &lt;file_var&gt;</code></td><td>Closes the file handle</td></tr>
+                            </tbody>
+                        </table>
+                        <p>Code Example:</p>
+                        <pre class="code-block"><code># Opening a file (creates it if it doesn't exist)
+file.open "notes.txt" as myfile
+
+# Writing data to the file (overwrites existing content)
+file.write "Hello, Hexus!" to myfile
+
+# Appending more data to the end of the file
+file.append "\nThis is a new line." to myfile
+
+# Reading the entire file content
+file.read myfile into content
+send "Full file content: {content}"
+
+# Reading line by line
+file.readline myfile into line1
+send "First line: {line1}"
+
+file.readline myfile into line2
+send "Secound line: {line2}
+
+# Always close the file when done
+file.close myfile
+
+# Practical example: logging
+file.open "log.txt" as log
+file.append "{now}: Application started" to log
+file.append "{now}: Processing data..." to log
+file.append "{now}: Done." to log
+
+# Reading the log back
+file.open "log.txt" as log
+file.read log into log_data
+send "Log contents:\n{lod_data}"
+file.close log</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Saving and loading player progress, high scores, or game configuration.</p>
+                        <p>- Writing log files with timestamps for debugging or audit trails.</p>
+                        <p>- Reading structured data (CSV-like, config files) line by line</p>
+                        <p>- Creating template files or exporting data from a Hexus script.</p>
                     </section>
                 </section>
 
