@@ -426,7 +426,7 @@ class HexusInterpreter:
         value1 = self.visit(node.value1)
         value2 = self.visit(node.value2)
         import random
-        return random.randrange(value1, value2)
+        return random.randint(value1, value2)
 
 
 

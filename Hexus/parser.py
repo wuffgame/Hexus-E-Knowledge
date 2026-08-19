@@ -770,9 +770,9 @@ class HexusParser:
         self.consume_value("VAR", "random")
         self.consume_value("VAR", "number")
         self.consume_value("VAR", "from")
-        value1 = self.parse_value()
+        value1 = self.parse_expression()
         self.consume_value("VAR", "to")
-        value2 = self.parse_value()
+        value2 = self.parse_expression()
         return RandomNode(value1, value2)
 
 

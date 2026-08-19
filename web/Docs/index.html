@@ -40,6 +40,7 @@
             <a href="#list">List Management (add, remove, length of, pos of)</a>
             <a href="#for-each">For-Each Loop (Iterating Over Lists)</a>
             <a href="#num-for">Numeric For Loop (For X from Y to Z)</a>
+            <a href="#get-random">Get Random Number</a>
             <details class="docs-subgroup">
                 <summary>Data Types</summary>
                 <a href="#dynamic">Dynamic Typing System Overview</a>
@@ -482,6 +483,34 @@ for row from 1 to 3 {
                     <p>- Generating numbered menus or selecting items by an index range.</p>
                     <p>- Performing repetitive calculations a fixed number of times.</p>
                     <p>- Building grid-based game boards or tile maps (nested for loops).</p>
+                </section>
+
+                <section class="docs-section" id="get-random">
+                    <h2>Get Random Number</h2>
+                    <p>The <code class="inline">get random number from ... to ...</code> command generates a pseudo-random integr within a specified inclusive range. Both the lower and upper bounds can be literal numbers, variables, or expressions. This command is an expression, so it can be used directly inside assignments, conditions, or output statements.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>get random number from &lt;lower_bound&gt; to &lt;upper_bound&gt;</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Basic random number generation
+dice_roll = get random number from 1 to 6
+send "You rolled a: {dice_roll}"
+
+# Using variables as bounds
+min_val = 50
+max_val = 100
+random_score = get random number from min_val to max_val
+send "Random score: {random_score}"
+
+# Directly in an if condition
+if get random number from 1 to 10 > 5 {
+    send "Lucky! You passed the odds check."
+} else {
+    send "Unlucky this time."
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Creating dice-rolling mechanics or random loot tables in text-based games.</p>
+                    <p>- Selecting random elements, rewards, or enemies from a weighted list.</p>
+                    <p>- Adding procedural variety or randomness to simulation scripts.</p>
                 </section>
 
                 <section class="docs-section">
