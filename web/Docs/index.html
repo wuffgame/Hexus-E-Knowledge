@@ -41,6 +41,7 @@
             <a href="#for-each">For-Each Loop (Iterating Over Lists)</a>
             <a href="#num-for">Numeric For Loop (For X from Y to Z)</a>
             <a href="#get-random">Get Random Number</a>
+            <a href="#now">Now Keyword</a>
             <details class="docs-subgroup">
                 <summary>Data Types</summary>
                 <a href="#dynamic">Dynamic Typing System Overview</a>
@@ -512,6 +513,32 @@ if get random number from 1 to 10 > 5 {
                     <p>- Creating dice-rolling mechanics or random loot tables in text-based games.</p>
                     <p>- Selecting random elements, rewards, or enemies from a weighted list.</p>
                     <p>- Adding procedural variety or randomness to simulation scripts.</p>
+                </section>
+
+                <section class="docs-section">
+                    <h2>Now Keyword</h2>
+                    <p>The <code class="inline">now</code> keyword returns the current system date and time as string value. It can be used anywhere an expression is expected - in assignments, inside <code class="inline">send</code> output, or as part of string interpolation. This is useful for logging, timestamps, or measuring real-world time.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>now</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Simple timestamp output
+send "Current system time: {now}"
+
+# Storing the timestamp in a variable
+start_time = now
+send "Session started at: {start_time}"
+
+# Using now for logging
+send "User login attempt recorded at {now}"
+
+# Combine with timer to measure real elapsed time
+send "Script launched at: {now}"
+wait 2 s
+send "Script completed at: {now}"</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Adding timestamps to log messages or audit trails.</p>
+                    <p>- Recording when a player started or finished a game level.</p>
+                    <p>- Tracking script execution windows for performance monitoring.</p>
                 </section>
 
                 <section class="docs-section">
