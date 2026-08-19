@@ -32,6 +32,7 @@
             <a href="#read">Read Command</a>
             <a href="#comm">Comments</a>
             <a href="#var">Variable Declaration & Assignment</a>
+            <a href="#inc-op">Increment & Decrement Operators (++, --, +=, -=)</a>
             <a href="#if">Conditional Statements (if/elif/else)</a>
             <a href="#while">Conditional Loops (while)</a>
             <a href="#repeat">Fixed-Iteration Loops (repeat)</a>
@@ -156,6 +157,60 @@ fruits is "apple", "banana", "cherry",
 # List declaration with one element
 name = "Hexus",</code></pre>
                     <p>In list declaration end comma is very important!!!</p>
+                </section>
+
+                <section class="docs-section" id="inc-op">
+                    <h2>Increment & Decrement Operators (++, --, =+, -=)</h2>
+                    <p>Hexus provides shorthand operators to increment or decrement variables without writing a full assignment expression. The <code class="inline">++</code> and <code>--</code> operators increase or decrease a variable by exactly 1. The <code>+=</code> and <code>-=</code> operators allow you to add or subtract any numeric value from a variable. These operators modify the variable in-place.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>&lt;var&gt;++</code></pre>
+                    <pre class="code-block"><code>&lt;var&gt;--</code></pre>
+                    <pre class="code-block"><code>&lt;var&gt; += &lt;number&gt;</code></pre>
+                    <pre class="code-block"><code>&lt;var&gt; -= &lt;number&gt;</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Basic increment and decrement
+score = 0
+score++
+send score
+# Output: 1
+
+lives = 3
+lives--
+send lives
+# Output: 2
+
+# Using += and -= with custom amounts
+health = 100
+health += 20
+send health
+# Output: 120
+
+health -= 35
+send health
+# Output: 85
+
+# Practical counter example
+counter = 1
+
+while counter <= 5 {
+    send "Round: {counter}"
+    counter++
+}
+
+# Using += inside a loop for accumulation
+total = 0
+i = 1
+
+while i <= 10 {
+    total += i
+    i++
+}
+send "Sum of 1 to 10: {total}"
+# Output: Sum of 1 to 10: 55</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Keeping score, counting kills, or tracking round numbers in games.</p>
+                    <p>- Accumulating values (e.g., summing stats, building totals) in compact syntax.</p>
+                    <p>- Simplifying loop counters and avoiding repetitive <code class="inline">counter = counter + 1</code> lines.</p>
                 </section>
 
                 <section class="docs-section" id="if">
