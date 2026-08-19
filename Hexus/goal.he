@@ -1,10 +1,9 @@
-# Next Goal (done)
-for i from 1 to 10 {
-    send i
+# Next Goal
+for row from 1 to 3 {
+    for col from 1 to 3 {
+        send "{row} * {col} = {row * col}"
+    }
 }
-score = 0
-score += 1
-# or score++
 
 # Complete the Now section in docs
 - # Think about lists (przecinek na końcu to jest takie cholerstwo jak niektórzy mówią)
