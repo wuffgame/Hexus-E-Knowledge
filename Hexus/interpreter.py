@@ -1,4 +1,5 @@
-from Hexus.parser import FunctionDefNode
+from Hexus.parser import FunctionDefNode, HexusParser
+from Hexus.lexer import tokenizer_tokens
 from typing import Any, Callable
 import importlib
 import pkgutil
@@ -91,18 +92,21 @@ class HexusInterpreter:
         if not isinstance(value, str):
             return value
 
-        # Remove surrounding quotes if they are present.
         if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
             value = value[1:-1]
 
         def replace_variable(match):
-            var_name = match.group(1).strip()
+            expression = match.group(1).strip()
 
-            if var_name in self.env:
-                return str(self.env.get(var_name))
-
-            # Keep unknown variables untouched.
-            return match.group(0)
+            try:
+                tokens = [token for token in tokenizer_tokens(expression) if token[0] != "SKIP"]
+                expression_parser = HexusParser(tokens)
+                expression_node = expression_parser.parse_expression()
+                if expression_parser.peek()[0] != "EOF":
+                    raise SyntaxError(f"Unexpected token in interpolation: {expression_parser.peek()[1]}")
+                return str(self.visit(expression_node))
+            except NameError:
+                return match.group(0)
 
         return re.sub(r"\{([^{}]+)\}", replace_variable, value)
 

@@ -68,9 +68,7 @@
             </details>
             <details class="docs-subgroup">
                 <summary>Modules</summary>
-                <details class="docs-subgroup">
-                    <summary>Time</summary>
-                </details>
+                <a href="#time-mod" class="sub-link">Time Module</a>
             </details>
             </div>
         </aside>
@@ -1013,9 +1011,8 @@ send "Task completed in: {elapsed} seconds."</code></pre>
                         <p>- Creating game timers to measure how quickly a player completes a level or puzzle.</p>
                         <p>- Profiling bottlenecks in your Hexus scripts.</p>
                     </section>
-                </section>
 
-                <section class="docs-subsection" id="stop">
+                    <section class="docs-subsection" id="stop">
                     <h3>Stop Command</h3>
                     <p>The <code class="inline">stop</code> command immediately halts program execution. It can be used standalone to exit the script at any point, or with an optional string message that is displayed before termination. This is useful for controlled shutdowns, error handling, or debugging breakpoints.</p>
                     <p>Syntax:</p>
@@ -1089,6 +1086,78 @@ send "Negative Fahrenheit: {fahrenheit_negative}"</code></pre>
                     <p>- Flipping the sign of a variable (e.g., inverting a direction vector in games)</p>
                     <p>- Working with negative offsets or coordinates in grid-based simulations.</p>
                     <p>- Making code more explicit when a positive value is intentional.</p>
+                    </section>
+                </section>
+
+                <section class="docs-section" id="modules">
+
+                    <h2>Modules</h2>
+                    <p>Desc</p>
+
+                    <section class="docs-subsection" id="time-mod">
+                        <h3>Time Module</h3>
+                        <p>The <code class="inline">Time</code> module provides built-in functions for retrieving the current system date and time components. It supports extracting individual values (hour, minute, second, day, month, year) as well as formatted datetime strings with optional UTC offset. The module also exposes a <code class="inline">UTC</code> constant for timezone manipulation.</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>time.hour</code></pre>
+                        <pre class="code-block"><code>time.minute</code></pre>
+                        <pre class="code-block"><code>time.second</code></pre>
+                        <pre class="code-block"><code>time.day</code></pre>
+                        <pre class="code-block"><code>time.month</code></pre>
+                        <pre class="code-block"><code>time.year</code></pre>
+                        <pre class="code-block"><code>time.get time "&lt;format_string&gt;"</code></pre>
+                        <pre class="code-block"><code>time.get time &lt;UTC_offset&gt;</code></pre>
+                        <p>Module Functions Reference:</p>
+                        <table class="ref-table">
+                        <thead>
+                        <tr><th>Function</th><th>Returns</th><th>Example Output</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr><td><code>time.hour</code></td><td>Current hour (00-23)</td><td><code>"14"</code></td></tr>
+                        <tr><td><code>time.minute</code></td><td>Current minute (00-59)</td><td><code>"05"</code></td></tr>
+                        <tr><td><code>time.second</code></td><td>Current second (00-59)</td><td><code>"47"</code></td></tr>
+                        <tr><td><code>time.day</code></td><td>Current day of month (01-31)</td><td><code>"19"</code></td></tr>
+                        <tr><td><code>time.month</code></td><td>Current month (01-12)</td><td><code>"08"</code></td></tr>
+                        <tr><td><code>time.year</code></td><td>Current year</td><td><code>"2026"</code></td></tr>
+                        <tr><td><code>time.get time "&lt;format&gt;"</code></td><td>Current datetime with custom format</td><td><code>"2026-08-19 14:05:47"</code></td></tr>
+                        <tr><td><code>time.get time UTC</code></td><td>Current UTC datetime</td><td><code>"2026-08-19 12:05:47"</code></td></tr>
+                        <tr><td><code>time.get time UTC+2</code></td><td>Current datetime with UTC+2 offset</td><td><code>"2026-08-19 14:05:47"</code></td></tr>
+                        <tr><td><code>time.get time UTC-5</code></td><td>Current datetime with UTC-5 offset</td><td><code>"2026-08-19 09:05:47"</code></td></tr>
+                        </tbody>
+                        </table>
+                        <p>Code Example:</p>
+                        <pre class="code-block"><code># Getting individual time components
+send "Current hour: {time.hour}"
+send "Current minute: {time.minute}"
+send "Current second: {time.second}"
+
+# Getting date components
+send "Day: {time.day}"
+send "Month: {time.month}"
+send "Year: {time.year}"
+
+# Custom formatted datetime using strftime patterns
+send "Full time: {time.get time '%H:%M:%S'}"
+
+# Working with UTC timezone
+send "UTC time: {time.get time UTC}"
+
+# Applying timezone offsets
+send "UTC+2: {time.get time UTC+2}"
+send "UTC-5: {time.get time UTC-5}"
+
+# Storing module results in variables
+current_year = time.year
+send "The year is: {current_year}"
+
+# Using UTC constant independently for timezone math
+utc_plus_1 = UTC + 1</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Displaying real-time clocks or timestamps in terminal applications.</p>
+                        <p>- Logging events with precise time and timezone information.</p>
+                        <p>- Generating date-stamped filenames or save-file names.</p>
+                        <p>- Building countdown timers or scheduling systems based on current time components.</p>
+                        <p>- Normalizing timestamps across different timezones using UTC offsets.</p>
+                    </section>
                 </section>
 
                 <!-- Sample of table

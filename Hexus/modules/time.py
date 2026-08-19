@@ -27,7 +27,6 @@ class TimeMinuteNode:
     def __repr__(self):
         return "TimeMinuteNode()"
 
-
 class TimeSecNode:
     is_expression = True
     def __repr__(self):
@@ -97,32 +96,26 @@ class TimeParser:
 
     @staticmethod
     def parse_hour(parser):
-        parser.consume_end_of_statement()
         return TimeHourNode()
 
     @staticmethod
     def parse_minute(parser):
-        parser.consume_end_of_statement()
         return TimeMinuteNode()
 
     @staticmethod
     def parse_second(parser):
-        parser.consume_end_of_statement()
         return TimeSecNode()
 
     @staticmethod
     def parse_day(parser):
-        parser.consume_end_of_statement()
         return TimeDayNode()
 
     @staticmethod
     def parse_month(parser):
-        parser.consume_end_of_statement()
         return TimeMonthNode()
 
     @staticmethod
     def parse_year(parser):
-        parser.consume_end_of_statement()
         return TimeYearNode()
 
     @staticmethod
