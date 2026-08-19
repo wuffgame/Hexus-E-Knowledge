@@ -691,12 +691,12 @@ class HexusParser:
 
     def parse_minus(self):
         self.consume("OP")
-        value = self.parse_value()
+        value = self.parse_expression()
         return MinusNode(value)
 
     def parse_plus(self):
         self.consume("OP")
-        value = self.parse_value()
+        value = self.parse_expression()
         return PlusNode(value)
 
 

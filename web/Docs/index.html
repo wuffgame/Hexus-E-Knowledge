@@ -31,7 +31,7 @@
             <a href="#send">Send Command</a>
             <a href="#read">Read Command</a>
             <a href="#comm">Comments</a>
-            <a href="b-comm">Block Comments</a>
+            <a href="#b-comm">Block Comments</a>
             <a href="#var">Variable Declaration & Assignment</a>
             <a href="#inc-op">Increment & Decrement Operators (++, --, +=, -=)</a>
             <a href="#if">Conditional Statements (if/elif/else)</a>
@@ -61,6 +61,7 @@
                 <a href="#make" class="sub-link">Make Command (lower & upper)</a>
                 <a href="#timer" class="sub-link">Timer Command</a>
                 <a href="#stop" class="sub-link">Stop Command</a>
+                <a href="#unary" class="sub-link">Unary Minus & Plus (-expr, +expr)</a>
             </details>
             <details class="docs-subgroup">
                 <summary>Modules</summary>
@@ -833,7 +834,7 @@ send "Task completed in: {elapsed} seconds."</code></pre>
                 </section>
 
                 <section class="docs-subsection" id="stop">
-                    <h2>Stop Command</h2>
+                    <h3>Stop Command</h3>
                     <p>The <code class="inline">stop</code> command immediately halts program execution. It can be used standalone to exit the script at any point, or with an optional string message that is displayed before termination. This is useful for controlled shutdowns, error handling, or debugging breakpoints.</p>
                     <p>Syntax:</p>
                     <pre class="code-block"><code></code>stop</pre>
@@ -868,6 +869,44 @@ while True {
                     <p>- Exiting a script immediately when critical validation fails.</p>
                     <p>- Implementing a hard shutdown after a game-over condition.</p>
                     <p>- Debugging by placing a <code class="inline">stop</code> at a specific line to inspect program flow.</p>
+                </section>
+
+                <section class="docs-subsection" id="unary">
+                    <h3>Unary Minus & Plus (-expr, +expr)</h3>
+                    <p>The unary minus (<code class="inline">-</code>) and unary plus (<code class="inline">+</code>) operators can be placed before a number, variable, or parenthesized expression. The unary minus negates the value (flips the sign), while the unary plus explicitly indicates a positive value (it has no practical effect on the value, but can improve readability).</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>-&lt;expression&gt;</code></pre>
+                    <pre class="code-block"><code>+&lt;expression&gt;</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Negating numeric values
+temperature = -5
+send temperature
+# Output: -5
+
+# Using unary minus in calculations
+a = 10
+b = -a
+send b
+# Output: -10
+
+# Unary minus with parentheses
+result = -(20 + 5)
+send result
+# Output: -25
+
+# Unary plus (explicitly marks positive)
+positive_value = +42
+send positive_value
+# Output: 42
+
+# Practical example with temperature conversion
+celsius = 25
+fahrenheit_negative = -(celsius * 9 / 5 + 32)
+send "Negative Fahrenheit: {fahrenheit_negative}"</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Flipping the sign of a variable (e.g., inverting a direction vector in games)</p>
+                    <p>- Working with negative offsets or coordinates in grid-based simulations.</p>
+                    <p>- Making code more explicit when a positive value is intentional.</p>
                 </section>
 
                 <!-- Sample of table
