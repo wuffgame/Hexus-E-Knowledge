@@ -57,6 +57,7 @@
                 <a href="#clear" class="sub-link">Clear Command</a>
                 <a href="#make" class="sub-link">Make Command (lower & upper)</a>
                 <a href="#timer" class="sub-link">Timer Command</a>
+                <a href="#stop" class="sub-link">Stop Command</a>
             </details>
             <details class="docs-subgroup">
                 <summary>Modules</summary>
@@ -289,8 +290,8 @@ repeat 3 times {
                     <p>- <code class="inline">continue</code>: Skips the rest of the current iteration and jumps directly to the next loop cycle.</p>
                     <p>Note: Using <code class="inline">break</code> or <code class="inline">continue</code> outside of an active loop block will raise a syntax error.</p>
                     <p>Syntax:</p>
-                    <pre class="code-block"><code>break
-continue</code></pre>
+                    <pre class="code-block"><code>break</code></pre>
+                    <pre class="code-block"><code>continue</code></pre>
                     <p>Code Examples:</p>
                     <pre class="code-block"><code># Using break to exit an infinite loop prematurely
 search_target = 7
@@ -711,6 +712,44 @@ send "Task completed in: {elapsed} seconds."</code></pre>
                         <p>- Creating game timers to measure how quickly a player completes a level or puzzle.</p>
                         <p>- Profiling bottlenecks in your Hexus scripts.</p>
                     </section>
+                </section>
+
+                <section class="docs-subsection" id="stop">
+                    <h2>Stop Command</h2>
+                    <p>The <code class="inline">stop</code> command immediately halts program execution. It can be used standalone to exit the script at any point, or with an optional string message that is displayed before termination. This is useful for controlled shutdowns, error handling, or debugging breakpoints.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code></code>stop</pre>
+                    <pre class="code-block"><code>stop &lt;message_string&gt;</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Simple program termination
+read "Enter your age: " to user_age
+
+if user_age < 0 {
+    stop "Error: Age cannot be negative!"
+}
+
+send "Age registered successfully."
+
+# Stopping an infinite loop
+attempts = 0
+
+while True {
+    read "Enter the correct password: " to input
+    attempts = attempts + 1
+
+    if input == "hexus123" {
+        send "Access granted!"
+        stop
+    }
+
+    if attempts >= 3 {
+        stop "Too many failed attempts. Exiting..."
+    }
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Exiting a script immediately when critical validation fails.</p>
+                    <p>- Implementing a hard shutdown after a game-over condition.</p>
+                    <p>- Debugging by placing a <code class="inline">stop</code> at a specific line to inspect program flow.</p>
                 </section>
 
                 <!-- Sample of table
