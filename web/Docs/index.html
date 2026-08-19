@@ -34,6 +34,7 @@
             <a href="#b-comm">Block Comments</a>
             <a href="#var">Variable Declaration & Assignment</a>
             <a href="#inc-op">Increment & Decrement Operators (++, --, +=, -=)</a>
+            <a href="#modulo">Modulo Operator (%)</a>
             <a href="#if">Conditional Statements (if/elif/else)</a>
             <a href="#while">Conditional Loops (while)</a>
             <a href="#repeat">Fixed-Iteration Loops (repeat)</a>
@@ -248,6 +249,49 @@ send "Sum of 1 to 10: {total}"
                     <p>- Keeping score, counting kills, or tracking round numbers in games.</p>
                     <p>- Accumulating values (e.g., summing stats, building totals) in compact syntax.</p>
                     <p>- Simplifying loop counters and avoiding repetitive <code class="inline">counter = counter + 1</code> lines.</p>
+                </section>
+
+                <section class="docs-section" id="modulo">
+                    <h2>Modulo Operator (%)</h2>
+                    <p>The modulo operator (<code class="inline">%</code>) returns the remainder of a division between two numbers. It can be used with both integer and floating-point values. This operator follows standard mathematical precedence (same level as multiplication and division), making it useful for cyclic logic, even/odd checks, and range clamping.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>&lt;expression1&gt; % &lt;expression2&gt;</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Even / odd check
+number = 7
+
+if number % 2 == 0 {
+    send "{number} is even"
+} else {
+    send "{number} is odd"
+}
+# Output: 7 is odd
+
+# Cyclic wrapping (clamp a value to a range)
+index = 0
+index = (index + 1) % 4
+send index
+# Output: 1
+
+# Checking divisibility
+year = 2024
+
+if year % 4 == 0 {
+    send "{year} is a leap year"
+}
+
+# Practical: alternating actions
+for i from 1 to 6 {
+    if i % 2 == 0 {
+        send "Even turn: {1} - defensive action"
+    } else {
+        send "Odd turn: {1} - offensive action"
+    }
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Cycling through menu options or wrapping around array indices.</p>
+                    <p>- Determining even/odd turns in turn-based game logic.</p>
+                    <p>- Checking whether a number is divisible by another (e.g., leap year calculation, pagination).</p>
                 </section>
 
                 <section class="docs-section" id="if">
@@ -952,3 +996,4 @@ send "Negative Fahrenheit: {fahrenheit_negative}"</code></pre>
 
 </body>
 </html>
+
