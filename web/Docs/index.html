@@ -31,6 +31,7 @@
             <a href="#send">Send Command</a>
             <a href="#read">Read Command</a>
             <a href="#comm">Comments</a>
+            <a href="b-comm">Block Comments</a>
             <a href="#var">Variable Declaration & Assignment</a>
             <a href="#inc-op">Increment & Decrement Operators (++, --, +=, -=)</a>
             <a href="#if">Conditional Statements (if/elif/else)</a>
@@ -125,6 +126,41 @@ read "Waiting for payload..." to payload_data from network</code></pre>
 
 send "Hello World!" # You can also add comments at the end of statements</code></pre>
                     <p>When writing clean Hexus programs, use comments liberally to describe complex logic, mark TODO sections, or document custom function inputs.</p>
+                </section>
+
+                <section class="docs-section" id="b-comm">
+                    <h2>Block Comments</h2>
+                    <p>Hexus supports multi-line block comments delimited by <code class="inline">//</code> at both the start and the end. Everything between the opening and closing <code class="inline">//</code> is ignored by the parser, allowing you to comment out large sections of code or write detailed documentation notes spanning multiple lines. This complements the single-line <code class="inline">#</code> comment syntax.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>// This is a multi-line
+    comment block
+    spanning several lines
+//</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code>// This block comment explains the entire
+    initialization routine below. It sets up
+    the player's starting stats and inventory.
+    Last modified: 2025-01-15
+//
+player_health = 100
+player_mana = 50
+
+// Temporarily disabled the following code block
+    for debugging purposes -- uncomment later.
+//
+# send "Debug: player initialized"
+# send "Health: {player_health}"
+
+send "Game started!"
+
+//============================
+    Section: Combat Logic
+    Review before next patch
+//============================</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Temporarily disabling large blocks of code while debugging or testing.</p>
+                    <p>- Adding detailed author notes, changelogs, or in-line documentation headers.</p>
+                    <p>- Visually separating logical sections of a script for better readability.</p>
                 </section>
 
                 <section class="docs-section" id="var">
