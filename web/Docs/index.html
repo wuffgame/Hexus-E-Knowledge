@@ -35,6 +35,7 @@
             <a href="#var">Variable Declaration & Assignment</a>
             <a href="#inc-op">Increment & Decrement Operators (++, --, +=, -=)</a>
             <a href="#com-op">Comparison Operators (==, !=, <, >, <=, >=, is, is not)</a>
+            <a href="#log-op">Logical Operators (and, or, not)</a>
             <a href="#modulo">Modulo Operator (%)</a>
             <a href="#if">Conditional Statements (if/elif/else)</a>
             <a href="#while">Conditional Loops (while)</a>
@@ -332,6 +333,60 @@ if temperature <= 0 {
                     <p>- Controlling game logic (score thresholds, level completion conditions).</p>
                     <p>- Sorting or filtering data (checking if a value falls within expected bounds).</p>
                     <p>- Writing readable natural-language conditions with <code class="inline">is</code> and <code class="inline">is not</code> for string comparisons.</p>
+                </section>
+
+                <section class="docs-section" id="log-op">
+                    <h2>Logical Operators (and, or, not)</h2>
+                    <p>Hexus supports three logical operators for combining or negating boolean conditions. They allow you to build complex decision logic from simpler comparisons.</p>
+                    <p>- <b>and</b> - returns <code class="inline">True</code> only if both sides evaluate to truthy.</p>
+                    <p>- <b>or</b> - returns <code class="inline">True</code> if at least one side evaluates to truthy.</p>
+                    <p>- <b>not</b> - negates a condition; returns <code class="inline">True</code> if the expression is falsy, and <code class="inline">False</code> if it is truthy.</p>
+                    <p>All three operators follow short-circut evaluation: for <code class="inline">and</code>, if the left side is <code class="inline">False</code>, the right side is never evaluated; for <code class="inline">or</code>, if the left side is <code class="inline">True</code>, the right side is skipped. This can prevent errors like division by zero when used carefully.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>&lt;condition1&gt; and &lt;condition2&gt;</code></pre>
+                    <pre class="code-block"><code>&lt;condition1&gt; or &lt;condition2&gt;</code></pre>
+                    <pre class="code-block"><code>not &lt;condition&gt;</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Using and - both conditions must be true
+age = 25
+has_id = True
+
+if age >= 18 and has_id is True {
+    send "Entry granted!"
+} else {
+    send "Entry denied."
+}
+
+# Using or - at least one condition must be true
+is_weekend = False
+is_holiday = True
+
+if is_weekend or is_holiday {
+    send "No work today!"
+}
+
+# Using not - negating a condition
+player_health = 0
+
+if not player_health > 0 {
+    send "Player is defeated."
+}
+
+# Combining operators for complex logic
+score = 85
+lives = 2
+has_powerup = True
+
+if (score >= 100 or has_powerup is True) and lives > 0 {
+    send "Bonus level unlocked!"
+}
+
+# Short-circuit example - safely avoids division by zero
+x = 10
+
+if x != 0 and 10 / x > 2 {
+    send "This line will never run"
+}</code></pre>
                 </section>
 
                 <section class="docs-section" id="modulo">
