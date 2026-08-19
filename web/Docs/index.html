@@ -39,6 +39,7 @@
             <a href="#func">Custom Functions (func & return)</a>
             <a href="#list">List Management (add, remove, length of, pos of)</a>
             <a href="#for-each">For-Each Loop (Iterating Over Lists)</a>
+            <a href="#num-for">Numeric For Loop (For X from Y to Z)</a>
             <details class="docs-subgroup">
                 <summary>Data Types</summary>
                 <a href="#dynamic">Dynamic Typing System Overview</a>
@@ -441,6 +442,46 @@ send "Sum of all scores: {total}"
                     <p>- Displaying all items from a player's inventory or shopping cart.</p>
                     <p>- Calculating totals, averages, or statistics from a dynamic data set.</p>
                     <p>- Filtering or transforming every element inside a list without manual indexing.</p>
+                </section>
+
+                <section class="docs-section" id="num-for">
+                    <h2>Numeric For Loop (For X from Y to Z)</h2>
+                    <p>The numeric <code class="inline">for</code> loop lets you iterate over a sequence of numbers by declaring a loop variable, a starting value, and an end value. The loop variable automatically increments on each iteration until it exceeds the target end value. This is ideal when you know the exact numerical range you want to work through.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>for &lt;var&gt; from &lt;start_value&gt; to &lt;end_value&gt; {
+    # Code executed for each number in range
+}</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Simple countdown
+for i from 1 to 5 {
+    send "Iteration number: {i}"
+}
+# Output:
+# Iteration number: 1
+# Iteration number: 2
+# Iteration number: 3
+# Iteration number: 4
+# Iteration number: 5
+
+# Using variables for the range boundaries
+start = 0
+finish = 3
+
+for counter from start to finish {
+    send "Counter at: {counter}"
+}
+
+# In progress!!!
+# Generating a multiplication table
+for row from 1 to 3 {
+    for col from 1 to 3 {
+        send "{row} * {col} = {row * col}"
+    }
+}</code></pre>
+                    <p>Practical Use Cases:</p>
+                    <p>- Generating numbered menus or selecting items by an index range.</p>
+                    <p>- Performing repetitive calculations a fixed number of times.</p>
+                    <p>- Building grid-based game boards or tile maps (nested for loops).</p>
                 </section>
 
                 <section class="docs-section">
