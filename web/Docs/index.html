@@ -34,6 +34,7 @@
             <a href="#b-comm">Block Comments</a>
             <a href="#var">Variable Declaration & Assignment</a>
             <a href="#inc-op">Increment & Decrement Operators (++, --, +=, -=)</a>
+            <a href="com-op">Comparison Operators (==, !=, <, >, <=, >=, is, is not)</a>
             <a href="#modulo">Modulo Operator (%)</a>
             <a href="#if">Conditional Statements (if/elif/else)</a>
             <a href="#while">Conditional Loops (while)</a>
@@ -249,6 +250,88 @@ send "Sum of 1 to 10: {total}"
                     <p>- Keeping score, counting kills, or tracking round numbers in games.</p>
                     <p>- Accumulating values (e.g., summing stats, building totals) in compact syntax.</p>
                     <p>- Simplifying loop counters and avoiding repetitive <code class="inline">counter = counter + 1</code> lines.</p>
+                </section>
+
+                <section class="docs-section" id="com-op">
+                    <h2>Comparison Operators (==, !=, <, >, <=, >=, is, is not)</h2>
+                    <p>Hexus provides a full set of comparison operators to compare two values. Each operator returns a boolean (<code class="inline">True</code> or <code class="inline">False</code>). Values are compared based on their types: numbers compare numerically, strings compare lexicographically (alphabetically), and booleans compare by truth value. These operators are typically used inside <code class="inline">if</code>, <code class="inline">elif</code>, <code class="inline">while</code> conditions, or anywhere a boolean expression is expected.</p>
+                    <p>Syntax:</p>
+                    <pre class="code-block"><code>&lt;expression&gt; == &lt;expression&gt;     # Equal to</code></pre>
+                    <pre class="code-block"><code>&lt;expression&gt; != &lt;expression&gt;     # Not equal to</code></pre>
+                    <pre class="code-block"><code>&lt;expression&gt; < &lt;expression&gt;      # Less than</code></pre>
+                    <pre class="code-block"><code>&lt;expression&gt; > &lt;expression&gt;      # Greater than</code></pre>
+                    <pre class="code-block"><code>&lt;expression&gt; <= &lt;expression&gt;     # Less than or equal to</code></pre>
+                    <pre class="code-block"><code>&lt;expression&gt; >= &lt;expression&gt;     # Greater then or equal to</code></pre>
+                    <pre class="code-block"><code>&lt;expression&gt; is &lt;expression&gt;     # Equal to (keyword alias)</code></pre>
+                    <pre class="code-block"><code>&lt;expression&gt; is not &lt;expression&gt; # Not equal to (keyword alias)</code></pre>
+                    <p>Code Example:</p>
+                    <pre class="code-block"><code># Equality and inequality
+if 10 == 10 {
+    send "Ten equals ten"
+}
+
+status = "active"
+if status != "inactive" {
+    send "Status is not inactive"
+}
+
+# Numeric comparisons
+score = 85
+if score >= 60 {
+    send "Passed! Score: {score}"
+}
+
+if score < 50 {
+    send "Failing score"
+}
+
+# Using is and is not (keyword aliases)
+player_name = "Hero"
+
+if player_name is "Hero" {
+    send "Welcome, Hero!"
+}
+
+if player_name is not "Guest" {
+    send "You are logged in as {player_name}"
+}
+
+# Combined with logical operators
+age = 20
+has_permission = True
+
+if age >= 18 and has_permission is True {
+    send "Access granted"
+}
+
+# Greater than or equal, less than or equal
+temperature = 30
+if temperature <= 0 {
+    send "Freezing!"
+} elif temperature >= 30 {
+    send "Hot!"
+}</code></pre>
+                    <p>Comparison reference table:</p>
+                    <table class="ref-table">
+                        <thead>
+                        <tr><th>Operator</th><th>Meaning</th><th>Example (True)</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr><td><code>==</code></td><td>Equal to</td><td><code>5 == 5</code></td></tr>
+                        <tr><td><code>!=</code></td><td> Not equal to</td><td><code>5 != 3</code></td></tr>
+                        <tr><td><code>&lt;</code></td><td>Less than</td><td><code>3 &lt; 5</code></td></tr>
+                        <tr><td><code>&gt;</code></td><td>Greater than</td><td><code>5 &gt; 3</code></td></tr>
+                        <tr><td><code><=</code></td><td>Less than or equal</td><td><code>5 <= 5, 3 <= 5</code></td></tr>
+                        <tr><td><code>>=</code></td><td>Greater than or equal</td><td><code>5 >= 5, 7 >= 5</code></td></tr>
+                        <tr><td><code>is</code></td><td>Equal to (alias)</td><td><code>"a" is "a"</code></td></tr>
+                        <tr><td><code>is not</code></td><td>Not equal to (alias)</td><td><code>"a" is not "b"</code></td></tr>
+                        </tbody>
+                    </table>
+                    <p>Practical Use Cases:</p>
+                    <p>- Validating user input (checking if a password matches, if age is within range).</p>
+                    <p>- Controlling game logic (score thresholds, level completion conditions).</p>
+                    <p>- Sorting or filtering data (checking if a value falls within expected bounds).</p>
+                    <p>- Writing readable natural-language conditions with <code class="inline">is</code> and <code class="inline">is not</code> for string comparisons.</p>
                 </section>
 
                 <section class="docs-section" id="modulo">
