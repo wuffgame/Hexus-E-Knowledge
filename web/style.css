@@ -47,6 +47,19 @@ body {
     border-bottom: 1px solid var(--border);
 }
 
+/* The documentation has two navigation layers that must stay on screen. */
+.docs-page .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+}
+
+.docs-page .docs-shell {
+    padding-top: var(--nav-height);
+}
+
 .navbar .logo {
     display: flex;
     align-items: baseline;
@@ -232,6 +245,10 @@ pre.code-block {
     padding: 2rem 1.25rem;
     border-right: 1px solid var(--border);
     background-color: var(--panel);
+}
+
+.docs-page .docs-sidebar {
+    z-index: 10;
 }
 
 .docs-sidebar::-webkit-scrollbar {
