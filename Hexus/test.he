@@ -1,11 +1,3 @@
-send "     _   "
-send "    (_)  "
-send "   (( )) "
-send "    )  ( "
-send "   /    \\"
-send "  |  ()  |"
-send "   \\    / "
-send "    '--'  "
-send "     ||   "
-send "     ||   "
-send "    /||\\ "
+import "test.he"
+from "test.he" import cos
+math.add 5

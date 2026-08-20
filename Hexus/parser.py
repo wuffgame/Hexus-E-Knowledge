@@ -1,6 +1,8 @@
 import os.path
 import os
 import importlib.util
+from typing import Any
+
 
 class NumberNode:
     def __init__(self, value):
@@ -241,6 +243,27 @@ class NumberForNode:
         self.block = block
     def __repr__(self):
         return f"NumberForNode(var={self.var}, value={self.value}, value2={self.value2}, block={self.block})"
+
+class ImportNode:
+    def __init__(self, module_name):
+        self.module_name = module_name
+    def __repr__(self):
+        return f"ImportNode(module_name={self.module_name})"
+
+class FromImportNode:
+    def __init__(self, module_name, names):
+        self.module_name = module_name
+        self.names = names
+    def __repr__(self):
+        return f"FromImportNode(module_name={self.module_name}, names={self.names})"
+
+class ModuleCallNode:
+    def __init__(self, module_name, func_name, args):
+        self.module_name = module_name
+        self.func_name = func_name
+        self.args = args
+    def __repr__(self):
+        return f"ModuleCallNode(module_name={self.module_name}, func_name={self.func_name}, args={self.args})"
 
 class HexusParser:
     def __init__(self, tokens):
@@ -836,6 +859,42 @@ class HexusParser:
         return NumberForNode(var, value, value2, block)
 
 
+    def parse_import(self):
+        module_name = None
+        self.consume_value("VAR", "import")
+        if self.peek()[0] == "STRING":
+            module_name = self.consume("STRING")
+        else:
+            self.syntax_error("expected module name (string) after 'import')")
+        return ImportNode(module_name)
+
+
+    def parse_from_import(self):
+        self.consume_value("VAR", "from")
+        module_name = None
+        if self.peek()[0] == "STRING":
+            module_name = self.consume("STRING")
+        else:
+            self.syntax_error("expected module name (string) after 'from'")
+        self.consume_value("VAR", "import")
+        names = []
+        names.append(self.consume("VAR"))
+        while self.peek()[0] == "COMMA":
+            self.consume("COMMA")
+            names.append(self.consume("VAR"))
+        return FromImportNode(module_name, names)
+
+
+    def parse_module_dot_call(self):
+        mod_name = self.consume("VAR")
+        self.consume("DOT")
+        func_name = self.consume("VAR")
+        args = []
+        while self.peek()[0] not in ["NEWLINE", "EOF", "RBRACE"]:
+            args.append(self.parse_expression())
+        return ModuleCallNode(mod_name, func_name, args)
+
+
 
 
 
@@ -845,21 +904,28 @@ class HexusParser:
             self.consume("NEWLINE")
 
         token_type, value = self.peek()
-        if token_type == "VAR" and value == "if":
-            return self.parse_if()
+        if token_type == "VAR" and value == "import":
+            node = self.parse_import()
+        elif token_type == "VAR" and value == "from":
+            node = self.parse_from_import()
+        elif token_type == "VAR" and value == "if":
+            node = self.parse_if()
         elif token_type == "VAR" and value == "while":
-            return self.parse_while()
+            node = self.parse_while()
         elif token_type == "VAR" and value == "repeat":
-            return self.parse_repeat()
+            node = self.parse_repeat()
         elif token_type == "VAR" and value == "for":
             if self.peek(1)[1] == "each":
-                return self.parse_for()
+                node = self.parse_for()
             else:
-                return self.parse_number_for()
+                node = self.parse_number_for()
         elif token_type == "VAR" and value == "func":
-            return self.parse_func()
-        elif token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":
-            node = self.parse_builtin_dot_call()
+            node = self.parse_func()
+        elif token_type == "VAR" and self.peek(1)[0] == "DOT":
+            if value in self.builtin_modules:
+                node = self.parse_builtin_dot_call()
+            else:
+                node = self.parse_module_dot_call()
         elif token_type == "VAR" and value == "send":
             node = self.parse_send()
         elif token_type == "VAR" and value == "read":
