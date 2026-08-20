@@ -460,7 +460,7 @@ class HexusInterpreter:
                 self.env.vars.pop(var_name, None)
 
     def visit_VarPlusNode(self, node):
-        value = node.value
+        value = self.visit(node.value)
         var = node.var.strip()
 
         old_value = self.env.get(var)
@@ -469,7 +469,7 @@ class HexusInterpreter:
         self.env.set(var, new_value)
 
     def visit_VarMinusNode(self, node):
-        value = node.value
+        value = self.visit(node.value)
         var = node.var.strip()
 
         old_value = self.env.get(var)
@@ -484,8 +484,8 @@ class HexusInterpreter:
             var_name = node.var.name
         else:
             raise TypeError("???")
-        start_value = self.visit(node.value)
-        end_value = self.visit(node.value2)
+        start_value = self.visit(node.value) + 1
+        end_value = self.visit(node.value2) + 1
         had_var = var_name in self.env.vars
         old_value = self.env.vars.get(var_name)
         try:

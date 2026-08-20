@@ -11,4 +11,9 @@ for row from 1 to 3 {
 # import własnych modułów i modułów type2
 - # Obsługa błędów czyli try/except/finally
 - # Dodać [] do parse_value jako lista (może nie jako [] jak tak teraz myśle, tylko poprostu "test, test1,"
-# Obsługa na plikach jako osobny moduł
+
+
+# Dodać do dokumentacji jak przygotować projekt
+# Dodać obsługe też '' w parserze/lekserze
+# Dodać obsługę \n w operacjach na plikach
+# Zmienić w dokumentacji elementy listy na '' zamiast ""

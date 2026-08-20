@@ -793,11 +793,12 @@ class HexusParser:
         self.consume_value("OP", "+")
         if self.peek()[1] == "+":
             self.consume_value("OP", "+")
-            return VarPlusNode(var, 1)
+            return VarPlusNode(var, NumberNode(1))
         elif self.peek()[1] == "=":
             self.consume_value("OP", "=")
-            value = self.consume("INT")
-            return VarPlusNode(var, value)
+            if self.peek()[0] == "VAR" or self.peek()[0] == "INT":
+                value = self.parse_value()
+                return VarPlusNode(var, value)
         raise SyntaxError("???")
 
 
@@ -806,11 +807,12 @@ class HexusParser:
         self.consume_value("OP", "-")
         if self.peek()[1] == "-":
             self.consume_value("OP", "-")
-            return VarMinusNode(var, 1)
+            return VarMinusNode(var, NumberNode(1))
         elif self.peek()[1] == "=":
             self.consume_value("OP", "=")
-            value = self.consume("INT")
-            return VarMinusNode(var, value)
+            if self.peek()[0] == "VAR" or self.peek()[0] == "INT":
+                value = self.parse_value()
+                return VarMinusNode(var, value)
         raise SyntaxError("???")
 
 

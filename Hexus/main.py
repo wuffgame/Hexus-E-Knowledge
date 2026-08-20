@@ -15,13 +15,13 @@ def main():
 
     clear_tokens = [t for t in token_list if t[0] != "SKIP"]
     try:
-        for token in clear_tokens:
-            print(token)
+        #for token in clear_tokens:
+            #print(token)
         parser = HexusParser(clear_tokens)
 
         program_tree = parser.parse()
 
-        print(program_tree)
+        #print(program_tree)
 
         interpreter = HexusInterpreter()
 
