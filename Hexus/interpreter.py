@@ -2,6 +2,7 @@ from Hexus.parser import FunctionDefNode, HexusParser
 from Hexus.lexer import tokenizer_tokens
 from typing import Any, Callable
 import importlib
+import os
 import pkgutil
 from Hexus import modules
 import re
@@ -69,6 +70,38 @@ class HexusInterpreter:
                 attr = getattr(py_mod, attr_name)
                 if attr_name.endswith("Interpreter") and hasattr(attr, "register_handlers"):
                     attr.register_handlers(self)
+
+    def _load_module(self, filepath: str):
+        with open(filepath, "r", encoding="utf-8") as f:
+            code = f.read()
+        from Hexus.lexer import tokenizer_tokens
+        tokens = [t for t in tokenizer_tokens(code) if t[0] != "SKIP"]
+        parser = HexusParser(tokens)
+        nodes = parser.parse()
+        module_env = Environment()
+        old_env = self.env
+        self.env = module_env
+        try:
+            for node in nodes:
+                self.visit(node)
+        finally:
+            self.env = old_env
+        return module_env
+
+    def _find_module(self, module_name: str) -> str:
+        base_dir = os.path.dirname(os.path.abspath(str(__file__)))
+        candidates = [
+            # Local imports: files in the project/current working directory.
+            os.path.abspath(module_name),
+            os.path.join(base_dir, module_name),
+            # Built-in Hexus modules.
+            os.path.join(base_dir, "modules", module_name),
+            os.path.join(base_dir, "..", "modules", module_name),
+        ]
+        for path in candidates:
+            if os.path.exists(path):
+                return os.path.abspath(path)
+        raise FileNotFoundError(f"Module '{module_name}' not found")
 
     def visit(self, node) -> Any:
         method_name = f"visit_{type(node).__name__}"
@@ -506,6 +539,63 @@ class HexusInterpreter:
                 self.env.vars[var_name] = old_value
             else:
                 self.env.vars.pop(var_name, None)
+
+
+
+    def visit_ImportNode(self, node):
+        module_name = node.module_name
+        filepath = self._find_module(module_name)
+        module_env = self._load_module(filepath)
+        key = module_name.replace(".he", "").replace(".", "_")
+        self.env.set(key, module_env)
+
+
+
+    def visit_FromImportNode(self, node):
+        module_name = node.module_name
+        filepath = self._find_module(module_name)
+        module_env = self._load_module(filepath)
+        for name in node.names:
+            try:
+                value = module_env.get(name)
+                self.env.set(name, value)
+            except NameError:
+                raise NameError(f"Module '{module_name}' has no '{name}'")
+
+
+
+    def visit_ModuleCallNode(self, node):
+        mod_value = self.env.get(node.module_name)
+        if not isinstance(mod_value, Environment):
+            raise TypeError(f"'{node.module_name}' is not a module")
+        try:
+            func = mod_value.get(node.func_name)
+        except NameError:
+            raise NameError(f"Module '{node.module_name}' has no '{node.func_name}'")
+
+        if isinstance(func, FunctionDefNode):
+            if len(node.args) != len(func.para):
+                raise TypeError(
+                    f"Function '{node.func_name}' in module '{node.module_name}' "
+                    f"expects {len(func.para)} arguments, but got {len(node.args)}"
+                )
+            arg_values = [self.visit(arg) for arg in node.args]
+            previous_env = self.env
+            local_env = Environment(parent=previous_env)
+            for para_name, val in zip(func.para, arg_values):
+                local_env.set(para_name, val)
+            self.env = local_env
+            return_value = None
+            try:
+                for stmt in func.body:
+                    self.visit(stmt)
+            except ReturnException as ret:
+                return_value = ret.value
+            finally:
+                self.env = previous_env
+            return return_value
+        else:
+            return func
 
 
 

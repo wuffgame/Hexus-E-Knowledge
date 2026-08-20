@@ -167,12 +167,13 @@ class ContinueNode:
         return "ContinueNode()"
 
 class FunctionDefNode:
-    def __init__(self, name, para, body):
+    def __init__(self, name, para, body, syntax=None):
         self.name = name
         self.para = para
         self.body = body
+        self.syntax = syntax
     def __repr__(self):
-        return f"FunctionDefNode(name={self.name} para={self.para} body={self.body})"
+        return f"FunctionDefNode(name={self.name} para={self.para} body={self.body} syntax={self.syntax})"
 
 class FunctionCallNode:
     def __init__(self, name, args):
@@ -265,6 +266,13 @@ class ModuleCallNode:
     def __repr__(self):
         return f"ModuleCallNode(module_name={self.module_name}, func_name={self.func_name}, args={self.args})"
 
+class SyntaxPart:
+    def __init__(self, kind, value):
+        self.kind = kind
+        self.value = value
+    def __repr__(self):
+        return f"SyntaxPart(kind={self.kind}, value={self.value})"
+
 class HexusParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -272,6 +280,7 @@ class HexusParser:
         self.loop_depth = 0
         self.current_line = 1
         self.builtin_modules = {}
+        self.module_syntax = {}
         self._load_type1_modules()
 
     def _load_type1_modules(self):
@@ -298,6 +307,56 @@ class HexusParser:
                     attr = getattr(py_mod, attr_name)
                     if attr_name.endswith("Parser") and hasattr(attr, "name") and hasattr(attr, "parse"):
                         self.builtin_modules[attr.name] = attr
+
+    def _load_module_syntax(self, module_name):
+        clean_name = module_name.replace(".he", "")
+
+        filepath = None
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        candidates = [
+            # Local imports: files in the project/current working directory.
+            os.path.abspath(module_name),
+            os.path.join(base_dir, module_name),
+            # Built-in Hexus modules.
+            os.path.join(base_dir, "modules", module_name),
+            os.path.join(base_dir, "..", "modules", module_name),
+        ]
+        for path in candidates:
+            if os.path.exists(path):
+                filepath = path
+                break
+
+        if filepath is None:
+            return
+
+        with open(filepath, "r", encoding="utf-8") as f:
+            code = f.read()
+
+        from Hexus.lexer import tokenizer_tokens
+        tokens = [t for t in tokenizer_tokens(code) if t[0] != "SKIP"]
+
+        temp_parser = HexusParser(tokens)
+        syntax_map = {}
+        while temp_parser.peek()[0] != "EOF":
+            if temp_parser.peek()[0] == "AT":
+                saved_pos = temp_parser.pos
+                try:
+                    syntax_parts = temp_parser.parse_syntax_decl()
+                    # A syntax declaration is normally followed by a newline
+                    # before the function definition.
+                    while temp_parser.peek()[0] == "NEWLINE":
+                        temp_parser.consume("NEWLINE")
+                    if temp_parser.peek()[0] == "VAR" and temp_parser.peek()[1] == "func":
+                        func_node = temp_parser.parse_func()
+                        func_node.syntax = syntax_parts
+                        syntax_map[func_node.name] = syntax_parts
+                        continue
+                except (SyntaxError, StopIteration, IndexError):
+                    pass
+                temp_parser.pos = saved_pos
+            temp_parser.pos += 1
+
+        self.module_syntax[clean_name] = syntax_map
 
     def peek(self, offset=0):
         if self.pos + offset <len(self.tokens):
@@ -405,6 +464,8 @@ class HexusParser:
             var_name = self.consume("VAR")
             if self.peek()[0] == "LPAREN":
                 return self.parse_func_call(var_name)
+            elif self.peek()[0] == "DOT" and var_name not in self.builtin_modules:
+                return self.parse_module_dot_call(var_name)
             return VariableNode(var_name)
         elif token_type == "STRING":
             val = self.consume("STRING")
@@ -858,22 +919,23 @@ class HexusParser:
         self.loop_depth -= 1
         return NumberForNode(var, value, value2, block)
 
-
     def parse_import(self):
-        module_name = None
         self.consume_value("VAR", "import")
         if self.peek()[0] == "STRING":
-            module_name = self.consume("STRING")
+            raw = self.consume("STRING")
+            module_name = raw.strip("\"'")
         else:
-            self.syntax_error("expected module name (string) after 'import')")
-        return ImportNode(module_name)
+            self.syntax_error("expected module name (string) after 'import'")
 
+        self._load_module_syntax(module_name)
+
+        return ImportNode(module_name)
 
     def parse_from_import(self):
         self.consume_value("VAR", "from")
-        module_name = None
         if self.peek()[0] == "STRING":
-            module_name = self.consume("STRING")
+            raw = self.consume("STRING")
+            module_name = raw.strip("\"'")
         else:
             self.syntax_error("expected module name (string) after 'from'")
         self.consume_value("VAR", "import")
@@ -882,20 +944,73 @@ class HexusParser:
         while self.peek()[0] == "COMMA":
             self.consume("COMMA")
             names.append(self.consume("VAR"))
+
+        self._load_module_syntax(module_name)
+
         return FromImportNode(module_name, names)
 
-
-    def parse_module_dot_call(self):
-        mod_name = self.consume("VAR")
+    def parse_module_dot_call(self, mod_name=None):
+        if mod_name is None:
+            mod_name = self.consume("VAR")
         self.consume("DOT")
         func_name = self.consume("VAR")
+
+        syntax = None
+        if mod_name in self.module_syntax and func_name in self.module_syntax[mod_name]:
+            syntax = self.module_syntax[mod_name][func_name]
+
         args = []
-        while self.peek()[0] not in ["NEWLINE", "EOF", "RBRACE"]:
-            args.append(self.parse_expression())
+
+        if syntax is not None:
+            syntax_parts = syntax[1:]
+
+            for part in syntax_parts:
+                if self.peek()[0] in ("NEWLINE", "EOF", "RBRACE"):
+                    self.syntax_error(f"expected more arguments for {mod_name}.{func_name}")
+
+                if part.kind == "literal":
+                    if self.peek()[0] == "VAR" and self.peek()[1] == part.value:
+                        self.consume("VAR")
+                    elif self.peek()[0] == part.value.upper():
+                        self.consume(self.peek()[0])
+                    else:
+                        self.syntax_error(f"expected '{part.value}' in {mod_name}.{func_name} call")
+                elif part.kind == "arg":
+                    args.append(self.parse_expression())
+        else:
+            while self.peek()[0] not in ["NEWLINE", "EOF", "RBRACE"]:
+                args.append(self.parse_expression())
+
         return ModuleCallNode(mod_name, func_name, args)
 
-
-
+    def parse_syntax_decl(self):
+        self.consume("AT")
+        self.consume_value("VAR", "syntax")
+        raw = self.consume("STRING")
+        pattern_str = raw.strip("\"'")
+        parts = []
+        current_word = []
+        i = 0
+        while i < len(pattern_str):
+            ch = pattern_str[i]
+            if ch == '<':
+                if current_word:
+                    for word in ''.join(current_word).split():
+                        if word:
+                            parts.append(SyntaxPart("literal", word))
+                    current_word = []
+                j = pattern_str.index('>', i)
+                type_name = pattern_str[i + 1:j]
+                parts.append(SyntaxPart("arg", type_name))
+                i = j + 1
+            else:
+                current_word.append(ch)
+                i += 1
+        if current_word:
+            for word in ''.join(current_word).split():
+                if word:
+                    parts.append(SyntaxPart("literal", word))
+        return parts
 
 
 
@@ -904,7 +1019,17 @@ class HexusParser:
             self.consume("NEWLINE")
 
         token_type, value = self.peek()
-        if token_type == "VAR" and value == "import":
+        if token_type == "AT":
+            syntax_parts = self.parse_syntax_decl()
+            if self.peek()[0] == "NEWLINE":
+                self.consume("NEWLINE")
+            if self.peek()[0] == "VAR" and self.peek()[1] == "func":
+                node = self.parse_func()
+                node.syntax = syntax_parts
+                return node
+            else:
+                self.syntax_error("expected 'func' after @syntax declaration")
+        elif token_type == "VAR" and value == "import":
             node = self.parse_import()
         elif token_type == "VAR" and value == "from":
             node = self.parse_from_import()
