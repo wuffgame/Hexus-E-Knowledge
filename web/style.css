@@ -261,6 +261,30 @@ pre.code-block {
     margin-bottom: 1.75rem;
 }
 
+.docs-sidebar-group a {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: var(--display);
+    font-size: 0.98rem;
+    padding: 0.45rem 0.75rem;
+    border-left: 2px solid transparent;
+    border-radius: 0 4px 4px 0;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.docs-sidebar-group a:hover,
+.docs-sidebar-group a:focus-visible {
+    color: var(--text);
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.docs-sidebar-group a.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background-color: rgba(111, 168, 220, 0.08);
+}
+
 .docs-content {
     flex: 1;
     min-width: 0;
