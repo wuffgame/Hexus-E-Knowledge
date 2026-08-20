@@ -1,6 +1,7 @@
 import re
 
 token_pattern = [
+        ("AT", r"@"),
         ("HASH", r"#"),
         ("INT", r"\d+"),
         ("BOOL", r"\b(True|False)\b"),
