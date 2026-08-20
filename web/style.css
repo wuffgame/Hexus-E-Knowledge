@@ -256,6 +256,18 @@ pre.code-block {
     z-index: 10;
 }
 
+.docs-page .docs-sidebar-group {
+    position: fixed;
+    top: var(--nav-height);
+    bottom: 0;
+    left: 0;
+    width: 270px;
+    margin: 0;
+    padding: 2rem 1.25rem;
+    overflow-y: auto;
+    background-color: var(--panel);
+}
+
 .docs-sidebar::-webkit-scrollbar {
     width: 8px;
 }
@@ -537,6 +549,18 @@ footer {
 
     .docs-page .docs-sidebar {
         bottom: auto;
+    }
+
+    .docs-page .docs-sidebar-group {
+        top: var(--nav-height);
+        right: 0;
+        bottom: auto;
+        width: 100%;
+        padding: 0.65rem 1rem;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
     }
 
     .docs-sidebar-group {
