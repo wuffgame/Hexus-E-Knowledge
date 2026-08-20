@@ -223,6 +223,8 @@ pre.code-block {
 .docs-sidebar {
     position: sticky;
     top: var(--nav-height);
+    z-index: 9;
+    align-self: flex-start;
     height: calc(100vh - var(--nav-height));
     width: 270px;
     flex-shrink: 0;
@@ -490,20 +492,56 @@ footer {
 }
 
 @media (max-width: 720px) {
-    .docs-layout {
-        grid-template-columns: 1fr;
+    .docs-shell {
+        display: block;
     }
-    .docs-toc {
-        position: static;
-        display: flex;
-        gap: 1rem;
+
+    .docs-sidebar {
+        width: 100%;
+        height: auto;
+        max-height: none;
+        padding: 0.65rem 1rem;
         overflow-x: auto;
-        padding-bottom: 0.5rem;
+        overflow-y: hidden;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
     }
-    .docs-toc a {
-        border-left: none;
-        border-bottom: 2px solid var(--border);
+
+    .docs-sidebar-group {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        width: max-content;
+        margin: 0;
+    }
+
+    .docs-sidebar-group .group-label {
+        margin: 0 0.35rem 0 0;
         padding-left: 0;
+    }
+
+    .docs-sidebar-group a,
+    .docs-subgroup summary,
+    .docs-subgroup a.sub-link {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .docs-subgroup {
+        display: contents;
+    }
+
+    .docs-content {
+        padding: 2rem 1rem 4rem;
+    }
+
+    .docs-section,
+    .docs-subsection {
+        scroll-margin-top: calc(var(--nav-height) + 4rem);
+    }
+
+    .docs-toc a {
         white-space: nowrap;
     }
     .playground {
