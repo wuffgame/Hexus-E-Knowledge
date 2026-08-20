@@ -14,3 +14,4 @@ for row from 1 to 3 {
 
 
 # Dodać do dokumentacji jak przygotować projekt
+# Przetestować na nowym projekcie w vsc czy moduły użytkowników działają jak w opisie importów w docs (wszystkie 4 opcje)

@@ -71,6 +71,7 @@
             </details>
             <details class="docs-subgroup">
                 <summary>Modules</summary>
+                <a href="#import" class="sub-link">Import System (import, from ... import, @syntax)</a>
                 <a href="#time-mod" class="sub-link">Time Module</a>
                 <a href="#file_mod" class="sub-link">File Module</a>
             </details>
@@ -1096,6 +1097,76 @@ send "Negative Fahrenheit: {fahrenheit_negative}"</code></pre>
 
                     <h2>Modules</h2>
                     <p>Hexus supports an extensible built-in module system that provides additional functionality beyond the core language. Modules are accessed using dot notation <code>modulename.function</code>. Each module encapsulates a specific domain (time, file I/O, etc.) and exposes its own set of functions and constants. The module system keeps the core language lightweight while allowing you yo tap into powerful utilities when needed.</p>
+
+                    <section class="docs-subsection" id="import">
+                        <h3>Import System (import, from ... import, @syntax)</h3>
+                        <p>Hexus features a powerful module system that allows you to import external Hexus files (.he) and use their functions with custom syntax patterns. When you import a file, the parser reads it, extracts all <code class="inline">@syntax</code> declarations, and makes them available for use under the module's name via dot notation.</p>
+                        <p>There are two types of modules:</p>
+                        <p>- <b>Built-in modules</b> - Python-based modules like <code class="inline">time</code> and <code class="inline">file</code>, loaded automatically from the <code class="inline">modules/</code> directory. They are always available without an explicit import.</p>
+                        <p>- <b>User/Hexus modules</b> - regular <code class="inline">.he</code> files that you import manually using <code class="inline">import</code> or <code class="inline">from ... import</code>. They can be located in the current working directory.</p>
+                        <p>Syntax:</p>
+                        <pre class="code-block"><code>import "&lt;module_name&gt;"</code></pre>
+                        <pre class="code-block"><code>from "&lt;module_name&gt;" import &lt;name1&gt;, &lt;name2&gt;, ...</code></pre>
+                        <p>- <code class="inline">import</code> - loads all <code class="inline">@syntax</code>-decorated functions from the module. You can then call them using <code class="inline">&lt;module_name&gt;.&lt;func_name&gt; &lt;args and/or keywords&gt;</code>.</p>
+                        <p>- <code class="inline">from ... import ...</code> - loads only the specified function names from the module, keeping your namespace cleaner.</p>
+                        <p>- Module names must be given with the <code class="inline">.he</code> extension.</p>
+                        <p><b>File resolution order</b> (first match wins):</p>
+                        <p>1. Current working directory (absolute path or relative filename)</p>
+                        <p>2. Same directory as the parser</p>
+                        <p>3. <code class="inline">modules/</code> subdirectory (where built-in modules live)</p>
+                        <p>4. Parent <code class="inline">modules/</code> directory</p>
+                        <p><b>How it works under the hood:</b></p>
+                        <p>When you write a module <code class="inline">.he</code> file, you define functions with a <code class="inline">@syntax</code> decorator thet describes the expected argument pattern. For example:</p>
+                        <pre class="code-block"><code># math.he
+@syntax "add &lt;number&gt; and &lt;number&gt;"
+func add(a, b) {
+    send "Result: {a + b}"
+}</code></pre>
+                        <p>The <code class="inline">@syntax</code> string defines:</p>
+                        <p>- <b>Literal words</b> - must appear exactly as written (e.g., <code class="inline">add</code>, <code class="inline">and</code>)</p>
+                        <p>- <b>&lt;arg&gt; placeholders</b> - represent arguments that the caller provides (e.g., <code class="inline">&lt;number&gt;</code>)</p>
+                        <p>When another file imports <code class="inline">math</code>, it can call <code class="inline">math.add</code> using the defined syntax:</p>
+                        <pre class="code-block"><code>import "math.he"
+
+math.add 5 to 3
+# Output: Result: 8</code></pre>
+                        <p>Code Example:</p>
+                        <pre class="code-block"><code># --- File: math.he ---
+@syntax "add &lt;number&gt; and &lt;number&gt;"
+func add(a, b) {
+    send "Result: {a + b}"
+}
+
+@syntax "multiply &lt;number&gt; by &lt;number&gt;"
+func multiply(x, y) {
+    send "Product: {x * y}"
+}
+
+# --- File: main.he ---
+# Import all functions from math module
+import "math.he"
+
+# Use the custom syntax patterns defined in the module
+math.add 10 to 20
+# Output: Result: 30
+
+math.multiply 6 by 7
+# Output: Product: 42
+
+# Import only specific functions
+from "math.he" import multiply
+
+# Now only multiply is available
+math.multiply 3 by 9
+# Output: Product: 27
+
+# math.add would cause an error here (not imported)</code></pre>
+                        <p>Practical Use Cases:</p>
+                        <p>- Creating reusable libraries of game functions (combat, inventory, quest, logic).</p>
+                        <p>- Splitting large projects into manageable, modular <code class="inline">.he</code> files.</p>
+                        <p>- Defining domain-specific DSL-like syntax with <code class="inline">@syntax</code> for readability.</p>
+                        <p>- Sharing and distributing Hexus code between projects or with other developers.</p>
+                    </section>
 
                     <section class="docs-subsection" id="time-mod">
                         <h3>Time Module</h3>
