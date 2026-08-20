@@ -308,6 +308,22 @@ pre.code-block {
     margin-top: 0;
 }
 
+/* Make links in the getting-started section easy to spot in the dark theme. */
+.docs-section#start a {
+    color: var(--text);
+    text-decoration-line: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.docs-section#start a:hover,
+.docs-section#start a:focus-visible {
+    color: var(--accent);
+    text-decoration-color: var(--text);
+}
+
 .docs-subgroup {
     margin: 0;
 }
