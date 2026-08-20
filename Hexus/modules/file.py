@@ -85,7 +85,7 @@ class FileParser:
         elif token_type == "VAR" and value == "append":
             parser.consume_value("VAR", "append")
             return FileParser.parse_append(parser)
-        raise SyntaxError(f"SyntaxError: [Line: {parser.current_line}] Unknown start instruction: {token_type} ('{value}') in file module.")
+        parser.syntax_error("unknown command in the 'file' module")
 
 
     @staticmethod
@@ -95,7 +95,7 @@ class FileParser:
         if parser.peek()[0] == "VAR":
             var = parser.parse_value()
             return FileOpenNode(value, var)
-        raise SyntaxError(f"SyntaxError: [Line: {parser.current_line}] {parser.peek()[1]} is not a name of variable.")
+        parser.syntax_error("expected a variable name after 'as'")
 
     @staticmethod
     def parse_read(parser):
@@ -105,7 +105,7 @@ class FileParser:
             if parser.peek()[0] == "VAR":
                 var = parser.parse_value()
                 return FileReadNode(file, var)
-        raise SyntaxError(f"SyntaxError: [Line: {parser.current_line}] {parser.peek()[1]} is not a name of variable.")
+        parser.syntax_error("expected a variable name after 'into'")
 
     @staticmethod
     def parse_readline(parser):
@@ -115,7 +115,7 @@ class FileParser:
             if parser.peek()[0] == "VAR":
                 var = parser.parse_value()
                 return FileReadLineNode(file, var)
-        raise SyntaxError(f"SyntaxError: [Line: {parser.current_line}] {parser.peek()[1]} is not a name of variable.")
+        parser.syntax_error("expected a variable name after 'into'")
 
     @staticmethod
     def parse_write(parser):
@@ -124,14 +124,14 @@ class FileParser:
         if parser.peek()[0] == "VAR":
             file = parser.parse_value()
             return FileWriteNode(value, file)
-        raise SyntaxError(f"SyntaxError: [Line: {parser.current_line}] {parser.peek()[1]} is not a name of variable.")
+        parser.syntax_error("expected a file variable after 'to'")
 
     @staticmethod
     def parse_close(parser):
         if parser.peek()[0] == "VAR":
             file = parser.parse_value()
             return FileCloseNode(file)
-        raise SyntaxError(f"SyntaxError: [Line: {parser.current_line}] {parser.peek()[1]} is not a name of variable.")
+        parser.syntax_error("expected a file variable after 'close'")
 
     @staticmethod
     def parse_append(parser):
@@ -140,7 +140,7 @@ class FileParser:
         if parser.peek()[0] == "VAR":
             file = parser.parse_value()
             return FileAppendNode(value, file)
-        raise SyntaxError(f"SyntaxError: [Line: {parser.current_line}] {parser.peek()[1]} is not a name of variable.")
+        parser.syntax_error("expected a file variable after 'to'")
 
 
 

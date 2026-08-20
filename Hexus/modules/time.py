@@ -92,7 +92,7 @@ class TimeParser:
         elif token_type == "VAR" and value == "get":
             parser.consume_value("VAR", "get")
             return TimeParser.parse_time(parser)
-        raise SyntaxError(f"SyntaxError [time module]: Unknown command 'time.{value}'")
+        parser.syntax_error(f"unknown command in the 'time' module: {value!r}")
 
     @staticmethod
     def parse_hour(parser):
@@ -129,7 +129,7 @@ class TimeParser:
                 expr_node = parser.parse_expression()
                 return TimeUTCNode(expr_node)
         else:
-            raise SyntaxError("SyntaxError [time module]: Expected 'time' after 'get'")
+            parser.syntax_error("expected the keyword 'time' after 'get'")
 
 
 
