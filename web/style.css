@@ -257,15 +257,17 @@ pre.code-block {
 }
 
 .docs-page .docs-sidebar-group {
-    position: fixed;
-    top: var(--nav-height);
-    bottom: 0;
+    position: fixed !important;
+    top: var(--nav-height) !important;
+    bottom: 0 !important;
     left: 0;
     width: 270px;
+    height: calc(100vh - var(--nav-height));
     margin: 0;
     padding: 2rem 1.25rem;
     overflow-y: auto;
     background-color: var(--panel);
+    z-index: 11;
 }
 
 .docs-sidebar::-webkit-scrollbar {
@@ -552,10 +554,11 @@ footer {
     }
 
     .docs-page .docs-sidebar-group {
-        top: var(--nav-height);
+        top: var(--nav-height) !important;
         right: 0;
-        bottom: auto;
+        bottom: auto !important;
         width: 100%;
+        height: auto;
         padding: 0.65rem 1rem;
         overflow-x: auto;
         overflow-y: hidden;
