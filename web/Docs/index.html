@@ -1266,6 +1266,31 @@ file.close log</code></pre>
         }, { rootMargin: '-20% 0px -70% 0px' });
 
         sekcje.forEach((s) => obserwator.observe(s));
+        const toggleBtn = document.querySelector('.sidebar-toggle');
+        const sidebar = document.querySelector('.docs-sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const isOpen = sidebar.classList.toggle('open');
+                overlay.classList.toggle('open', isOpen);
+                toggleBtn.setAttribute('aria-expanded', String(isOpen));
+            });
+
+            overlay.addEventListener('click', closeSidebar);
+
+            document.querySelectorAll('.docs-sidebar-group a').forEach(a => {
+                a.addEventListener('click', () => {
+                    if (window.innerWidth <= 720) closeSidebar();
+                });
+            });
+        }
     </script>
 
 
