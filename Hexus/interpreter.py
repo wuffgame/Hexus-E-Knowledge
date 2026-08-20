@@ -92,7 +92,7 @@ class HexusInterpreter:
         if not isinstance(value, str):
             return value
 
-        if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+        if len(value) >= 2 and value[0] in "\"'" and value[-1] == value[0]:
             value = value[1:-1]
 
         def replace_variable(match):

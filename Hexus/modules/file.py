@@ -1,6 +1,19 @@
 import types
+import re
 from hashlib import file_digest
 from typing import Any
+
+
+def _decode_file_escapes(value):
+    escapes = {
+        "n": "\n",
+        "r": "\r",
+        "t": "\t",
+        '"': '"',
+        "\\": "\\",
+    }
+
+    return re.sub(r"\\([nrt\"\\])", lambda match: escapes[match.group(1)], value)
 
 
 class FileOpenNode:
@@ -162,7 +175,7 @@ class FileInterpreter:
 
         def visit_FileWriteNode(self, node):
             file = self.visit(node.file)
-            value = self.visit(node.value)
+            value = _decode_file_escapes(self.visit(node.value))
             file.seek(0)
             file.truncate(0)
             file.write(value)
@@ -173,7 +186,7 @@ class FileInterpreter:
 
         def visit_FileAppendNode(self, node):
             file = self.visit(node.file)
-            value = self.visit(node.value)
+            value = _decode_file_escapes(self.visit(node.value))
             file.seek(0, 2)
             file.write(value)
 
