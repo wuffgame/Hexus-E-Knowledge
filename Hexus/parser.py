@@ -281,6 +281,16 @@ class HexusParser:
             return self.tokens[self.pos + offset]
         return "EOF", "EOF"
 
+    def token_description(self, offset=0):
+        token_type, value = self.peek(offset)
+        return f"{token_type} with value {value!r}"
+
+    def syntax_error(self, message, offset=0):
+        raise SyntaxError(
+            f"SyntaxError: [Line: {self.current_line}] {message}; "
+            f"found {self.token_description(offset)}."
+        )
+
     def consume(self, expected_type):
         token_type, value = self.peek()
 
@@ -290,10 +300,7 @@ class HexusParser:
             self.pos += 1
             return value
         else:
-            raise SyntaxError(
-                f"[Line: {self.current_line}] expected token of type '{expected_type}', "
-                f"but found '{token_type}' with value '{value}' at position {self.pos}."
-            )
+            self.syntax_error(f"expected token of type {expected_type!r}")
 
     def advance(self):
         token_type, value = self.peek()
@@ -308,9 +315,7 @@ class HexusParser:
             self.pos += 1
             return value
         else:
-            raise SyntaxError(
-                f"Syntax error: [Line: {self.current_line}] Expected '{expected_value}', but found '{value}'."
-            )
+            self.syntax_error(f"expected {expected_value!r}")
 
     def consume_end_of_statement(self):
         token_type, value = self.peek()
@@ -319,7 +324,7 @@ class HexusParser:
         elif token_type == "EOF":
             pass
         else:
-            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected end of line, but found token of type '{token_type}' and value '{value}'")
+            self.syntax_error("expected the end of the instruction")
 
     def parse_value(self):
         token_type, value = self.peek()
@@ -336,7 +341,7 @@ class HexusParser:
             if self.peek()[0] == "VAR" and self.peek()[1] == "of":
                 self.consume_value("VAR", "of")
             else:
-                raise SyntaxError(f"[Line: {self.current_line}] ???")
+                self.syntax_error("expected the keyword 'of' after the index position")
             target_expr = self.parse_value()
             return IndexNode(target=target_expr, pos=pos_expr)
         elif token_type == "VAR" and value == "length":
@@ -346,12 +351,14 @@ class HexusParser:
                 target_expr = self.parse_value()
                 return LengthNode(target_expr)
             else:
-                raise SyntaxError(f"[Line: {self.current_line}] ???")
+                self.syntax_error("expected the keyword 'of' after 'length'")
         elif token_type == "VAR" and value in self.builtin_modules and self.peek(1)[0] == "DOT":
             node = self.parse_builtin_dot_call()
 
             if getattr(node, "is_expression", True) is False:
-                raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] '{value}' command does not return a value and can not be use inside expression command")
+                self.syntax_error(
+                    f"command {value!r} does not return a value and cannot be used in an expression"
+                )
             return node
         elif token_type == "INT":
             self.consume("INT")
@@ -387,7 +394,7 @@ class HexusParser:
         elif token_type == "OP" and value == "+":
             return self.parse_plus()
         else:
-            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expect number or variable, but found '{token_type}' ('{value}')")
+            self.syntax_error("expected a number, variable, string, boolean, or parenthesized expression")
 
     def parse_factor(self):
         left = self.parse_value()
@@ -487,7 +494,7 @@ class HexusParser:
             self.consume_value("VAR", "is")
 
         else:
-            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected '=' or 'is', but found {token_type} ('{value}')")
+            self.syntax_error("expected '=' or the keyword 'is' after the variable name")
 
         is_empty_list = (self.peek()[0] == "LSBRACE" and self.peek(1)[0] == "RSBRACE")
 
@@ -514,7 +521,7 @@ class HexusParser:
                     if self.peek()[0] == "COMMA":
                         self.consume("COMMA")
                     else:
-                        raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected ',' after list element, but found {self.peek()[0]}")
+                        self.syntax_error("expected ',' after a list element")
 
         else:
             expr_value = self.parse_expression()
@@ -637,7 +644,7 @@ class HexusParser:
         if self.peek()[0] == "VAR" and (self.peek()[1] == "s" or self.peek()[1] == "m" or self.peek()[1] == "h" or self.peek()[1] == "d"):
             value2 = self.parse_value()
             return WaitNode(value, value2)
-        raise SyntaxError(f"[Line: {self.current_line}] ???")
+        self.syntax_error("expected a time unit after the wait value (s, m, h, or d)")
 
     def parse_while(self):
         self.consume_value("VAR", "while")
@@ -659,9 +666,9 @@ class HexusParser:
                 self.loop_depth -= 1
                 return RepeatNode(value, value2)
             else:
-                raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected 'times' but found {self.peek()[1]}")
+                self.syntax_error("expected the keyword 'times' after the repeat count")
         else:
-            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected number but found {self.peek()[1]}")
+            self.syntax_error("expected a repeat count")
 
 
     def parse_clear(self):
@@ -682,10 +689,10 @@ class HexusParser:
                 value = "upper"
                 self.consume("VAR")
             else:
-                raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected lower or upper but found {self.peek()[0]}")
+                self.syntax_error("expected 'lower' or 'upper' after the variable name")
             return MakeNode(var, value)
         else:
-            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Expected VAR but found {self.peek()[0]}")
+            self.syntax_error("expected a variable name after 'make'")
 
 
 
@@ -763,7 +770,7 @@ class HexusParser:
             self.consume_value("VAR", "stop")
             return StopTimerNode()
         else:
-            raise SyntaxError(f"???")
+            self.syntax_error("expected 'start' or 'stop' after 'timer'")
 
 
     def parse_random(self):
@@ -799,7 +806,7 @@ class HexusParser:
             if self.peek()[0] == "VAR" or self.peek()[0] == "INT":
                 value = self.parse_value()
                 return VarPlusNode(var, value)
-        raise SyntaxError("???")
+        self.syntax_error("expected '++' or '+=' followed by a value")
 
 
     def parse_varminus(self):
@@ -813,7 +820,7 @@ class HexusParser:
             if self.peek()[0] == "VAR" or self.peek()[0] == "INT":
                 value = self.parse_value()
                 return VarMinusNode(var, value)
-        raise SyntaxError("???")
+        self.syntax_error("expected '--' or '-=' followed by a value")
 
 
     def parse_number_for(self):
@@ -885,12 +892,12 @@ class HexusParser:
             if self.loop_depth > 0:
                 node = self.parse_break()
             else:
-                raise SyntaxError(f"[LINE: {self.current_line}] You can't use break outside of loop")
+                self.syntax_error("'break' can only be used inside a loop")
         elif token_type == "VAR" and value == "continue":
             if self.loop_depth > 0:
                 node = self.parse_continue()
             else:
-                raise SyntaxError(f"[LINE: {self.current_line}] You can't use continue outside of loop")
+                self.syntax_error("'continue' can only be used inside a loop")
         elif token_type == "VAR":
             if self.peek(1)[0] == "OP" and self.peek(1)[1] == "+":
                 node = self.parse_varplus()
@@ -906,7 +913,7 @@ class HexusParser:
                 else:
                     node = self.parse_expression()
         else:
-            raise SyntaxError(f"SyntaxError: [Line: {self.current_line}] Unknown start instruction: {token_type} ('{value}')")
+            self.syntax_error("expected the start of an instruction")
         self.consume_end_of_statement()
         return node
 
