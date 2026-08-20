@@ -302,9 +302,10 @@ class HexusInterpreter:
             value = self.visit(node.value)
         import sys
         if value is None:
-            sys.exit("Program stop")
+            sys.exit(0)
         else:
-            sys.exit(value)
+            print(value, file=sys.stderr)
+            sys.exit(0)
 
 
     def visit_MakeNode(self, node):
@@ -484,7 +485,7 @@ class HexusInterpreter:
             var_name = node.var.name
         else:
             raise TypeError("???")
-        start_value = self.visit(node.value) + 1
+        start_value = self.visit(node.value)
         end_value = self.visit(node.value2) + 1
         had_var = var_name in self.env.vars
         old_value = self.env.vars.get(var_name)
