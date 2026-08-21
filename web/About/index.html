@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../style.css">
     <link rel="canonical" href="https://hexus-lang.dev/About/" />
 </head>
-<body>
+<body class="about-page">
     <header class="navbar">
         <a href="../" class="logo">
             <span class="name">HEXUS (E-Knowledge)</span>
@@ -19,21 +19,45 @@
             <a href="../">Start</a>
             <a href="../Docs/">Documentation</a>
             <a href="../Playground/">Playground</a>
-            <a href="../Download/ " class="active">Download</a>
+            <a href="../Download/">Download</a>
             <a href="../About/" class="active">About me</a>
         </nav>
     </header>
-    <main>
-        <h1>About the creator</h1>
-        <p>Hi! I'm a 16-year-old developer from Poland who likes making things that probably didn't need to exist.</p>
-        <p>I enjoy programming, game development and experimenting with my own ideas. I like building things from scratch — whether that's a programming language, a game, a tool, or something completely random that I decided to make at 2 AM.</p>
-        <p>One of my biggest projects so far has been Hexus (E-Knowledge), my own programming language.</p>
-        <p>I'm always working on something new, so Hexus probably won't be the last weird project you'll find on my Git. :D</p>
-        <p>My social:</p>
-        <p><a href="https://github.com/wuffgame">GitHub</a></p>
-        <p>My discord: _anik2010_</p>
-        <p>My email: kacper5555544444@gmail.com</p>
-        <p>My name on Hack Club Slack: wuff</p>
+    <main class="about-content">
+        <section class="about-hero">
+            <div class="about-intro">
+                <p class="eyebrow">The person behind Hexus</p>
+                <h1>About the creator</h1>
+                <p class="lede">Hi! I'm a 16-year-old developer from Poland who likes making things that probably didn't need to exist.</p>
+                <hr class="rule">
+                <p>I enjoy programming, game development and experimenting with my own ideas. I like building things from scratch — whether that's a programming language, a game, a tool, or something completely random that I decided to make at 2 AM.</p>
+                <p>One of my biggest projects so far has been <strong>Hexus (E-Knowledge)</strong>, my own programming language.</p>
+                <p>I'm always working on something new, so Hexus probably won't be the last weird project you'll find on my Git. :D</p>
+            </div>
+            <aside class="about-badge" aria-label="Creator information">
+                <span class="badge-mark">W</span>
+                <span class="badge-label">Creator</span>
+                <strong>wuff</strong>
+                <span>Poland · building weird things</span>
+            </aside>
+        </section>
+
+        <section class="contact-card">
+            <div>
+                <p class="eyebrow">Stay in touch</p>
+                <h2>Find me online</h2>
+            </div>
+            <div class="contact-list">
+                <a class="contact-item" href="https://github.com/wuffgame" target="_blank" rel="noopener noreferrer">
+                    <span class="contact-icon">GH</span>
+                    <span><small>Code & projects</small><strong>GitHub / wuffgame</strong></span>
+                    <span class="arrow">↗</span>
+                </a>
+                <div class="contact-item"><span class="contact-icon">DC</span><span><small>Discord</small><strong>_anik2010_</strong></span></div>
+                <div class="contact-item"><span class="contact-icon">@</span><span><small>Email</small><strong>kacper5555544444@gmail.com</strong></span></div>
+                <div class="contact-item"><span class="contact-icon">HC</span><span><small>Hack Club Slack</small><strong>wuff</strong></span></div>
+            </div>
+        </section>
     </main>
     <footer>Hexus-lang - Made by wuff</footer>
 </body>
