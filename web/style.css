@@ -535,12 +535,7 @@ footer {
 }
 
 .update-notice {
-    background-color: var(--panel-alt);
-    border: 1px solid var(--accent-dim);
     border-left: 4px solid var(--accent);
-    border-radius: 6px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
 }
 
 .update-notice h2 {
