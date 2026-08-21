@@ -332,7 +332,7 @@ class HexusParser:
         with open(filepath, "r", encoding="utf-8") as f:
             code = f.read()
 
-        from Hexus.lexer import tokenizer_tokens
+        from lexer import tokenizer_tokens
         tokens = [t for t in tokenizer_tokens(code) if t[0] != "SKIP"]
 
         temp_parser = HexusParser(tokens)

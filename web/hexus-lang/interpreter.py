@@ -65,7 +65,7 @@ class HexusInterpreter:
             if mod_name.endswith("_ext"):
                 continue
 
-            py_mod = importlib.import_module(f".modules.{mod_name}")
+            py_mod = importlib.import_module(f"modules.{mod_name}")
             for attr_name in dir(py_mod):
                 attr = getattr(py_mod, attr_name)
                 if attr_name.endswith("Interpreter") and hasattr(attr, "register_handlers"):
@@ -74,7 +74,7 @@ class HexusInterpreter:
     def _load_module(self, filepath: str):
         with open(filepath, "r", encoding="utf-8") as f:
             code = f.read()
-        from Hexus.lexer import tokenizer_tokens
+        from lexer import tokenizer_tokens
         tokens = [t for t in tokenizer_tokens(code) if t[0] != "SKIP"]
         parser = HexusParser(tokens)
         nodes = parser.parse()
