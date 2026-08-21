@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hexus-lang"
-version = "0.1.1b"
+version = "0.1.1a3"
 description = "Hexus (E-Knowledge) programming language"
 readme = "README.md"
 license = { file = "LICENSE" }

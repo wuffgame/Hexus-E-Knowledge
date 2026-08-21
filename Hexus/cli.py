@@ -18,6 +18,8 @@ def main():
         print("Use: hexus <file.he>")
         sys.exit(0)
 
+    file_name = os.path.abspath(file_name)
+
     if not os.path.exists(file_name):
         print(f"Error: File '{file_name}' does not exist!")
         sys.exit(1)
@@ -33,10 +35,11 @@ def main():
         token_list = tokenizer_tokens(source_code)
         clear_tokens = [t for t in token_list if t[0] != "SKIP"]
 
-        parser = HexusParser(clear_tokens)
+        source_dir = os.path.dirname(file_name)
+        parser = HexusParser(clear_tokens, source_dir=source_dir)
         program_tree = parser.parse()
 
-        interpreter = HexusInterpreter()
+        interpreter = HexusInterpreter(source_dir=source_dir)
         interpreter.interpret(program_tree)
 
     except SyntaxError as e:

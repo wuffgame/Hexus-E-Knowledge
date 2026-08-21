@@ -53,8 +53,9 @@ class Environment:
 
 
 class HexusInterpreter:
-    def __init__(self):
+    def __init__(self, source_dir=None):
         self.env = Environment()
+        self.source_dir = os.path.abspath(source_dir or os.getcwd())
         self._register_type1_modules()
         self.timer = 0
         self.timer2 = 0
@@ -76,7 +77,7 @@ class HexusInterpreter:
             code = f.read()
         from Hexus.lexer import tokenizer_tokens
         tokens = [t for t in tokenizer_tokens(code) if t[0] != "SKIP"]
-        parser = HexusParser(tokens)
+        parser = HexusParser(tokens, source_dir=os.path.dirname(filepath))
         nodes = parser.parse()
         module_env = Environment()
         old_env = self.env
@@ -91,10 +92,10 @@ class HexusInterpreter:
     def _find_module(self, module_name: str) -> str:
         base_dir = os.path.dirname(os.path.abspath(str(__file__)))
         candidates = [
-            # Local imports: files in the project/current working directory.
+            os.path.join(self.source_dir, module_name),
+            os.path.join(self.source_dir, "modules", module_name),
             os.path.abspath(module_name),
             os.path.join(base_dir, module_name),
-            # Built-in Hexus modules.
             os.path.join(base_dir, "modules", module_name),
             os.path.join(base_dir, "..", "modules", module_name),
         ]

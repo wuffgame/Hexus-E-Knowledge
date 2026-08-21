@@ -274,11 +274,12 @@ class SyntaxPart:
         return f"SyntaxPart(kind={self.kind}, value={self.value})"
 
 class HexusParser:
-    def __init__(self, tokens):
+    def __init__(self, tokens, source_dir=None):
         self.tokens = tokens
         self.pos = 0
         self.loop_depth = 0
         self.current_line = 1
+        self.source_dir = os.path.abspath(source_dir or os.getcwd())
         self.builtin_modules = {}
         self.module_syntax = {}
         self._load_type1_modules()
@@ -314,7 +315,11 @@ class HexusParser:
         filepath = None
         base_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
-            # Local imports: files in the project/current working directory.
+            # Local imports: files next to the source file.
+            os.path.join(self.source_dir, module_name),
+            # Prefer project modules over Hexus' built-in modules.
+            os.path.join(self.source_dir, "modules", module_name),
+            # Keep accepting absolute paths and imports from the cwd.
             os.path.abspath(module_name),
             os.path.join(base_dir, module_name),
             # Built-in Hexus modules.
@@ -335,7 +340,7 @@ class HexusParser:
         from Hexus.lexer import tokenizer_tokens
         tokens = [t for t in tokenizer_tokens(code) if t[0] != "SKIP"]
 
-        temp_parser = HexusParser(tokens)
+        temp_parser = HexusParser(tokens, source_dir=os.path.dirname(filepath))
         syntax_map = {}
         while temp_parser.peek()[0] != "EOF":
             if temp_parser.peek()[0] == "AT":
