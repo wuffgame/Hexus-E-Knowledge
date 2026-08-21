@@ -1,4 +1,4 @@
 @syntax "add <number> to <number>"
 func add(a, b) {
-    return a + b
+    send "Result: {a + b}"
 }

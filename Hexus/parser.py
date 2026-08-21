@@ -656,6 +656,8 @@ class HexusParser:
         text = []
         self.consume("DASHS")
         while self.peek()[0] != "DASHS":
+            if self.peek()[0] == "EOF":
+                self.syntax_error("unclosed block comment '//'")
             text.append(self.advance())
         self.consume("DASHS")
         return ComNode(" ".join(text))

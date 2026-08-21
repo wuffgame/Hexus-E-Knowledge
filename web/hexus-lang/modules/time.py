@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+import types
 
 class _UTC:
     def __add__(self, h):
@@ -25,7 +26,6 @@ class TimeMinuteNode:
     is_expression = True
     def __repr__(self):
         return "TimeMinuteNode()"
-
 
 class TimeSecNode:
     is_expression = True
@@ -92,36 +92,30 @@ class TimeParser:
         elif token_type == "VAR" and value == "get":
             parser.consume_value("VAR", "get")
             return TimeParser.parse_time(parser)
-        raise SyntaxError(f"SyntaxError [time module]: Unknown command 'time.{value}'")
+        parser.syntax_error(f"unknown command in the 'time' module: {value!r}")
 
     @staticmethod
     def parse_hour(parser):
-        parser.consume_end_of_statement()
         return TimeHourNode()
 
     @staticmethod
     def parse_minute(parser):
-        parser.consume_end_of_statement()
         return TimeMinuteNode()
 
     @staticmethod
     def parse_second(parser):
-        parser.consume_end_of_statement()
         return TimeSecNode()
 
     @staticmethod
     def parse_day(parser):
-        parser.consume_end_of_statement()
         return TimeDayNode()
 
     @staticmethod
     def parse_month(parser):
-        parser.consume_end_of_statement()
         return TimeMonthNode()
 
     @staticmethod
     def parse_year(parser):
-        parser.consume_end_of_statement()
         return TimeYearNode()
 
     @staticmethod
@@ -135,7 +129,7 @@ class TimeParser:
                 expr_node = parser.parse_expression()
                 return TimeUTCNode(expr_node)
         else:
-            raise SyntaxError("SyntaxError [time module]: Expected 'time' after 'get'")
+            parser.syntax_error("expected the keyword 'time' after 'get'")
 
 
 
@@ -145,37 +139,35 @@ class TimeInterpreter:
         interpreter.env.set("UTC", UTC)
 
         def visit_TimeHourNode(self, node):
-            _ = self, node
+            _ = node, self
             return datetime.now().strftime("%H")
 
         def visit_TimeMinuteNode(self, node):
-            _ = self, node
+            _ = node, self
             return datetime.now().strftime("%M")
 
         def visit_TimeSecNode(self, node):
-            _ = self, node
+            _ = node, self
             return datetime.now().strftime("%S")
 
         def visit_TimeDayNode(self, node):
-            _ = self, node
+            _ = node, self
             return datetime.now().strftime("%d")
 
         def visit_TimeMonthNode(self, node):
-            _ = self, node
+            _ = node, self
             return datetime.now().strftime("%m")
 
         def visit_TimeYearNode(self, node):
-            _ = self, node
+            _ = node, self
             return datetime.now().strftime("%Y")
 
         def visit_TimeTimeNode(self, node):
-            _ = self
-            value = interpreter.visit(node.value)
+            value = self.visit(node.value)
             return datetime.now().strftime(value)
 
         def visit_TimeUTCNode(self, node):
-            _ = self
-            tz_val = interpreter.visit(node.value_node)
+            tz_val = self.visit(node.value_node)
             if isinstance(tz_val, _UTC):
                 tz_val = timezone.utc
             elif isinstance(tz_val, int):
@@ -183,11 +175,16 @@ class TimeInterpreter:
 
             return datetime.now(tz_val).strftime("%Y-%m-%d %H:%M:%S")
 
-        setattr(interpreter.__class__, "visit_TimeHourNode", visit_TimeHourNode)
-        setattr(interpreter.__class__, "visit_TimeMinuteNode", visit_TimeMinuteNode)
-        setattr(interpreter.__class__, "visit_TimeSecNode", visit_TimeSecNode)
-        setattr(interpreter.__class__, "visit_TimeDayNode", visit_TimeDayNode)
-        setattr(interpreter.__class__, "visit_TimeMonthNode", visit_TimeMonthNode)
-        setattr(interpreter.__class__, "visit_TimeYearNode", visit_TimeYearNode)
-        setattr(interpreter.__class__, "visit_TimeTimeNode", visit_TimeTimeNode)
-        setattr(interpreter.__class__, "visit_TimeUTCNode", visit_TimeUTCNode)
+        handlers = {
+            "visit_TimeHourNode": visit_TimeHourNode,
+            "visit_TimeMinuteNode": visit_TimeMinuteNode,
+            "visit_TimeSecNode": visit_TimeSecNode,
+            "visit_TimeDayNode": visit_TimeDayNode,
+            "visit_TimeMonthNode": visit_TimeMonthNode,
+            "visit_TimeYearNode": visit_TimeYearNode,
+            "visit_TimeTimeNode": visit_TimeTimeNode,
+            "visit_TimeUTCNode": visit_TimeUTCNode,
+        }
+
+        for name, func in handlers.items():
+            setattr(interpreter, name, types.MethodType(func, interpreter))

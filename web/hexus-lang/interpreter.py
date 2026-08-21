@@ -1,8 +1,11 @@
-from parser import FunctionDefNode
+from parser import FunctionDefNode, HexusParser
+from lexer import tokenizer_tokens
 from typing import Any, Callable
 import importlib
+import os
 import pkgutil
 import modules
+import re
 
 
 class BreakException(Exception):
@@ -23,11 +26,21 @@ class Environment:
     def get(self, name):
         if name in self.vars:
             return self.vars[name]
+
         if self.parent:
             return self.parent.get(name)
+
         raise NameError(f"Variable '{name}' is not defined!!!")
 
     def set(self, name, value):
+        if name in self.vars:
+            self.vars[name] = value
+            return
+
+        if self.parent and name in self.parent:
+            self.parent.set(name, value)
+            return
+
         self.vars[name] = value
 
     def __contains__(self, name):
@@ -52,70 +65,95 @@ class HexusInterpreter:
             if mod_name.endswith("_ext"):
                 continue
 
-            py_mod = importlib.import_module(f"modules.{mod_name}")
+            py_mod = importlib.import_module(f".modules.{mod_name}")
             for attr_name in dir(py_mod):
                 attr = getattr(py_mod, attr_name)
                 if attr_name.endswith("Interpreter") and hasattr(attr, "register_handlers"):
                     attr.register_handlers(self)
+
+    def _load_module(self, filepath: str):
+        with open(filepath, "r", encoding="utf-8") as f:
+            code = f.read()
+        from Hexus.lexer import tokenizer_tokens
+        tokens = [t for t in tokenizer_tokens(code) if t[0] != "SKIP"]
+        parser = HexusParser(tokens)
+        nodes = parser.parse()
+        module_env = Environment()
+        old_env = self.env
+        self.env = module_env
+        try:
+            for node in nodes:
+                self.visit(node)
+        finally:
+            self.env = old_env
+        return module_env
+
+    def _find_module(self, module_name: str) -> str:
+        base_dir = os.path.dirname(os.path.abspath(str(__file__)))
+        candidates = [
+            os.path.abspath(module_name),
+            os.path.join(base_dir, module_name),
+            os.path.join(base_dir, "modules", module_name),
+            os.path.join(base_dir, "..", "modules", module_name),
+        ]
+        for path in candidates:
+            if os.path.exists(path):
+                return os.path.abspath(path)
+        raise FileNotFoundError(f"Module '{module_name}' not found")
 
     def visit(self, node) -> Any:
         method_name = f"visit_{type(node).__name__}"
         visitor: Callable[[Any], Any] = getattr(self, method_name, self.generic_visit)
         return visitor(node)
 
-    def generic_visit(self, node):
+    def generic_visit(self, node, *args, **kwargs):
+        _ = args, kwargs, self
         raise Exception(f"Interpreter error: No visit method defined for {type(node).__name__}")
 
-    @staticmethod
-    def visit_NumberNode(node):
+    def visit_NumberNode(self, node):
+        _ = self
         value = str(node.value)
         if "." in value:
             return float(value)
         return int(value)
 
-
     def visit_StringNode(self, node):
-        if isinstance(node.value, str):
-            words_list = node.value.split()
-        else:
-            words_list = node.value
+        value = node.value
 
+        if not isinstance(value, str):
+            return value
 
-        if len(words_list) == 1:
-            text = words_list[0][1:-1]
-            if text.startswith("{") and text.endswith("}"):
-                var_name = text[1:-1]
-                if var_name in self.env:
-                    return str(self.env.get(var_name))
-            return text
-        first = words_list[0][1:]
-        middle = words_list[1:-1]
-        last = words_list[-1][:-1]
-        newtxt = [first] + middle + [last]
-        for i, t in enumerate(newtxt):
-            if t.startswith("{") and t.endswith("}"):
-                t = t[1:-1]
-                if t in self.env:
-                    txt = self.env.get(t)
-                    newtxt[i] = str(txt)
+        if len(value) >= 2 and value[0] in "\"'" and value[-1] == value[0]:
+            value = value[1:-1]
 
-        full_txt = " ".join(newtxt)
-        return full_txt
+        def replace_variable(match):
+            expression = match.group(1).strip()
+
+            try:
+                tokens = [token for token in tokenizer_tokens(expression) if token[0] != "SKIP"]
+                expression_parser = HexusParser(tokens)
+                expression_node = expression_parser.parse_expression()
+                if expression_parser.peek()[0] != "EOF":
+                    raise SyntaxError(f"Unexpected token in interpolation: {expression_parser.peek()[1]}")
+                return str(self.visit(expression_node))
+            except NameError:
+                return match.group(0)
+
+        return re.sub(r"\{([^{}]+)\}", replace_variable, value)
 
     def visit_VariableNode(self, node):
         if node.name in self.env:
             return self.env.get(node.name)
         raise NameError(f"Variable '{node.name}' is not defined!!!")
 
-    @staticmethod
-    def visit_NowNode(node):
-        _ = node
+    def visit_NowNode(self, node):
+        _ = node, self
         import time
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         return now
 
-    @staticmethod
-    def visit_BoolNode(node):
+    def visit_BoolNode(self, node):
+        _ = self
         return bool(node.value)
 
 
@@ -135,6 +173,7 @@ class HexusInterpreter:
         if node.op == "<": return left_val < right_val
         if node.op == "<=": return left_val <= right_val
         if node.op == ">=": return left_val >= right_val
+        if node.op == "%": return left_val % right_val
         raise ValueError(f"Unknown binary operator: {node.op}")
 
     def visit_SendCommandNode(self, node):
@@ -280,8 +319,8 @@ class HexusInterpreter:
             except BreakException:
                 break
 
-    @staticmethod
-    def visit_ClearNode():
+    def visit_ClearNode(self, node):
+        _ = node, self
         import subprocess
         import os
         subprocess.run('cls' if os.name == 'nt' else 'clear', shell=True)
@@ -294,9 +333,10 @@ class HexusInterpreter:
             value = self.visit(node.value)
         import sys
         if value is None:
-            sys.exit("Program stop")
+            sys.exit(0)
         else:
-            sys.exit(value)
+            print(value, file=sys.stderr)
+            sys.exit(0)
 
 
     def visit_MakeNode(self, node):
@@ -326,8 +366,8 @@ class HexusInterpreter:
         var = self.visit(node.var)
         return len(var)
 
-    @staticmethod
-    def visit_TimeNode(node):
+    def visit_TimeNode(self, node):
+        _ = self
         import time
         value = node.value
         if value == "hour":
@@ -416,6 +456,145 @@ class HexusInterpreter:
             return target[pos - 1]
         except Exception:
             raise TypeError(f"{target} is not a list")
+
+
+    def visit_RandomNode(self, node):
+        value1 = self.visit(node.value1)
+        value2 = self.visit(node.value2)
+        import random
+        return random.randint(value1, value2)
+
+
+
+    def visit_ForNode(self, node):
+        if hasattr(node.value, "name"):
+            var_name = node.value.name
+        else:
+            raise TypeError("???")
+        list_value = self.visit(node.list_value)
+        had_var = var_name in self.env.vars
+        old_value = self.env.vars.get(var_name)
+        try:
+            for item in list(list_value):
+                self.env.set(var_name, item)
+                try:
+                    for stmt in node.value2:
+                        try:
+                            self.visit(stmt)
+                        except ContinueException:
+                            break
+                except BreakException:
+                    break
+        finally:
+            if had_var:
+                self.env.vars[var_name] = old_value
+            else:
+                self.env.vars.pop(var_name, None)
+
+    def visit_VarPlusNode(self, node):
+        value = self.visit(node.value)
+        var = node.var.strip()
+
+        old_value = self.env.get(var)
+        new_value = old_value + int(value)
+
+        self.env.set(var, new_value)
+
+    def visit_VarMinusNode(self, node):
+        value = self.visit(node.value)
+        var = node.var.strip()
+
+        old_value = self.env.get(var)
+        new_value = old_value - int(value)
+
+        self.env.set(var, new_value)
+
+
+
+    def visit_NumberForNode(self, node):
+        if hasattr(node.var, "name"):
+            var_name = node.var.name
+        else:
+            raise TypeError("???")
+        start_value = self.visit(node.value)
+        end_value = self.visit(node.value2) + 1
+        had_var = var_name in self.env.vars
+        old_value = self.env.vars.get(var_name)
+        try:
+            for item in range(start_value, end_value):
+                self.env.set(var_name, item)
+
+                try:
+                    for stmt in node.block:
+                        try:
+                            self.visit(stmt)
+                        except ContinueException:
+                            break
+                except BreakException:
+                    break
+        finally:
+            if had_var:
+                self.env.vars[var_name] = old_value
+            else:
+                self.env.vars.pop(var_name, None)
+
+
+
+    def visit_ImportNode(self, node):
+        module_name = node.module_name
+        filepath = self._find_module(module_name)
+        module_env = self._load_module(filepath)
+        key = module_name.replace(".he", "").replace(".", "_")
+        self.env.set(key, module_env)
+
+
+
+    def visit_FromImportNode(self, node):
+        module_name = node.module_name
+        filepath = self._find_module(module_name)
+        module_env = self._load_module(filepath)
+        for name in node.names:
+            try:
+                value = module_env.get(name)
+                self.env.set(name, value)
+            except NameError:
+                raise NameError(f"Module '{module_name}' has no '{name}'")
+
+
+
+    def visit_ModuleCallNode(self, node):
+        mod_value = self.env.get(node.module_name)
+        if not isinstance(mod_value, Environment):
+            raise TypeError(f"'{node.module_name}' is not a module")
+        try:
+            func = mod_value.get(node.func_name)
+        except NameError:
+            raise NameError(f"Module '{node.module_name}' has no '{node.func_name}'")
+
+        if isinstance(func, FunctionDefNode):
+            if len(node.args) != len(func.para):
+                raise TypeError(
+                    f"Function '{node.func_name}' in module '{node.module_name}' "
+                    f"expects {len(func.para)} arguments, but got {len(node.args)}"
+                )
+            arg_values = [self.visit(arg) for arg in node.args]
+            previous_env = self.env
+            local_env = Environment(parent=previous_env)
+            for para_name, val in zip(func.para, arg_values):
+                local_env.set(para_name, val)
+            self.env = local_env
+            return_value = None
+            try:
+                for stmt in func.body:
+                    self.visit(stmt)
+            except ReturnException as ret:
+                return_value = ret.value
+            finally:
+                self.env = previous_env
+            return return_value
+        else:
+            return func
+
 
 
 

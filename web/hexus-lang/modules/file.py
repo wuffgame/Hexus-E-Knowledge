@@ -1,0 +1,204 @@
+import types
+import re
+from hashlib import file_digest
+from typing import Any
+
+
+def _decode_file_escapes(value):
+    escapes = {
+        "n": "\n",
+        "r": "\r",
+        "t": "\t",
+        '"': '"',
+        "\\": "\\",
+    }
+
+    return re.sub(r"\\([nrt\"\\])", lambda match: escapes[match.group(1)], value)
+
+
+class FileOpenNode:
+    is_expression = False
+    def __init__(self, value, var):
+        self.value = value
+        self.var = var
+    def __repr__(self):
+        return f"FileOpenNode(value={self.value}, var={self.var})"
+
+
+class FileReadNode:
+    is_expression = False
+    def __init__(self, file, var):
+        self.file = file
+        self.var = var
+    def __repr__(self):
+        return f"FileReadNode(file={self.file}, var={self.var})"
+
+class FileReadLineNode:
+    is_expression = False
+    def __init__(self, file, var):
+        self.file = file
+        self.var = var
+    def __repr__(self):
+        return f"FileReadLineNode(file={self.file}, var={self.var})"
+
+class FileWriteNode:
+    def __init__(self, value, file):
+        self.value = value
+        self.file = file
+    def __repr__(self):
+        return f"FileWriteNode(value={self.value}, file={self.file})"
+
+class FileCloseNode:
+    def __init__(self, file):
+        self.file = file
+    def __repr__(self):
+        return f"FileCloseNode(file={self.file})"
+
+class FileAppendNode:
+    def __init__(self, value, file):
+        self.value = value
+        self.file = file
+    def __repr__(self):
+        return f"FileAppendNode(value={self.value}, file={self.file})"
+
+class FileParser:
+    name = "file"
+
+    @staticmethod
+    def parse(parser):
+        token_type, value = parser.peek()
+        if token_type == "VAR" and value == "open":
+            parser.consume_value("VAR", "open")
+            return FileParser.parse_open(parser)
+        elif token_type == "VAR" and value == "read":
+            parser.consume_value("VAR", "read")
+            return FileParser.parse_read(parser)
+        elif token_type == "VAR" and value == "readline":
+            parser.consume_value("VAR", "readline")
+            return FileParser.parse_readline(parser)
+        elif token_type == "VAR" and value == "write":
+            parser.consume_value("VAR", "write")
+            return FileParser.parse_write(parser)
+        elif token_type == "VAR" and value == "close":
+            parser.consume_value("VAR", "close")
+            return FileParser.parse_close(parser)
+        elif token_type == "VAR" and value == "append":
+            parser.consume_value("VAR", "append")
+            return FileParser.parse_append(parser)
+        parser.syntax_error("unknown command in the 'file' module")
+
+
+    @staticmethod
+    def parse_open(parser):
+        value = parser.parse_value()
+        parser.consume_value("VAR", "as")
+        if parser.peek()[0] == "VAR":
+            var = parser.parse_value()
+            return FileOpenNode(value, var)
+        parser.syntax_error("expected a variable name after 'as'")
+
+    @staticmethod
+    def parse_read(parser):
+        if parser.peek()[0] == "VAR":
+            file = parser.parse_value()
+            parser.consume_value("VAR", "into")
+            if parser.peek()[0] == "VAR":
+                var = parser.parse_value()
+                return FileReadNode(file, var)
+        parser.syntax_error("expected a variable name after 'into'")
+
+    @staticmethod
+    def parse_readline(parser):
+        if parser.peek()[0] == "VAR":
+            file = parser.parse_value()
+            parser.consume_value("VAR", "into")
+            if parser.peek()[0] == "VAR":
+                var = parser.parse_value()
+                return FileReadLineNode(file, var)
+        parser.syntax_error("expected a variable name after 'into'")
+
+    @staticmethod
+    def parse_write(parser):
+        value = parser.parse_value()
+        parser.consume_value("VAR", "to")
+        if parser.peek()[0] == "VAR":
+            file = parser.parse_value()
+            return FileWriteNode(value, file)
+        parser.syntax_error("expected a file variable after 'to'")
+
+    @staticmethod
+    def parse_close(parser):
+        if parser.peek()[0] == "VAR":
+            file = parser.parse_value()
+            return FileCloseNode(file)
+        parser.syntax_error("expected a file variable after 'close'")
+
+    @staticmethod
+    def parse_append(parser):
+        value = parser.parse_value()
+        parser.consume_value("VAR", "to")
+        if parser.peek()[0] == "VAR":
+            file = parser.parse_value()
+            return FileAppendNode(value, file)
+        parser.syntax_error("expected a file variable after 'to'")
+
+
+
+
+
+
+
+class FileInterpreter:
+    @staticmethod
+    def register_handlers(interpreter):
+
+        def visit_FileOpenNode(self, node):
+            file_name = self.visit(node.value) if hasattr(node.value, "value") else node.value
+            var_name = node.var.name if hasattr(node.var, "name") else str(node.var)
+            try:
+                file_obj = open(file_name, "r+", encoding="utf-8")
+            except FileNotFoundError:
+                file_obj = open(file_name, "w+", encoding="utf-8")
+            self.env.set(var_name, file_obj)
+
+        def visit_FileReadNode(self, node):
+            file = self.visit(node.file)
+            var = node.var.name
+            file_read = file.read()
+            self.env.set(var, file_read)
+
+        def visit_FileReadLineNode(self, node):
+            file = self.visit(node.file)
+            var = node.var.name
+            line = file.readline()
+            self.env.set(var, line)
+
+        def visit_FileWriteNode(self, node):
+            file = self.visit(node.file)
+            value = _decode_file_escapes(self.visit(node.value))
+            file.seek(0)
+            file.truncate(0)
+            file.write(value)
+
+        def visit_FileCloseNode(self, node):
+            file = self.visit(node.file)
+            file.close()
+
+        def visit_FileAppendNode(self, node):
+            file = self.visit(node.file)
+            value = _decode_file_escapes(self.visit(node.value))
+            file.seek(0, 2)
+            file.write(value)
+
+
+        handlers = {
+            "visit_FileOpenNode": visit_FileOpenNode,
+            "visit_FileReadNode": visit_FileReadNode,
+            "visit_FileReadLineNode": visit_FileReadLineNode,
+            "visit_FileWriteNode": visit_FileWriteNode,
+            "visit_FileCloseNode": visit_FileCloseNode,
+            "visit_FileAppendNode": visit_FileAppendNode,
+        }
+
+        for name, func in handlers.items():
+            setattr(interpreter, name, types.MethodType(func, interpreter))
