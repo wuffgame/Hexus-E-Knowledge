@@ -8,10 +8,6 @@ for row from 1 to 3 {
 - # Think about lists (przecinek na końcu to jest takie cholerstwo jak niektórzy mówią)
 - # Dodać słowniki
 - # Zastanowić się nad switch/match lub/i status = "OK" if x > 0 else "BAD"
-# import własnych modułów i modułów type2
+- # modułów type2
 - # Obsługa błędów czyli try/except/finally
 - # Dodać [] do parse_value jako lista (może nie jako [] jak tak teraz myśle, tylko poprostu "test, test1,"
-
-
-# Dodać do dokumentacji jak przygotować projekt
-# Przetestować na nowym projekcie w vsc czy moduły użytkowników działają jak w opisie importów w docs (wszystkie 4 opcje)

@@ -315,14 +315,10 @@ class HexusParser:
         filepath = None
         base_dir = os.path.dirname(os.path.abspath(__file__))
         candidates = [
-            # Local imports: files next to the source file.
             os.path.join(self.source_dir, module_name),
-            # Prefer project modules over Hexus' built-in modules.
             os.path.join(self.source_dir, "modules", module_name),
-            # Keep accepting absolute paths and imports from the cwd.
             os.path.abspath(module_name),
             os.path.join(base_dir, module_name),
-            # Built-in Hexus modules.
             os.path.join(base_dir, "modules", module_name),
             os.path.join(base_dir, "..", "modules", module_name),
         ]
@@ -347,8 +343,6 @@ class HexusParser:
                 saved_pos = temp_parser.pos
                 try:
                     syntax_parts = temp_parser.parse_syntax_decl()
-                    # A syntax declaration is normally followed by a newline
-                    # before the function definition.
                     while temp_parser.peek()[0] == "NEWLINE":
                         temp_parser.consume("NEWLINE")
                     if temp_parser.peek()[0] == "VAR" and temp_parser.peek()[1] == "func":
