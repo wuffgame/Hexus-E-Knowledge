@@ -534,6 +534,33 @@ footer {
     margin: 0;
 }
 
+.update-notice {
+    background-color: var(--panel-alt);
+    border: 1px solid var(--accent-dim);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.update-notice h2 {
+    margin: 0 0 0.5rem;
+}
+
+.update-notice p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.update-notice .eyebrow {
+    margin: 0 0 0.25rem;
+    color: var(--text);
+}
+
+.update-notice pre {
+    margin: 1rem 0;
+}
+
 .content-card {
     background-color: var(--panel);
     border: 1px solid var(--border);
